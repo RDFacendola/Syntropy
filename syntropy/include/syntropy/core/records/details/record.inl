@@ -18,30 +18,24 @@ namespace Syntropy::Records
 
     template <Int TIndex, typename TRecord>
     [[nodiscard]] constexpr auto
-    Get(Forwarding<TRecord> sequence) noexcept
-        -> decltype(Details::RouteGet<TIndex>(Forward<TRecord>(sequence)))
+    Get(Forwarding<TRecord> record) noexcept
+        -> decltype(Details::RouteGet<TIndex>(Forward<TRecord>(record)))
     {
-        return Details::RouteGet<TIndex>(Forward<TRecord>(sequence));
+        return Details::RouteGet<TIndex>(Forward<TRecord>(record));
     }
-
-
-
-
-
 
     // Functional.
     // ===========
 
     template <typename TFunction, Concepts::ForwardingRecord TRecord>
     constexpr decltype(auto)
-    Apply(Forwarding<TFunction> function, Forwarding<TRecord> ntuple) noexcept
+    Apply(Forwarding<TFunction> function, Forwarding<TRecord> record) noexcept
     {
-        using namespace Templates;
-
         auto apply = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
             {
-                return function(Get<TIndex>(Forward<TRecord>(ntuple))...);
+                return function(Records::Get<TIndex>(
+                    Forward<TRecord>(record))...);
             };
 
         return apply(Templates::RecordEnumerationOf<TRecord>{});
@@ -50,14 +44,13 @@ namespace Syntropy::Records
     template <typename TFunction, Concepts::ForwardingRecord TRecord>
     constexpr void
     ForEachApply(Forwarding<TFunction> function,
-                 Forwarding<TRecord> ntuple) noexcept
+                 Forwarding<TRecord> record) noexcept
     {
-        using namespace Templates;
-
         auto for_each_apply = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
             {
-                (function(Get<TIndex>(Forward<TRecord>(ntuple))), ...);
+                (function(Records::Get<TIndex>(
+                    Forward<TRecord>(record))), ...);
             };
 
         for_each_apply(Templates::RecordEnumerationOf<TRecord>{});
@@ -68,27 +61,24 @@ namespace Syntropy::Records
               Concepts::ForwardingRecord... TRecords>
     constexpr decltype(auto)
     ProjectApply(Forwarding<TFunction> function,
-                 Forwarding<TRecords>... tuples) noexcept
+                 Forwarding<TRecords>... records) noexcept
     {
-        using namespace Templates;
-
-        return function(Get<TIndex>(Forward<TRecords>(tuples))...);
+        return function(Records::Get<TIndex>(Forward<TRecords>(records))...);
     }
 
     template <typename TFunction, Concepts::ForwardingRecord... TRecords>
     constexpr void
     LockstepApply(Forwarding<TFunction> function,
-                  Forwarding<TRecords>... tuples) noexcept
+                  Forwarding<TRecords>... records) noexcept
     {
-        using namespace Templates;
-
-        constexpr auto kMinRank = Math::Min(RecordRankOf<TRecords>...);
+        constexpr auto kMinRank
+            = Math::Min(Templates::RecordRankOf<TRecords>...);
 
         auto lockstep_apply = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
             {
                 (ProjectApply<TIndex>(Forward<TFunction>(function),
-                                      tuples...), ...);
+                                      records...), ...);
             };
 
         lockstep_apply(Syntropy::Templates::MakeSequence<kMinRank>{});
@@ -96,17 +86,16 @@ namespace Syntropy::Records
 
     template <typename TType, Concepts::ForwardingRecord TRecord>
     [[nodiscard]] constexpr TType
-    MakeFromTuple(Forwarding<TRecord> tuple) noexcept
+    MakeFromRecord(Forwarding<TRecord> record) noexcept
     {
-        using namespace Templates;
-
-        auto make_from_tuple = [&]<Int... TIndex>
+        auto make_from_record = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
             {
-                return TType(Get<TIndex>(Forward<TRecord>(tuple))...);
+                return TType(
+                    Records::Get<TIndex>(Forward<TRecord>(record))...);
             };
 
-        return make_from_tuple(Templates::RecordEnumerationOf<TRecord>{});
+        return make_from_record(Templates::RecordEnumerationOf<TRecord>{});
     }
 
 }
@@ -243,7 +232,8 @@ namespace Syntropy::Algorithm::Extensions
             return result;
         };
 
-        return lockstep_compare(Records::Templates::RecordEnumerationOf<TRecord>{});
+        return lockstep_compare(
+            Records::Templates::RecordEnumerationOf<TRecord>{});
     }
 
 }
@@ -273,16 +263,16 @@ namespace std
 
     template <std::size_t TIndex,
               Syntropy::Records::Concepts::Record TRecord>
-    decltype(auto) get(Syntropy::Immutable<TRecord> tuple)
+    decltype(auto) get(Syntropy::Immutable<TRecord> record)
     {
-        return Get<TIndex>(tuple);
+        return Get<TIndex>(record);
     }
 
     template <std::size_t TIndex,
               Syntropy::Records::Concepts::Record TRecord>
-    decltype(auto) get(Syntropy::Movable<TRecord> tuple)
+    decltype(auto) get(Syntropy::Movable<TRecord> record)
     {
-        return Get<TIndex>(Syntropy::Move(tuple));
+        return Get<TIndex>(Syntropy::Move(record));
     }
 }
 
