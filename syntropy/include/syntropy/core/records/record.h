@@ -27,25 +27,19 @@
 
 // ===========================================================================
 
-namespace Syntropy::Records::Templates
+namespace Syntropy::Records
 {
     /************************************************************************/
-    /* RECORD                                                               */
+    /* RANK TRAIT                                                           */
     /************************************************************************/
 
     /// \brief Int constant equal to the rank of a record.
     template <typename TRecord>
-    struct RankTrait // : Syntropy::Templates::IntConstant<rank>
+    struct RankTrait
     {
-
+        // : Syntropy::Templates::IntConstant<rank>
     };
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Records
-{
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
@@ -61,12 +55,6 @@ namespace Syntropy::Records
     Get(Forwarding<TRecord> record) noexcept
         -> decltype(Details::RouteGet<TIndex>(Forward<TRecord>(record)));
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Records::Concepts
-{
     /************************************************************************/
     /* RECORD                                                               */
     /************************************************************************/
@@ -77,57 +65,48 @@ namespace Syntropy::Records::Concepts
     concept Record = requires
     {
         /// \brief Rank of the record.
-        { Records::Templates::RankTrait<TRecord>::kValue }
-            -> Syntropy::Concepts::IsIntegral;
+        { RankTrait<TRecord>::kValue } -> Concepts::IsIntegral;
     };
+
+    /************************************************************************/
+    /* FORWARDING RECORD                                                    */
+    /************************************************************************/
 
     /// \brief Concept for a Record that can be perfectly-forwarded.
     template <typename TRecord>
     concept ForwardingRecord
-        = Record<Syntropy::Templates::UnqualifiedOf<TRecord>>;
+        = Record<Templates::UnqualifiedOf<TRecord>>;
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Records::Templates
-{
     /************************************************************************/
     /* RECORD                                                               */
     /************************************************************************/
 
     /// \brief Rank of a record.
-    template <Concepts::Record TRecord>
+    template <Record TRecord>
     inline constexpr Int RankOf =
-        RankTrait<Syntropy::Templates::UnqualifiedOf<TRecord>>::kValue;
+        RankTrait<Templates::UnqualifiedOf<TRecord>>::kValue;
 
     /// \brief Constant equal to true if two records have the same rank,
     ///        equal to false otherwise.
-    template <Concepts::Record TRecord, Concepts::Record URecord>
+    template <Record TRecord, Record URecord>
     inline constexpr Bool SameRank =
         (RankOf<TRecord> == RankOf<URecord>);
 
     /// \brief Type of a record element.
-    template <Int TIndex, Concepts::Record TRecord>
-    using ElementTypeOf = Syntropy::Templates::UnqualifiedOf<decltype(
-        Records::Get<TIndex>(Syntropy::Templates::Declval<TRecord>()))>;
+    template <Int TIndex, Record TRecord>
+    using ElementTypeOf = Templates::UnqualifiedOf<decltype(
+        Records::Get<TIndex>(Templates::Declval<TRecord>()))>;
 
     /// \brief Index of the first element with type TElement in a record.
-    template <typename TElement, Concepts::Record TRecord>
+    template <typename TElement, Record TRecord>
     inline constexpr Int ElementIndexOf = 0;
 
     /// \brief Generates a sequence that can be used to enumerate all
     ///        elements in a record.
-    template <Concepts::Record TRecord>
+    template <Record TRecord>
     using EnumerationSequenceOf =
         Syntropy::Templates::MakeSequence<RankOf<TRecord>>;
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Records
-{
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
@@ -138,24 +117,24 @@ namespace Syntropy::Records
     /// \brief Access the first element of type TElement in a record.
     ///
     /// \remarks Ill-formed if no such element exist.
-    template <typename TElement, Concepts::ForwardingRecord TRecord>
+    template <typename TElement, ForwardingRecord TRecord>
     [[nodiscard]] constexpr auto
     Get(Forwarding<TRecord> record) noexcept
-        -> decltype(Get<Templates::ElementIndexOf<
+        -> decltype(Get<ElementIndexOf<
             TElement,
-            Syntropy::Templates::QualifiedOf<TRecord>>>(
+            Templates::QualifiedOf<TRecord>>>(
                 Forward<TRecord>(record)));
 
     // Functional.
     // ===========
 
     /// \brief Invoke a function with arguments provided in form of record.
-    template <typename TFunction, Concepts::ForwardingRecord TRecord>
+    template <typename TFunction, ForwardingRecord TRecord>
     constexpr decltype(auto)
     Apply(Forwarding<TFunction> function, Forwarding<TRecord> record) noexcept;
 
     /// \brief Apply a function to each record elements individually.
-    template <typename TFunction, Concepts::ForwardingRecord TRecord>
+    template <typename TFunction, ForwardingRecord TRecord>
     constexpr void
     ForEachApply(Forwarding<TFunction> function,
                  Forwarding<TRecord> record) noexcept;
@@ -163,7 +142,7 @@ namespace Syntropy::Records
     /// \brief Apply a function to the index-th element of each record at once.
     template <Int TIndex,
               typename TFunction,
-              Concepts::ForwardingRecord... TRecords>
+              ForwardingRecord... TRecords>
     constexpr decltype(auto)
     ProjectApply(Forwarding<TFunction> function,
                  Forwarding<TRecords>... records) noexcept;
@@ -171,14 +150,14 @@ namespace Syntropy::Records
     /// \brief Apply a function to each argument list generated by projecting
     ///        the i-th records elements, for each index up to the minimum rank
     ///        among those records.
-    template <typename TFunction, Concepts::ForwardingRecord... TRecords>
+    template <typename TFunction, ForwardingRecord... TRecords>
     constexpr void
     LockstepApply(Forwarding<TFunction> function,
                   Forwarding<TRecords>... records) noexcept;
 
     /// \brief Create a new instance of TType using TRecord as constructor
     ///        arguments.
-    template <typename TType, Concepts::ForwardingRecord TRecord>
+    template <typename TType, ForwardingRecord TRecord>
     [[nodiscard]] constexpr TType
     MakeFromRecord(Forwarding<TRecord> record) noexcept;
 
@@ -187,9 +166,9 @@ namespace Syntropy::Records
 
     /// \brief Member-wise swap two records and returns the value of the
     ///        former.
-    template <Concepts::Record TRecord, Concepts::ForwardingRecord URecord>
-    requires Templates::SameRank<TRecord,
-                                 Syntropy::Templates::UnqualifiedOf<URecord>>
+    template <Record TRecord, ForwardingRecord URecord>
+    requires SameRank<TRecord,
+                                 Templates::UnqualifiedOf<URecord>>
     [[nodiscard]] constexpr TRecord
     Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept;
 
@@ -198,22 +177,21 @@ namespace Syntropy::Records
 
     /// \brief Check whether two records are member-wise equal.
     /// \remarks Equality implies equivalence.
-    template <Concepts::Record TRecord, Concepts::Record URecord>
-    requires Templates::SameRank<TRecord, URecord>
+    template <Record TRecord, Record URecord>
+    requires SameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
     /// \brief Check whether two record are member-wise equivalent.
     /// \brief Equivalence doesn't imply equality.
-    template <Concepts::Record TRecord, Concepts::Record URecord>
-    requires Templates::SameRank<TRecord, URecord>
+    template <Record TRecord, Record URecord>
+    requires SameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
     /// \brief Member-wise compare two records.
-    template <Concepts::Record TRecord, Concepts::Record URecord>
-    requires Templates::SameRank<TRecord, URecord>
-    [[nodiscard]] constexpr Ordering
+    template <Record TRecord, Record URecord>
+    requires SameRank<TRecord, URecord>    [[nodiscard]] constexpr Ordering
     Compare(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
 }
@@ -227,22 +205,22 @@ namespace std
     /************************************************************************/
 
     /// \brief Rank of a record.
-    template <Syntropy::Records::Concepts::Record TRecord>
+    template <Syntropy::Records::Record TRecord>
     struct std::tuple_size<TRecord>;
 
     /// \brief Type of a record element, by index.
     template <std::size_t TIndex,
-              Syntropy::Records::Concepts::Record TRecord>
+              Syntropy::Records::Record TRecord>
     struct std::tuple_element<TIndex, TRecord>;
 
     /// \brief Access a record element, by index.
     template <std::size_t TIndex,
-              Syntropy::Records::Concepts::Record TRecord>
+              Syntropy::Records::Record TRecord>
     decltype(auto) get(Syntropy::Immutable<TRecord> record);
 
     /// \brief Access a record element, by index..
     template <std::size_t TIndex,
-              Syntropy::Records::Concepts::Record TRecord>
+              Syntropy::Records::Record TRecord>
     decltype(auto) get(Syntropy::Movable<TRecord> record);
 }
 

@@ -135,7 +135,7 @@ namespace Syntropy::Ranges
         return { ranges... };
     }
 
-    template <Syntropy::Records::Concepts::Record TTuple>
+    template <Syntropy::Records::Record TTuple>
     [[nodiscard]] constexpr auto
     MakeZipRangeFromTuple(Immutable<TTuple> ranges) noexcept
     {
@@ -148,7 +148,7 @@ namespace Syntropy::Ranges
         using RangesType = decltype(ranges);
 
         return make_zip_range(
-            Syntropy::Records::Templates::EnumerationSequenceOf<RangesType>{});
+            Syntropy::Records::EnumerationSequenceOf<RangesType>{});
     }
 
     template <Concepts::ForwardRange... TRanges>

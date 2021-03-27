@@ -180,7 +180,7 @@ namespace Syntropy
 
 // ===========================================================================
 
-namespace Syntropy::Records::Templates
+namespace Syntropy::Records
 {
     /************************************************************************/
     /* TUPLE TRAITS                                                         */
@@ -189,7 +189,7 @@ namespace Syntropy::Records::Templates
     /// \brief Specialization for fix-arrays.
     template <typename TType, Int TCount>
     struct RankTrait<FixArray<TType, TCount>>
-        : Syntropy::Templates::IntConstant<TCount> {};
+        : Templates::IntConstant<TCount> {};
 }
 
 // ===========================================================================

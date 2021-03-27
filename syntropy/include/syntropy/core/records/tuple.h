@@ -42,22 +42,22 @@ namespace Syntropy::Records
     {
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Immutable<Templates::ElementTypeOf<VIndex, Tuple<UElements...>>>
+        Immutable<ElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Immutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Mutable<Templates::ElementTypeOf<VIndex, Tuple<UElements...>>>
+        Mutable<ElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Mutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Immovable<Templates::ElementTypeOf<VIndex, Tuple<UElements...>>>
+        Immovable<ElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Immovable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Movable<Templates::ElementTypeOf<VIndex, Tuple<UElements...>>>
+        Movable<ElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Movable<Tuple<UElements...>> tuple) noexcept;
 
     public:
@@ -170,7 +170,7 @@ namespace Syntropy::Records
               Forwarding<UElements>... elements) noexcept;
 
         /// \brief Construct a tuple unwinding another tuple elements.
-        template<Concepts::ForwardingRecord TTuple, Int... VIndexes>
+        template<ForwardingRecord TTuple, Int... VIndexes>
         constexpr
         Tuple(UnwindTag,
               Syntropy::Templates::Sequence<VIndexes...>,
@@ -303,13 +303,13 @@ namespace Syntropy::Records
     ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
-    template <Concepts::ForwardingRecord... TRecords>
+    template <ForwardingRecord... TRecords>
     [[nodiscard]] constexpr auto
     Concatenate(Forwarding<TRecords>... tuples) noexcept
         -> decltype(Details::Concatenate(Forward<TRecords>(tuples)...));
 
     /// \brief Flatten a tuple recursively.
-    template <Concepts::ForwardingRecord TTuple>
+    template <ForwardingRecord TTuple>
     [[nodiscard]] constexpr auto
     Flatten(Forwarding<TTuple> tuple) noexcept
         -> decltype(Details::Flatten(Forward<TTuple>(tuple)));
@@ -372,20 +372,15 @@ namespace Syntropy::Records
     Compare(Immutable<Tuple<TElements...>> lhs,
             Immutable<Tuple<UElements...>> rhs) noexcept;
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Records::Templates
-{
     /************************************************************************/
     /* TYPE TRAITS                                                          */
     /************************************************************************/
 
     /// \brief Partial template specialization for tuples.
     template <typename... TElements>
-    struct RankTrait<Records::Tuple<TElements...>>
-        : Syntropy::Templates::IntConstant<sizeof...(TElements)> {};
+    struct RankTrait<Tuple<TElements...>>
+        : Templates::IntConstant<sizeof...(TElements)> {};
+
 }
 
 // ===========================================================================

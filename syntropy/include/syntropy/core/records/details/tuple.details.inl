@@ -14,16 +14,16 @@ namespace Syntropy::Records::Details
     // Concatenate.
     // =========
 
-    template <Concepts::ForwardingRecord... TRecords>
+    template <ForwardingRecord... TRecords>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TRecords>... tuples) noexcept
     {
-        auto tuple_cat = [&]<Concepts::ForwardingRecord TTuple,
+        auto tuple_cat = [&]<ForwardingRecord TTuple,
                              Int... VTupleIndex,
                              Int... VElementIndex>
              (Forwarding<TTuple> tuple,
-              Syntropy::Templates::Sequence<VTupleIndex...>,
-              Syntropy::Templates::Sequence<VElementIndex...>)
+              Templates::Sequence<VTupleIndex...>,
+              Templates::Sequence<VElementIndex...>)
              {
                  return MakeTuple(
                      Get<VElementIndex>(
@@ -32,33 +32,32 @@ namespace Syntropy::Records::Details
 
         return tuple_cat(
             ForwardAsTuple(tuples...),
-            EnumerateTupleIndexes<Syntropy::Templates::UnqualifiedOf<TRecords>...>{},
-            EnumerateTupleElementIndexes<Syntropy::Templates::UnqualifiedOf<TRecords>...>{});
+            EnumerateTupleIndexes<Templates::UnqualifiedOf<TRecords>...>{},
+            EnumerateTupleElementIndexes<Templates::UnqualifiedOf<TRecords>...>{});
     }
 
     // Flatten.
     // ========
 
-    template <Concepts::ForwardingRecord TTuple>
+    template <ForwardingRecord TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept
     {
         // The argument is a tuple: flatten each element recursively and
         // eturn their concatenation.
 
-        using Syntropy::Records::Concatenate;
+        using Records::Concatenate;
 
         auto flat = [&]<Int... VTupleIndex>(
             Forwarding<TTuple> tuple,
-            Syntropy::Templates::Sequence<VTupleIndex...>)
+            Templates::Sequence<VTupleIndex...>)
         {
             return Concatenate(
                 Details::Flatten(Get<VTupleIndex>(Forward<TTuple>(tuple)))...);
         };
 
         return flat(Forward<TTuple>(tuple),
-                    Templates::EnumerationSequenceOf<
-                        Syntropy::Templates::UnqualifiedOf<TTuple>>{});
+                    EnumerationSequenceOf<Templates::UnqualifiedOf<TTuple>>{});
     }
 
     template <typename TElement>

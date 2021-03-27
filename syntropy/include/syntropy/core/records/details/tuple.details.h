@@ -28,11 +28,11 @@ namespace Syntropy::Records
     [[nodiscard]] constexpr Tuple<TElements...>
     MakeTuple(Forwarding<TElements>... elements) noexcept;
 
-    template <Concepts::ForwardingRecord... TRecords>
+    template <ForwardingRecord... TRecords>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TRecords>... tuples) noexcept;
 
-    template <Concepts::ForwardingRecord TTuple>
+    template <ForwardingRecord TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept;
 }
@@ -52,8 +52,8 @@ namespace Syntropy::Records::Details
     template <typename... TTypes>
     inline constexpr Bool
     ExplicitIfTupleDefaultConstructor
-        = !Syntropy::Concepts::IsImplicitlyDefaultConstructible<
-            Syntropy::Templates::TypeList<TTypes...>>;
+        = !Concepts::IsImplicitlyDefaultConstructible<
+            Templates::TypeList<TTypes...>>;
 
     // (2)
 
@@ -61,7 +61,7 @@ namespace Syntropy::Records::Details
     ///        true otherwise.
     template <typename... TTypes>
     inline constexpr Bool
-    ExplicitIfTupleDirectConstructor = !(Syntropy::Concepts::IsConvertible<
+    ExplicitIfTupleDirectConstructor = !(Concepts::IsConvertible<
         Immutable<TTypes>, TTypes> && ...);
 
     // (3)
@@ -72,14 +72,14 @@ namespace Syntropy::Records::Details
     template <typename TTypeList, typename... UTypes>
     inline constexpr Bool
     ExplicitIfTupleConvertingConstructor
-        = Syntropy::Templates::IllFormed<Bool, TTypeList, UTypes...>::kValue;
+        = Templates::IllFormed<Bool, TTypeList, UTypes...>::kValue;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
     inline constexpr Bool
     ExplicitIfTupleConvertingConstructor
-    <Syntropy::Templates::TypeList<TTypes...>, UTypes...>
-        = !(Syntropy::Concepts::IsConvertible<Movable<UTypes>, TTypes> && ...);
+    <Templates::TypeList<TTypes...>, UTypes...>
+        = !(Concepts::IsConvertible<Movable<UTypes>, TTypes> && ...);
 
     // (4)
 
@@ -88,14 +88,14 @@ namespace Syntropy::Records::Details
     template <typename TTypeList, typename... UTypes>
     inline constexpr Bool
     ExplicitIfTupleConvertingCopyConstructor
-        = Syntropy::Templates::IllFormed<Bool, TTypeList, UTypes...>::kValue;
+        = Templates::IllFormed<Bool, TTypeList, UTypes...>::kValue;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
     inline constexpr Bool
     ExplicitIfTupleConvertingCopyConstructor
-    <Syntropy::Templates::TypeList<TTypes...>, UTypes...>
-        = !(Syntropy::Concepts::IsConvertible<Immutable<UTypes>,
+    <Templates::TypeList<TTypes...>, UTypes...>
+        = !(Concepts::IsConvertible<Immutable<UTypes>,
                                               TTypes> && ...);
 
     // (5)
@@ -105,14 +105,14 @@ namespace Syntropy::Records::Details
     template <typename TTypeList, typename... UTypes>
     inline constexpr Bool
     ExplicitIfTupleConvertingMoveConstructor
-        = Syntropy::Templates::IllFormed<Bool, TTypeList, UTypes...>::kValue;
+        = Templates::IllFormed<Bool, TTypeList, UTypes...>::kValue;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
     inline constexpr Bool
     ExplicitIfTupleConvertingMoveConstructor
-    <Syntropy::Templates::TypeList<TTypes...>, UTypes...>
-        = !(Syntropy::Concepts::IsConvertible<Movable<UTypes>, TTypes> && ...);
+    <Templates::TypeList<TTypes...>, UTypes...>
+        = !(Concepts::IsConvertible<Movable<UTypes>, TTypes> && ...);
 
     /************************************************************************/
     /* ENABLE IF - TUPLE CONSTRUCTOR                                        */
@@ -125,8 +125,8 @@ namespace Syntropy::Records::Details
     ///        default constructor.
     template <typename TTypeList>
     using EnableIfTupleDefaultConstructor
-        = RWPtr<Syntropy::Templates::EnableIf<
-            Syntropy::Concepts::IsDefaultConstructible<TTypeList>>>;
+        = RWPtr<Templates::EnableIf<
+            Concepts::IsDefaultConstructible<TTypeList>>>;
 
     // (2)
 
@@ -134,8 +134,8 @@ namespace Syntropy::Records::Details
     ///        implicitly copy-constructible.
     template <typename TTypeList>
     using EnableIfTupleDirectConstructor
-        = RWPtr<Syntropy::Templates::EnableIf<
-            Syntropy::Concepts::IsCopyConstructible<TTypeList>>>;
+        = RWPtr<Templates::EnableIf<
+            Concepts::IsCopyConstructible<TTypeList>>>;
 
     // (3)
 
@@ -150,19 +150,19 @@ namespace Syntropy::Records::Details
     template <typename TTypeList, typename... UTypeLists>
     inline constexpr Bool
     EnableIfTupleConvertingConstructorHelper<true, TTypeList, UTypeLists...>
-        = Syntropy::Concepts::IsConstructibleFrom<
+        = Concepts::IsConstructibleFrom<
             TTypeList,
-            Syntropy::Templates::MovableOf<UTypeLists>...>;
+            Templates::MovableOf<UTypeLists>...>;
 
     /// \brief Enable converting tuple constructor.
     template <typename TTypeList, typename... UTypes>
     using EnableIfTupleConvertingConstructor
-        = RWPtr<Syntropy::Templates::EnableIf<
+        = RWPtr<Templates::EnableIf<
             EnableIfTupleConvertingConstructorHelper<
-                Syntropy::Templates::CountOf<TTypeList>
+                Templates::CountOf<TTypeList>
                     == sizeof...(UTypes),
                 TTypeList,
-                Syntropy::Templates::TypeList<UTypes>...>>>;
+                Templates::TypeList<UTypes>...>>>;
 
     // (4)
 
@@ -178,9 +178,9 @@ namespace Syntropy::Records::Details
     inline constexpr Bool
     EnableIfTupleConvertingCopyConstructorHelper
         <true, TTypeList, UTypeLists...>
-            = Syntropy::Concepts::IsConstructibleFrom<
+            = Concepts::IsConstructibleFrom<
                 TTypeList,
-                Syntropy::Templates::ImmutableOf<UTypeLists>...>;
+                Templates::ImmutableOf<UTypeLists>...>;
 
     /// \brief Specialization for 1-tuples. True if TType can be constructed
     ///        from UType and the overload doesn't reduce to a
@@ -189,15 +189,15 @@ namespace Syntropy::Records::Details
     inline constexpr Bool
     EnableIfTupleConvertingCopyConstructorHelper<
         true,
-        Syntropy::Templates::TypeList<TType>,
-        Syntropy::Templates::TypeList<UType>>
-             =  Syntropy::Concepts::IsConstructibleFrom<TType,
+        Templates::TypeList<TType>,
+        Templates::TypeList<UType>>
+             =  Concepts::IsConstructibleFrom<TType,
                                                      Immutable<UType>>
-            && !Syntropy::Concepts::IsConvertible<Immutable<Tuple<UType>>,
+            && !Concepts::IsConvertible<Immutable<Tuple<UType>>,
                                                   TType>
-            && !Syntropy::Concepts::IsConstructibleFrom<TType,
+            && !Concepts::IsConstructibleFrom<TType,
                                                       Immutable<Tuple<UType>>>
-            && !Syntropy::Concepts::IsSame<TType, UType>;
+            && !Concepts::IsSame<TType, UType>;
 
     /// \brief Enable converting tuple copy-constructor if both TTypeList
     ///        and UTypes have the same rank, all types in TTypeList can be
@@ -205,12 +205,12 @@ namespace Syntropy::Records::Details
     ///        UType and the overload does not reduce to a copy-constructor.
     template <typename TTypeList, typename... UTypes>
     using EnableIfTupleConvertingCopyConstructor
-        = RWPtr<Syntropy::Templates::EnableIf<
+        = RWPtr<Templates::EnableIf<
             EnableIfTupleConvertingCopyConstructorHelper<
-                Syntropy::Templates::CountOf<TTypeList>
+                Templates::CountOf<TTypeList>
                     == sizeof...(UTypes),
                 TTypeList,
-                Syntropy::Templates::TypeList<UTypes>...>>>;
+                Templates::TypeList<UTypes>...>>>;
 
     // (5)
 
@@ -226,9 +226,9 @@ namespace Syntropy::Records::Details
     inline constexpr Bool
     EnableIfTupleConvertingMoveConstructorHelper
         <true, TTypeList, UTypeLists...>
-            = Syntropy::Concepts::IsConstructibleFrom<
+            = Concepts::IsConstructibleFrom<
                 TTypeList,
-                Syntropy::Templates::MovableOf<UTypeLists>...>;
+                Templates::MovableOf<UTypeLists>...>;
 
     /// \brief Specialization for 1-tuples. True if TType can be constructed
     ///        from UType and the overload doesn't reduce to a
@@ -237,12 +237,12 @@ namespace Syntropy::Records::Details
     inline constexpr Bool
     EnableIfTupleConvertingMoveConstructorHelper<
         true,
-        Syntropy::Templates::TypeList<TType>,
-        Syntropy::Templates::TypeList<UType>>
-             = Syntropy::Concepts::IsConstructibleFrom<TType, Movable<UType>>
-            && !Syntropy::Concepts::IsConvertible<Tuple<UType>, TType>
-            && !Syntropy::Concepts::IsConvertible<TType, Tuple<UType>>
-            && !Syntropy::Concepts::IsSame<TType, UType>;
+        Templates::TypeList<TType>,
+        Templates::TypeList<UType>>
+             = Concepts::IsConstructibleFrom<TType, Movable<UType>>
+            && !Concepts::IsConvertible<Tuple<UType>, TType>
+            && !Concepts::IsConvertible<TType, Tuple<UType>>
+            && !Concepts::IsSame<TType, UType>;
 
     /// \brief Enable converting tuple move-constructor if both TTypeList and
     ///        UTypes have the same rank, all types in TTypeList can be
@@ -250,12 +250,12 @@ namespace Syntropy::Records::Details
     ///        UType and the overload does not reduce to a move-constructor.
     template <typename TTypeList, typename... UTypes>
     using EnableIfTupleConvertingMoveConstructor
-        = RWPtr<Syntropy::Templates::EnableIf<
+        = RWPtr<Templates::EnableIf<
             EnableIfTupleConvertingMoveConstructorHelper<
-                Syntropy::Templates::CountOf<TTypeList>
+                Templates::CountOf<TTypeList>
                     == sizeof...(UTypes),
                 TTypeList,
-                Syntropy::Templates::TypeList<UTypes>...>>>;
+                Templates::TypeList<UTypes>...>>>;
 
     /************************************************************************/
     /* ENABLE IF - TUPLE ASSIGNMENT                                         */
@@ -267,8 +267,8 @@ namespace Syntropy::Records::Details
     ///        TTypeList are copy-assignable.
     template <typename TTypeList>
     using EnableIfTupleCopyAssignment
-        = RWPtr<Syntropy::Templates::EnableIf<
-            Syntropy::Concepts::IsCopyAssignable<TTypeList>>>;
+        = RWPtr<Templates::EnableIf<
+            Concepts::IsCopyAssignable<TTypeList>>>;
 
     // (2)
 
@@ -276,8 +276,8 @@ namespace Syntropy::Records::Details
     ///        are move-assignable.
     template <typename TTypeList>
     using EnableIfTupleMoveAssignment
-        = RWPtr<Syntropy::Templates::EnableIf<
-            Syntropy::Concepts::IsMoveAssignable<TTypeList>>>;
+        = RWPtr<Templates::EnableIf<
+            Concepts::IsMoveAssignable<TTypeList>>>;
 
     // (3)
 
@@ -286,11 +286,11 @@ namespace Syntropy::Records::Details
     ///        corresponding element in UTypeList.
     template <typename TTypeList, typename UTypeList>
     using EnableIfTupleConvertingCopyAssignment
-        = RWPtr<Syntropy::Templates::EnableIf<
-             ! Syntropy::Concepts::IsSame<TTypeList, UTypeList>
-            && Syntropy::Concepts::IsAssignableFrom<
+        = RWPtr<Templates::EnableIf<
+             ! Concepts::IsSame<TTypeList, UTypeList>
+            && Concepts::IsAssignableFrom<
                    TTypeList,
-                   Syntropy::Templates::ImmutableOf<UTypeList>>>>;
+                   Templates::ImmutableOf<UTypeList>>>>;
 
     // (4)
 
@@ -299,9 +299,9 @@ namespace Syntropy::Records::Details
     ///        corresponding element in UTypeList.
     template <typename TTypeList, typename UTypeList>
     using EnableIfTupleConvertingMoveAssignment
-        = RWPtr<Syntropy::Templates::EnableIf<
-             ! Syntropy::Concepts::IsSame<TTypeList, UTypeList>
-            && Syntropy::Concepts::IsAssignableFrom<
+        = RWPtr<Templates::EnableIf<
+             ! Concepts::IsSame<TTypeList, UTypeList>
+            && Concepts::IsAssignableFrom<
                 TTypeList,
                 UTypeList>>>;
 
@@ -310,7 +310,7 @@ namespace Syntropy::Records::Details
     /************************************************************************/
 
     /// \brief Access a tuple base type by index.
-    template <Int VCount, Concepts::ForwardingRecord TTuple>
+    template <Int VCount, ForwardingRecord TTuple>
     struct TupleBaseHelper;
 
     /// \brief Specialization for tuples.
@@ -319,14 +319,14 @@ namespace Syntropy::Records::Details
         : TupleBaseHelper<VCount - 1, Tuple<TElements...>> {};
 
     /// \brief End of recursion.
-    template <Concepts::ForwardingRecord TTuple>
+    template <ForwardingRecord TTuple>
     struct TupleBaseHelper<0, TTuple>
     {
         using Type = TTuple;
     };
 
     /// \brief Access a tuple base type by index.
-    template <Int VCount, Concepts::ForwardingRecord TTuple>
+    template <Int VCount, ForwardingRecord TTuple>
     using TupleBase = typename TupleBaseHelper<VCount, TTuple>::Type;
 
     /************************************************************************/
@@ -340,8 +340,8 @@ namespace Syntropy::Records::Details
 
     /// \brief Generate a sequence that can be used to access tuples.
     template <Int VIndex,
-              Concepts::ForwardingRecord TTuple,
-              Concepts::ForwardingRecord... TRecords>
+              ForwardingRecord TTuple,
+              ForwardingRecord... TRecords>
     struct EnumerateTupleIndexesHelper
     {
         using TupleSequence
@@ -352,29 +352,29 @@ namespace Syntropy::Records::Details
                                                    TRecords...>::Type;
 
         using Type
-            = Syntropy::Templates::SequenceCat<TupleSequence, RecordsSequence>;
+            = Templates::SequenceCat<TupleSequence, RecordsSequence>;
     };
 
     /// \brief Generate a sequence of VIndex repeated a number of times equal
     ///        to the rank of TTuple.
-    template <Int VIndex, Concepts::ForwardingRecord TTuple>
+    template <Int VIndex, ForwardingRecord TTuple>
     struct EnumerateTupleIndexesHelper<VIndex, TTuple>
     {
-        using Type = Syntropy::Templates::SequenceRepeat<
+        using Type = Templates::SequenceRepeat<
             VIndex,
-            Templates::RankOf<TTuple>>;
+            RankOf<TTuple>>;
     };
 
     /// \brief Generate a sequence that can be used to access tuples.
-    template <Concepts::ForwardingRecord... TRecords>
+    template <ForwardingRecord... TRecords>
     using EnumerateTupleIndexes
         = typename EnumerateTupleIndexesHelper<0, TRecords...>::Type;
 
     // EnumerateTupleElementIndexes.
 
     /// \brief Generate a sequence that can be used to access tuple elements.
-    template <Concepts::ForwardingRecord TTuple,
-              Concepts::ForwardingRecord... TRecords>
+    template <ForwardingRecord TTuple,
+              ForwardingRecord... TRecords>
     struct EnumerateTupleElementIndexesHelper
     {
         using TupleSequence
@@ -384,24 +384,24 @@ namespace Syntropy::Records::Details
             = typename EnumerateTupleElementIndexesHelper<TRecords...>::Type;
 
         using Type
-            = Syntropy::Templates::SequenceCat<TupleSequence, RecordsSequence>;
+            = Templates::SequenceCat<TupleSequence, RecordsSequence>;
     };
 
     /// \brief Generate an increasing sequence from 0 to the rank of
     ///        TTuple (excluded).
-    template <Concepts::ForwardingRecord TTuple>
+    template <ForwardingRecord TTuple>
     struct EnumerateTupleElementIndexesHelper<TTuple>
     {
-        using Type = Templates::EnumerationSequenceOf<TTuple>;
+        using Type = EnumerationSequenceOf<TTuple>;
     };
 
     /// \brief Generate a sequence that can be used to access tuple elements.
-    template <Concepts::ForwardingRecord... TRecords>
+    template <ForwardingRecord... TRecords>
     using EnumerateTupleElementIndexes
         = typename EnumerateTupleElementIndexesHelper<TRecords...>::Type;
 
     /// \brief Concatenate a set of tuples.
-    template <Concepts::ForwardingRecord... TRecords>
+    template <ForwardingRecord... TRecords>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TRecords>... tuples) noexcept;
 
@@ -409,7 +409,7 @@ namespace Syntropy::Records::Details
     // ========
 
     /// \brief Flatten a tuple recursively.
-    template <Concepts::ForwardingRecord TTuple>
+    template <ForwardingRecord TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept;
 

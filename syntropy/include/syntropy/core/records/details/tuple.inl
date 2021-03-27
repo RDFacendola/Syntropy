@@ -25,7 +25,7 @@ namespace Syntropy::Records
     }
 
     template <typename TElement, typename... TElements>
-    template<Concepts::ForwardingRecord TTuple, Int... VIndexes>
+    template<ForwardingRecord TTuple, Int... VIndexes>
     constexpr Tuple<TElement, TElements...>
     ::Tuple(UnwindTag,
             Syntropy::Templates::Sequence<VIndexes...>,
@@ -136,7 +136,7 @@ namespace Syntropy::Records
     Get(Immovable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
-        using TElement = Templates::ElementTypeOf<TIndex, Tuple<TElements...>>;
+        using TElement = ElementTypeOf<TIndex, Tuple<TElements...>>;
 
         return static_cast<Immovable<TElement>>(
                    static_cast<Immutable<TTupleBase>>(tuple).element_);
@@ -148,7 +148,7 @@ namespace Syntropy::Records
     Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
-        using TElement = Templates::ElementTypeOf<TIndex, Tuple<TElements...>>;
+        using TElement = ElementTypeOf<TIndex, Tuple<TElements...>>;
 
         return static_cast<Movable<TElement>>(
             static_cast<Mutable<TTupleBase>>(tuple).element_);
@@ -179,7 +179,7 @@ namespace Syntropy::Records
                    Forward<TElements>(elements)...);
     }
 
-    template <Concepts::ForwardingRecord... TRecords>
+    template <ForwardingRecord... TRecords>
     [[nodiscard]] constexpr auto
     Concatenate(Forwarding<TRecords>... tuples) noexcept
         -> decltype(Details::Concatenate(Forward<TRecords>(tuples)...))
@@ -187,7 +187,7 @@ namespace Syntropy::Records
         return Details::Concatenate(Forward<TRecords>(tuples)...);
     }
 
-    template <Concepts::ForwardingRecord TTuple>
+    template <ForwardingRecord TTuple>
     [[nodiscard]] constexpr auto
     Flatten(Forwarding<TTuple> tuple) noexcept
         -> decltype(Details::Flatten(Forward<TTuple>(tuple)))
