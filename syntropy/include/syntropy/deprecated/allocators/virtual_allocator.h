@@ -130,7 +130,7 @@ namespace Syntropy
 
     inline void VirtualAllocator::Swap(VirtualAllocator& rhs) noexcept
     {
-        using Algorithm::Swap;
+        using Algorithms::Swap;
 
         Swap(page_size_, rhs.page_size_);
         Swap(free_page_index_, rhs.free_page_index_);

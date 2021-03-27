@@ -110,7 +110,7 @@ namespace Syntropy::Records
             Syntropy::Templates::Sequence<TIndex...>) mutable
         {
             return TRecord{
-                Algorithm::Exchange(Records::Get<TIndex>(lhs),
+                Algorithms::Exchange(Records::Get<TIndex>(lhs),
                                     Records::Get<TIndex>(Forward(rhs)))... };
         };
 
@@ -128,7 +128,7 @@ namespace Syntropy::Records
         auto are_equal = [&]<Int... TIndex>(
             Syntropy::Templates::Sequence<TIndex...>)
         {
-            return (Algorithm::AreEqual(Records::Get<TIndex>(lhs),
+            return (Algorithms::AreEqual(Records::Get<TIndex>(lhs),
                                         Records::Get<TIndex>(rhs)) && ...);
         };
 
@@ -143,7 +143,7 @@ namespace Syntropy::Records
         auto are_equivalent = [&]<Int... TIndex>(
             Syntropy::Templates::Sequence<TIndex...>)
         {
-            return (Algorithm::AreEquivalent(
+            return (Algorithms::AreEquivalent(
                 Records::Get<TIndex>(lhs),
                 Records::Get<TIndex>(rhs)) && ...);
         };
@@ -160,7 +160,7 @@ namespace Syntropy::Records
             Ordering result, Syntropy::Templates::IntConstant<TIndex>)
         {
             return (result == Ordering::kEquivalent)
-                ? Algorithm::Compare(Records::Get<TIndex>(lhs),
+                ? Algorithms::Compare(Records::Get<TIndex>(lhs),
                                      Records::Get<TIndex>(rhs))
                 : result;
         };

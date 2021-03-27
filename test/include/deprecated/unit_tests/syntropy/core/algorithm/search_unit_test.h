@@ -16,7 +16,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Algorithm::UnitTest
+namespace Syntropy::Algorithms::UnitTest
 {
     /************************************************************************/
     /* SEARCH TEST FIXTURE                                                  */
@@ -55,42 +55,42 @@ namespace Syntropy::Algorithm::UnitTest
 
     .TestCase("Searching a range for a value returns a range starting with that value and the remaining ones.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(Algorithm::Find(fixture.ints_span_, 4), (Span<Int>{ &fixture.ints_[4], 6}));
+        SYNTROPY_UNIT_EQUAL(Algorithms::Find(fixture.ints_span_, 4), (Span<Int>{ &fixture.ints_[4], 6}));
     })
 
     .TestCase("Searching a range for a non-existent value returns an empty range.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithm::Find(fixture.ints_span_, 11)), true);
+        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithms::Find(fixture.ints_span_, 11)), true);
     })
 
     .TestCase("Reverse-searching a range for a value returns a range ending with that value and all elements prior to that.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(Algorithm::FindReverse(fixture.ints_span_, 4), (Span<Int>{ &fixture.ints_[0], 5}));
+        SYNTROPY_UNIT_EQUAL(Algorithms::FindReverse(fixture.ints_span_, 4), (Span<Int>{ &fixture.ints_[0], 5}));
     })
 
     .TestCase("Searching a reverse range for a non-existent value returns an empty range.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithm::FindReverse(fixture.ints_span_, 11)), true);
+        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithms::FindReverse(fixture.ints_span_, 11)), true);
     })
 
      .TestCase("Searching a range by predicate returns a range starting with the first element for which the predicate holds true and all values after that.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(Algorithm::FindIf(fixture.ints_span_, &SearchTestFixture::IsOdd), (Span<Int>{ &fixture.ints_[1], 9}));
+        SYNTROPY_UNIT_EQUAL(Algorithms::FindIf(fixture.ints_span_, &SearchTestFixture::IsOdd), (Span<Int>{ &fixture.ints_[1], 9}));
     })
 
     .TestCase("Searching a range by a predicate which is false for all the range elements returns an empty range.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithm::FindIf(fixture.ints_span_, &SearchTestFixture::Never)), true);
+        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithms::FindIf(fixture.ints_span_, &SearchTestFixture::Never)), true);
     })
 
     .TestCase("Reverse-searching a range by predicate returns a range ending with the last element for which the predicate holds true and all values before that.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(Algorithm::FindIfReverse(fixture.ints_span_, &SearchTestFixture::IsEven), (Span<Int>{ &fixture.ints_[0], 9}));
+        SYNTROPY_UNIT_EQUAL(Algorithms::FindIfReverse(fixture.ints_span_, &SearchTestFixture::IsEven), (Span<Int>{ &fixture.ints_[0], 9}));
     })
 
     .TestCase("Reverse-searching a range by a predicate which is false for all the range elements returns an empty range.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithm::FindIfReverse(fixture.ints_span_, &SearchTestFixture::Never)), true);
+        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithms::FindIfReverse(fixture.ints_span_, &SearchTestFixture::Never)), true);
     });
 
     /************************************************************************/

@@ -64,7 +64,7 @@ namespace Syntropy::Memory
         : allocator_(rhs.allocator_)
         , alignment_(rhs.alignment_)
     {
-        Algorithm::Swap(data_, rhs.data_);
+        Algorithms::Swap(data_, rhs.data_);
     }
 
     inline Mutable<Buffer> Buffer
@@ -89,8 +89,8 @@ namespace Syntropy::Memory
     {
         if (allocator_ == rhs.allocator_)
         {
-            Algorithm::Swap(data_, rhs.data_);
-            Algorithm::Swap(alignment_, rhs.alignment_);
+            Algorithms::Swap(data_, rhs.data_);
+            Algorithms::Swap(alignment_, rhs.alignment_);
         }
         else
         {
@@ -169,8 +169,8 @@ namespace Syntropy::Memory
         SYNTROPY_UNDEFINED_BEHAVIOR(allocator_ == rhs.allocator_,
             "Both this and rhs must share the same allocator.");
 
-        Algorithm::Swap(data_, rhs.data_);
-        Algorithm::Swap(alignment_, rhs.alignment_);
+        Algorithms::Swap(data_, rhs.data_);
+        Algorithms::Swap(alignment_, rhs.alignment_);
     }
 
     /************************************************************************/

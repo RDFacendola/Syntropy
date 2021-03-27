@@ -62,7 +62,7 @@ namespace Syntropy::Strings
     inline void String
     ::Swap(Movable<String> rhs) noexcept
     {
-        Algorithm::Swap(code_points_, rhs.code_points_);
+        Algorithms::Swap(code_points_, rhs.code_points_);
     }
 
     /************************************************************************/

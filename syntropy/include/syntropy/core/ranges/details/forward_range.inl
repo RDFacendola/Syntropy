@@ -86,7 +86,7 @@ namespace Syntropy::Ranges
                !Ranges::IsEmpty(rhs_view);
                ++count)
         {
-            Algorithm::Swap(Ranges::Front(lhs_view),
+            Algorithms::Swap(Ranges::Front(lhs_view),
                             Ranges::Front(rhs_view));
 
             lhs_view = Ranges::PopFront(lhs_view);

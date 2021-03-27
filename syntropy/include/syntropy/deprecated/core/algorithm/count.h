@@ -10,7 +10,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Algorithm
+namespace Syntropy::Algorithms
 {
     /************************************************************************/
     /* COUNTING                                                             */
@@ -28,7 +28,7 @@ namespace Syntropy::Algorithm
 
 // ===========================================================================
 
-namespace Syntropy::Algorithm
+namespace Syntropy::Algorithms
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */

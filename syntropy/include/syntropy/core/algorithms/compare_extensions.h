@@ -11,7 +11,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Algorithm::Extensions
+namespace Syntropy::Algorithms::Extensions
 {
     /************************************************************************/
     /* COMPARE EXTENSIONS                                                   */

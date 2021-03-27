@@ -16,7 +16,7 @@ int main()
     Syntropy::Memory::Alignment a;
     Syntropy::Memory::Alignment b;
 
-    auto cmp = Syntropy::Algorithm::Exchange(a, b);
+    auto cmp = Syntropy::Algorithms::Exchange(a, b);
 
     std::cout << "\ngg\n";
 
