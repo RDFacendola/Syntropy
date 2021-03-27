@@ -13,17 +13,10 @@ int main()
 {
     std::cout << "Hello, Syntropy\n";
 
-    auto array = Syntropy::FixArray<int, 10>{ 10, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    Syntropy::Memory::Alignment a;
+    Syntropy::Memory::Alignment b;
 
-    auto array_view = Syntropy::Ranges::ViewOf(array);
-
-    static_assert(Syntropy::Concepts::IsSame<decltype(array_view),
-                                             Syntropy::RWSpan<int>>);
-
-    for(auto&& e : array)
-    {
-        std::cout << e << std::endl;
-    }
+    auto cmp = Syntropy::Algorithm::Exchange(a, b);
 
     std::cout << "\ngg\n";
 

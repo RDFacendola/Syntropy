@@ -41,15 +41,13 @@ namespace Syntropy::Algorithm
     // =====
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
-    template <typename TType, typename UType = TType>
-    requires Concepts::IsAssignableFrom<Mutable<TType>, Forwarding<UType>>
-          && Concepts::IsMoveConstructible<TType>
+    template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept
         -> decltype(Details::RouteExchange(lhs, Forward<UType>(rhs)));
 
     /// \brief Swap lhs with rhs.
-    template <Concepts::IsSwappable TType>
+    template <typename TType>
     constexpr auto
     Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept
         -> decltype(Details::RouteSwap(lhs, rhs));
