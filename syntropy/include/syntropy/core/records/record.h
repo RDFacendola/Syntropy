@@ -30,8 +30,11 @@
 namespace Syntropy::Records
 {
     /************************************************************************/
-    /* INTERFACE                                                            */
+    /* TYPE TRAITS & FUNCTIONS                                              */
     /************************************************************************/
+
+    // Record.
+    // =======
 
     /// \brief Number of elements in a record.
     template <typename TRecord>
@@ -56,7 +59,7 @@ namespace Syntropy::Records
         -> decltype(Details::RouteGet<TIndex>(Forward<TRecord>(record)));
 
     /************************************************************************/
-    /* CONCEPTS                                                             */
+    /* RECORD                                                               */
     /************************************************************************/
 
     /// \brief Concept for a record whose elements can be accessed at
@@ -68,56 +71,54 @@ namespace Syntropy::Records
         { RankTrait<TRecord>::kValue } -> Concepts::IsIntegral;
     };
 
+    /// \brief Concept for a reference to a record.
+    template <typename TRecord>
+    concept RecordReference = Record<Templates::UnqualifiedOf<TRecord>>;
+
     /// \brief Concept for a Record that can be perfectly-forwarded.
     template <typename TRecord>
     concept ForwardingRecord
         = Record<Templates::UnqualifiedOf<TRecord>>;
 
     /************************************************************************/
-    /* RECORD                                                               */
+    /* TYPE TRAITS                                                          */
     /************************************************************************/
 
     /// \brief Number of elements in a record.
-    template <typename TRecordReference,
-              Record TRecord = Templates::UnqualifiedOf<TRecordReference>>
+    template <RecordReference TRecord>
     inline constexpr Int
-    RankOf = RankTrait<TRecord>::kValue;
+    RankOf = Details::RankOf<TRecord, RankTrait>;
 
     /// \brief True if two records have the same rank, false otherwise.
-    template <typename TRecordReference, typename URecordReference>
-    requires Record<Templates::UnqualifiedOf<TRecordReference>>
-          && Record<Templates::UnqualifiedOf<URecordReference>>
+    template <RecordReference TRecord, RecordReference URecord>
     inline constexpr Bool
-    IsSameRank = (RankOf<TRecordReference> == RankOf<URecordReference>);
+    IsSameRank = Details::IsSameRank<TRecord, URecord, RankTrait>;
 
     /// \brief Type of a record element.
-    template <Int TIndex,
-              typename TRecordReference,
-              Record TRecord = Templates::UnqualifiedOf<TRecordReference>>
+    template <Int TIndex, RecordReference TRecord>
     using
-    ElementTypeOf = typename ElementTypeTrait<TIndex, TRecord>::Type;
+    ElementTypeOf = Details::ElementTypeOf<TIndex, TRecord, ElementTypeTrait>;
 
     /// \brief Generates a sequence that can be used to enumerate all
     ///        elements in a record.
-    template <typename TRecordReference>
-    requires Record<Templates::UnqualifiedOf<TRecordReference>>
+    template <RecordReference TRecord>
     using
-    SequenceOf = Templates::MakeSequence<RankOf<TRecordReference>>;
+    SequenceOf = Details::SequenceOf<TRecord, RankTrait>;
 
     /// \brief List of types of a record's elements.
-    template <typename TRecordReference,
-              Record TRecord = Templates::UnqualifiedOf<TRecordReference>>
+    template <RecordReference TRecord>
     using
-    ElementTypeListOf = decltype(
-        Details::ElementTypeListOf<ElementTypeTrait,TRecord>(
-            SequenceOf<TRecord>{}));
+    ElementTypeListOf = Details::ElementTypeListOf<TRecord,
+                                                   RankTrait,
+                                                   ElementTypeTrait>;
 
     /// \brief Index of the first element with type TElement in a record.
-    template <typename TElement, typename TRecordReference>
-    requires Record<Templates::UnqualifiedOf<TRecordReference>>
+    template <typename TElement, RecordReference TRecord>
     inline constexpr Int
-    ElementIndexOf = Templates::IndexOf<TElement,
-                                        ElementTypeListOf<TRecordReference>>;
+    ElementIndexOf = Details::ElementIndexOf<TElement,
+                                             TRecord,
+                                             RankTrait,
+                                             ElementTypeTrait>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
