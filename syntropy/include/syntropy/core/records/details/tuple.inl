@@ -107,118 +107,51 @@ namespace Syntropy::Records
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Comparison.
-    // ===========
-
-    template <typename... TElements, typename... UElements>
-    [[nodiscard]] constexpr Bool
-    operator==(Immutable<Tuple<TElements...>> lhs,
-               Immutable<Tuple<UElements...>> rhs) noexcept
-    {
-        using namespace Records;
-
-        return AreEquivalent(lhs, rhs);
-    }
-
-    template <typename... TElements, typename... UElements>
-    [[nodiscard]] constexpr Ordering
-    operator<=>(Immutable<Tuple<TElements...>> lhs,
-                Immutable<Tuple<UElements...>> rhs) noexcept
-    {
-        using namespace Records;
-
-        return Compare(lhs, rhs);
-    }
-
     // Record.
     // =======
 
-    template <Int VIndex, typename... TElements>
+    template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
+    Immutable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
+        using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
 
         return static_cast<Immutable<TTupleBase>>(tuple).element_;
     }
 
-    template <Int VIndex, typename... TElements>
+    template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
+    Mutable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
+        using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
 
         return static_cast<Mutable<TTupleBase>>(tuple).element_;
     }
 
-    template <Int VIndex, typename... TElements>
+    template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
+    Immovable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
-        using TElement = Templates::ElementTypeOf<VIndex, Tuple<TElements...>>;
+        using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
+        using TElement = Templates::ElementTypeOf<TIndex, Tuple<TElements...>>;
 
         return static_cast<Immovable<TElement>>(
                    static_cast<Immutable<TTupleBase>>(tuple).element_);
     }
 
-    template <Int VIndex, typename... TElements>
+    template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
+    Movable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
-        using TElement = Templates::ElementTypeOf<VIndex, Tuple<TElements...>>;
+        using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
+        using TElement = Templates::ElementTypeOf<TIndex, Tuple<TElements...>>;
 
         return static_cast<Movable<TElement>>(
             static_cast<Mutable<TTupleBase>>(tuple).element_);
-    }
-
-    template <typename TElement, typename... TElements>
-    [[nodiscard]] constexpr Immutable<TElement>
-    Get(Immutable<Tuple<TElements...>> tuple) noexcept
-    {
-        constexpr auto kIndex = Syntropy::Templates::IndexOf<
-            TElement,
-            Syntropy::Templates::TypeList<TElements...>>;
-
-        return Get<kIndex>(tuple);
-    }
-
-    template <typename TElement, typename... TElements>
-    [[nodiscard]] constexpr Mutable<TElement>
-    Get(Mutable<Tuple<TElements...>> tuple) noexcept
-    {
-        constexpr auto kIndex = Syntropy::Templates::IndexOf<
-            TElement,
-            Syntropy::Templates::TypeList<TElements...>>;
-
-        return Get<kIndex>(tuple);
-    }
-
-    template <typename TElement, typename... TElements>
-    [[nodiscard]] constexpr Immovable<TElement>
-    Get(Immovable<Tuple<TElements...>> tuple) noexcept
-    {
-        constexpr auto kIndex = Syntropy::Templates::IndexOf<
-            TElement,
-            Syntropy::Templates::TypeList<TElements...>>;
-
-        return Get<kIndex>(Move(tuple));
-    }
-
-    template <typename TElement, typename... TElements>
-    [[nodiscard]] constexpr Movable<TElement>
-    Get(Movable<Tuple<TElements...>> tuple) noexcept
-    {
-        constexpr auto kIndex = Syntropy::Templates::IndexOf<
-            TElement,
-            Syntropy::Templates::TypeList<TElements...>>;
-
-        return Get<kIndex>(Move(tuple));
     }
 
     // Utilities.
@@ -247,15 +180,17 @@ namespace Syntropy::Records
     }
 
     template <Concepts::ForwardingRecord... TRecords>
-    [[nodiscard]] constexpr decltype(auto)
+    [[nodiscard]] constexpr auto
     Concatenate(Forwarding<TRecords>... tuples) noexcept
+        -> decltype(Details::Concatenate(Forward<TRecords>(tuples)...))
     {
         return Details::Concatenate(Forward<TRecords>(tuples)...);
     }
 
     template <Concepts::ForwardingRecord TTuple>
-    [[nodiscard]] constexpr decltype(auto)
+    [[nodiscard]] constexpr auto
     Flatten(Forwarding<TTuple> tuple) noexcept
+        -> decltype(Details::Flatten(Forward<TTuple>(tuple)))
     {
         return Details::Flatten(Forward<TTuple>(tuple));
     }
@@ -283,6 +218,22 @@ namespace Syntropy::Records
 
     // Comparison.
     // ===========
+
+    template <typename... TElements, typename... UElements>
+    [[nodiscard]] constexpr Bool
+    operator==(Immutable<Tuple<TElements...>> lhs,
+               Immutable<Tuple<UElements...>> rhs) noexcept
+    {
+        return Records::AreEquivalent(lhs, rhs);
+    }
+
+    template <typename... TElements, typename... UElements>
+    [[nodiscard]] constexpr Ordering
+    operator<=>(Immutable<Tuple<TElements...>> lhs,
+                Immutable<Tuple<UElements...>> rhs) noexcept
+    {
+        return Records::Compare(lhs, rhs);
+    }
 
     template <typename... TElements, typename... UElements>
     requires (sizeof...(TElements) == sizeof...(UElements))

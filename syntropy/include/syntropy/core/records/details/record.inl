@@ -24,6 +24,20 @@ namespace Syntropy::Records
         return Details::RouteGet<TIndex>(Forward<TRecord>(record));
     }
 
+    // Element access.
+    // ===============
+
+    template <typename TElement, Concepts::ForwardingRecord TRecord>
+    [[nodiscard]] constexpr auto
+    Get(Forwarding<TRecord> record) noexcept
+        -> decltype(Get<Templates::ElementIndexOf<
+            TElement,
+            Syntropy::Templates::QualifiedOf<TRecord>>>(
+                Forward<TRecord>(record)))
+    {
+
+    }
+
     // Functional.
     // ===========
 

@@ -249,116 +249,70 @@ namespace Syntropy::Records
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Comparison.
-    // ===========
+    // Record.
+    // =======
 
-    /// \brief Check whether two tuples compare equal.
+    /// \brief Access the VIndex-th element in a tuple.
     ///
-    /// \return Returns true if each element in lhs compares equal to the
-    ///         corresponding element in rhs, returns false otherwise.
-    template <typename... TElements, typename... UElements>
-    [[nodiscard]] constexpr Bool
-    operator==(Immutable<Tuple<TElements...>> lhs,
-               Immutable<Tuple<UElements...>> rhs) noexcept;
+    /// \remarks Ill-formed if no such element exists.
+    template <Int TIndex, typename... TElements>
+    [[nodiscard]] constexpr
+    Immutable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Get(Immutable<Tuple<TElements...>> tuple) noexcept;
 
-    /// \brief Compare two tuples lexicographically.
-    template <typename... TElements, typename... UElements>
-    [[nodiscard]] constexpr Ordering
-    operator<=>(Immutable<Tuple<TElements...>> lhs,
-                Immutable<Tuple<UElements...>> rhs) noexcept;
+    /// \brief Access the VIndex-th element in a tuple.
+    ///
+    /// \remarks Ill-formed if no such element exists.
+    template <Int TIndex, typename... TElements>
+    [[nodiscard]] constexpr
+    Mutable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Get(Mutable<Tuple<TElements...>> tuple) noexcept;
+
+    /// \brief Access the VIndex-th element in a tuple.
+    ///
+    /// \remarks Ill-formed if no such element exists.
+    template <Int TIndex, typename... TElements>
+    [[nodiscard]] constexpr
+    Immovable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Get(Immovable<Tuple<TElements...>> tuple) noexcept;
+
+    /// \brief Access the VIndex-th element in a tuple.
+    ///
+    /// \remarks Ill-formed if no such element exists.
+    template <Int TIndex, typename... TElements>
+    [[nodiscard]] constexpr
+    Movable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
     // Utilities.
     // ==========
 
-    /// \brief Create a tuple instance, deducing template types from arguments.
+    /// \brief Create a tuple deducing template types from arguments.
     template <typename... TElements>
     [[nodiscard]] constexpr Tuple<TElements...>
     MakeTuple(Forwarding<TElements>... elements) noexcept;
 
-    /// \brief Create a tuple of lvalue references to provided arguments.
+    /// \brief Create a tuple of references to the provided arguments.
     template <typename... TElements>
     [[nodiscard]] constexpr Tuple<Mutable<TElements>...>
     Tie(Mutable<TElements>... elements) noexcept;
 
-    /// \brief Create a tuple of the perfectly-forwarded elements provided.
+    /// \brief Create a tuple of perfectly-forwarded elements.
     template <typename... TElements>
     [[nodiscard]] constexpr Tuple<Forwarding<TElements>...>
     ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
     template <Concepts::ForwardingRecord... TRecords>
-    [[nodiscard]] constexpr decltype(auto)
-    Concatenate(Forwarding<TRecords>... tuples) noexcept;
+    [[nodiscard]] constexpr auto
+    Concatenate(Forwarding<TRecords>... tuples) noexcept
+        -> decltype(Details::Concatenate(Forward<TRecords>(tuples)...));
 
     /// \brief Flatten a tuple recursively.
     template <Concepts::ForwardingRecord TTuple>
-    [[nodiscard]] constexpr decltype(auto)
-    Flatten(Forwarding<TTuple> tuple) noexcept;
-
-    // Record.
-    // =======
-
-    /// \brief Access the VIndex-th element in a tuple.
-    ///
-    /// \remarks The program is ill-formed if no such element exists.
-    template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr
-    Immutable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
-    Get(Immutable<Tuple<TElements...>> tuple) noexcept;
-
-    /// \brief Access the VIndex-th element in a tuple.
-    ///
-    /// \remarks The program is ill-formed if no such element exists.
-    template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr
-    Mutable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
-    Get(Mutable<Tuple<TElements...>> tuple) noexcept;
-
-    /// \brief Access the VIndex-th element in a tuple.
-    ///
-    /// \remarks The program is ill-formed if no such element exists.
-    template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr
-    Immovable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
-    Get(Immovable<Tuple<TElements...>> tuple) noexcept;
-
-    /// \brief Access the VIndex-th element in a tuple.
-    ///
-    /// \remarks The program is ill-formed if no such element exists.
-    template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr
-    Movable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
-    Get(Movable<Tuple<TElements...>> tuple) noexcept;
-
-    /// \brief Access an element of a tuple by type.
-    ///
-    /// \remarks The program is ill-formed unless the tuple has exactly one
-    ///          occurrence of TElement.
-    template <typename TElement, typename... TElements>
-    [[nodiscard]] constexpr Immutable<TElement>
-    Get(Immutable<Tuple<TElements...>> tuple) noexcept;
-
-    /// \brief Access an element of a tuple by type.
-    ///
-    /// \remarks The program is ill-formed unless the tuple has exactly one
-    ///          occurrence of TElement.
-    template <typename TElement, typename... TElements>
-    [[nodiscard]] constexpr Mutable<TElement>
-    Get(Mutable<Tuple<TElements...>> tuple) noexcept;
-
-    /// \brief Access an element of a tuple by type.
-    /// \remarks The program is ill-formed unless the tuple has exactly one
-    ///          occurrence of TElement.
-    template <typename TElement, typename... TElements>
-    [[nodiscard]] constexpr Immovable<TElement>
-    Get(Immovable<Tuple<TElements...>> tuple) noexcept;
-
-    /// \brief Access an element of a tuple by type.
-    /// \remarks The program is ill-formed unless the tuple has exactly one
-    ///          occurrence of TElement.
-    template <typename TElement, typename... TElements>
-    [[nodiscard]] constexpr Movable<TElement>
-    Get(Movable<Tuple<TElements...>> tuple) noexcept;
+    [[nodiscard]] constexpr auto
+    Flatten(Forwarding<TTuple> tuple) noexcept
+        -> decltype(Details::Flatten(Forward<TTuple>(tuple)));
 
     // Swap.
     // =====
@@ -379,6 +333,21 @@ namespace Syntropy::Records
 
     // Comparison.
     // ===========
+
+    /// \brief Check whether two tuples compare equal.
+    ///
+    /// \return Returns true if each element in lhs compares equal to the
+    ///         corresponding element in rhs, returns false otherwise.
+    template <typename... TElements, typename... UElements>
+    [[nodiscard]] constexpr Bool
+    operator==(Immutable<Tuple<TElements...>> lhs,
+               Immutable<Tuple<UElements...>> rhs) noexcept;
+
+    /// \brief Compare two tuples lexicographically.
+    template <typename... TElements, typename... UElements>
+    [[nodiscard]] constexpr Ordering
+    operator<=>(Immutable<Tuple<TElements...>> lhs,
+                Immutable<Tuple<UElements...>> rhs) noexcept;
 
     /// \brief Check whether two tuples are member-wise equal.
     /// \remarks Equality implies equivalence.

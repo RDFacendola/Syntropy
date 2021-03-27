@@ -99,7 +99,7 @@ namespace Syntropy::Records::Templates
     /// \brief Rank of a record.
     template <Concepts::Record TRecord>
     inline constexpr Int RankOf =
-        RankTrait<TRecord>::kValue;
+        RankTrait<Syntropy::Templates::UnqualifiedOf<TRecord>>::kValue;
 
     /// \brief Constant equal to true if two records have the same rank,
     ///        equal to false otherwise.
@@ -111,6 +111,10 @@ namespace Syntropy::Records::Templates
     template <Int TIndex, Concepts::Record TRecord>
     using ElementTypeOf = Syntropy::Templates::UnqualifiedOf<decltype(
         Records::Get<TIndex>(Syntropy::Templates::Declval<TRecord>()))>;
+
+    /// \brief Index of the first element with type TElement in a record.
+    template <typename TElement, Concepts::Record TRecord>
+    inline constexpr Int ElementIndexOf = 0;
 
     /// \brief Generates a sequence that can be used to enumerate all
     ///        elements in a record.
@@ -127,6 +131,20 @@ namespace Syntropy::Records
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
+
+    // Element access.
+    // ===============
+
+    /// \brief Access the first element of type TElement in a record.
+    ///
+    /// \remarks Ill-formed if no such element exist.
+    template <typename TElement, Concepts::ForwardingRecord TRecord>
+    [[nodiscard]] constexpr auto
+    Get(Forwarding<TRecord> record) noexcept
+        -> decltype(Get<Templates::ElementIndexOf<
+            TElement,
+            Syntropy::Templates::QualifiedOf<TRecord>>>(
+                Forward<TRecord>(record)));
 
     // Functional.
     // ===========
