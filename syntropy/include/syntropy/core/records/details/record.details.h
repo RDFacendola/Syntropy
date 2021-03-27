@@ -48,28 +48,41 @@ namespace Syntropy::Records::Details
     /// \brief Custom extension.
     template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TRecord> sequence, ExtensionPriority)
+    InvokeGet(Forwarding<TRecord> record, ExtensionPriority)
         noexcept -> decltype(Extensions::Get<TIndex, TRecord>{}(
-            Forward<TRecord>(sequence)));
+            Forward<TRecord>(record)));
 
     /// \brief Member-function.
     template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TRecord> sequence, MemberFunctionPriority)
-        noexcept -> decltype(sequence.template Get<TIndex>());
+    InvokeGet(Forwarding<TRecord> record, MemberFunctionPriority)
+        noexcept -> decltype(record.template Get<TIndex>());
 
     /// \brief Non-member function, possibly using ADL.
     template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TRecord> sequence, NonMemberFunctionPriority)
-        noexcept -> decltype(Get<TIndex>(Forward<TRecord>(sequence)));
+    InvokeGet(Forwarding<TRecord> record, NonMemberFunctionPriority)
+        noexcept -> decltype(Get<TIndex>(Forward<TRecord>(record)));
 
     /// \brief Routes the invocation.
     template <Int TIndex, typename TRecord>
     inline auto
-    RouteGet(Forwarding<TRecord> sequence)
-        noexcept -> decltype(InvokeGet<TIndex>(Forward<TRecord>(sequence),
+    RouteGet(Forwarding<TRecord> record)
+        noexcept -> decltype(InvokeGet<TIndex>(Forward<TRecord>(record),
                                                kMaxPriority));
+
+    /************************************************************************/
+    /* TEMPLATE MACHINERY                                                   */
+    /***********************************************************************/
+
+    template <template <Int, typename> typename TElementTypeTrait,
+              typename TRecord,
+              Int... TIndex>
+    auto
+    EnumerateTypes(Templates::Sequence<TIndex...>) noexcept
+        -> Templates::TypeList<typename TElementTypeTrait<TIndex,
+                                                          TRecord>::Type...>;
+
 }
 
 // ===========================================================================

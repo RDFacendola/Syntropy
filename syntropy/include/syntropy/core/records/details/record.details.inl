@@ -15,36 +15,36 @@ namespace Syntropy::Records::Details
 
     template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TRecord> sequence, ExtensionPriority)
+    InvokeGet(Forwarding<TRecord> record, ExtensionPriority)
         noexcept -> decltype(Extensions::Get<TIndex, TRecord>{}(
-            Forward<TRecord>(sequence)))
+            Forward<TRecord>(record)))
     {
-        return Extensions::Get<TIndex, TRecord>{}(Forward<TRecord>(sequence));
+        return Extensions::Get<TIndex, TRecord>{}(Forward<TRecord>(record));
     }
 
     template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TRecord> sequence, MemberFunctionPriority)
-        noexcept -> decltype(sequence.template Get<TIndex>())
+    InvokeGet(Forwarding<TRecord> record, MemberFunctionPriority)
+        noexcept -> decltype(record.template Get<TIndex>())
     {
-        return sequence.template Get<TIndex>();
+        return record.template Get<TIndex>();
     }
 
     template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TRecord> sequence, NonMemberFunctionPriority)
-        noexcept -> decltype(Get<TIndex>(Forward<TRecord>(sequence)))
+    InvokeGet(Forwarding<TRecord> record, NonMemberFunctionPriority)
+        noexcept -> decltype(Get<TIndex>(Forward<TRecord>(record)))
     {
-        return Get<TIndex>(Forward<TRecord>(sequence));
+        return Get<TIndex>(Forward<TRecord>(record));
     }
 
     template <Int TIndex, typename TRecord>
     inline auto
-    RouteGet(Forwarding<TRecord> sequence)
-        noexcept -> decltype(InvokeGet<TIndex>(Forward<TRecord>(sequence),
+    RouteGet(Forwarding<TRecord> record)
+        noexcept -> decltype(InvokeGet<TIndex>(Forward<TRecord>(record),
                                                kMaxPriority))
     {
-        return InvokeGet<TIndex>(Forward<TRecord>(sequence), kMaxPriority);
+        return InvokeGet<TIndex>(Forward<TRecord>(record), kMaxPriority);
     }
 
 }

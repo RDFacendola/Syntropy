@@ -94,21 +94,30 @@ namespace Syntropy::Records
     template <Int TIndex,
               typename TRecordReference,
               Record TRecord = Templates::UnqualifiedOf<TRecordReference>>
-    using ElementTypeOf = typename ElementTypeTrait<TIndex, TRecord>::Type;
-
-    /// \brief Index of the first element with type TElement in a record.
-    template <typename TElement,
-              typename TRecordReference,
-              Record TRecord = Templates::UnqualifiedOf<TRecordReference>>
-    inline constexpr Int
-    ElementIndexOf = 0;
+    using
+    ElementTypeOf = typename ElementTypeTrait<TIndex, TRecord>::Type;
 
     /// \brief Generates a sequence that can be used to enumerate all
     ///        elements in a record.
     template <typename TRecordReference>
-    requires Record<TRecordReference>
-    using EnumerationOf =
-        Templates::MakeSequence<RankOf<TRecordReference>>;
+    requires Record<Templates::UnqualifiedOf<TRecordReference>>
+    using
+    EnumerationOf = Templates::MakeSequence<RankOf<TRecordReference>>;
+
+    /// \brief List of types of a record's elements.
+    template <typename TRecordReference,
+              Record TRecord = Templates::UnqualifiedOf<TRecordReference>>
+    using
+    ElementTypeListOf = decltype(
+        Details::EnumerateTypes<ElementTypeTrait,TRecord>(
+            EnumerationOf<TRecord>{}));
+
+    /// \brief Index of the first element with type TElement in a record.
+    template <typename TElement, typename TRecordReference>
+    requires Record<Templates::UnqualifiedOf<TRecordReference>>
+    inline constexpr Int
+    ElementIndexOf = Templates::IndexOf<TElement,
+                                        ElementTypeListOf<TRecordReference>>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
