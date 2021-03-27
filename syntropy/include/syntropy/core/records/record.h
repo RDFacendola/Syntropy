@@ -70,10 +70,11 @@ namespace Syntropy::Records
     /* RECORD                                                               */
     /************************************************************************/
 
-    /// \brief Rank of a record.
-    template <Record TRecord>
-    inline constexpr Int RankOf =
-        RankTrait<Templates::UnqualifiedOf<TRecord>>::kValue;
+    /// \brief Number of fields in a record.
+    template <typename TRecord,
+              Record URecord = Templates::UnqualifiedOf<TRecord>>
+    inline constexpr Int
+    RankOf = RankTrait<URecord>::kValue;
 
     /// \brief Constant equal to true if two records have the same rank,
     ///        equal to false otherwise.
