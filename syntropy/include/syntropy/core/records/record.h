@@ -76,10 +76,11 @@ namespace Syntropy::Records
     inline constexpr Int
     RankOf = RankTrait<URecord>::kValue;
 
-    /// \brief Constant equal to true if two records have the same rank,
-    ///        equal to false otherwise.
-    template <Record TRecord, Record URecord>
-    inline constexpr Bool SameRank =
+    /// \brief True if two records have the same rank, false otherwise.
+    template <typename TRecord, typename URecord>
+    requires Record<Templates::UnqualifiedOf<TRecord>>
+          && Record<Templates::UnqualifiedOf<URecord>>
+    inline constexpr Bool IsSameRank =
         (RankOf<TRecord> == RankOf<URecord>);
 
     /// \brief Type of a record element.
@@ -157,7 +158,7 @@ namespace Syntropy::Records
     /// \brief Member-wise swap two records and returns the value of the
     ///        former.
     template <Record TRecord, ForwardingRecord URecord>
-    requires SameRank<TRecord,
+    requires IsSameRank<TRecord,
                                  Templates::UnqualifiedOf<URecord>>
     [[nodiscard]] constexpr TRecord
     Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept;
@@ -168,20 +169,20 @@ namespace Syntropy::Records
     /// \brief Check whether two records are member-wise equal.
     /// \remarks Equality implies equivalence.
     template <Record TRecord, Record URecord>
-    requires SameRank<TRecord, URecord>
+    requires IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
     /// \brief Check whether two record are member-wise equivalent.
     /// \brief Equivalence doesn't imply equality.
     template <Record TRecord, Record URecord>
-    requires SameRank<TRecord, URecord>
+    requires IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
     /// \brief Member-wise compare two records.
     template <Record TRecord, Record URecord>
-    requires SameRank<TRecord, URecord>    [[nodiscard]] constexpr Ordering
+    requires IsSameRank<TRecord, URecord>    [[nodiscard]] constexpr Ordering
     Compare(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
 }

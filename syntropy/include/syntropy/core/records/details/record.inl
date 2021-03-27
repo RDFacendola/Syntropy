@@ -115,7 +115,7 @@ namespace Syntropy::Records
     // =====
 
     template <Record TRecord, ForwardingRecord URecord>
-    requires SameRank<TRecord, Templates::UnqualifiedOf<URecord>>
+    requires IsSameRank<TRecord, Templates::UnqualifiedOf<URecord>>
     [[nodiscard]] constexpr TRecord
     Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept
     {
@@ -134,7 +134,7 @@ namespace Syntropy::Records
     // ========
 
     template <Record TRecord, Record URecord>
-    requires SameRank<TRecord, URecord>
+    requires IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
@@ -149,7 +149,7 @@ namespace Syntropy::Records
     }
 
     template <Record TRecord, Record URecord>
-    requires SameRank<TRecord, URecord>
+    requires IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
@@ -165,7 +165,7 @@ namespace Syntropy::Records
     }
 
     template <Record TRecord, Record URecord>
-    requires SameRank<TRecord, URecord>
+    requires IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr Ordering
     Compare(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
