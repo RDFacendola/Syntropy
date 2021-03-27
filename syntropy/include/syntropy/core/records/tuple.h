@@ -28,8 +28,8 @@ namespace Syntropy::Records
     /************************************************************************/
 
     // !IMPORTANT! In VS2019 apparently "explicit" keyword is not
-    //             considered when
-    //             constructors are not declared and defined at the same time.
+    //             considered when constructors are not declared and defined at
+    //             the same time.
 
      /// \brief Represents a fixed-size collection of heterogeneous elements.
      /// \author Raffaele D. Facendola - September 2020.
@@ -267,6 +267,34 @@ namespace Syntropy::Records
     operator<=>(Immutable<Tuple<TElements...>> lhs,
                 Immutable<Tuple<UElements...>> rhs) noexcept;
 
+    // Utilities.
+    // ==========
+
+    /// \brief Create a tuple instance, deducing template types from arguments.
+    template <typename... TElements>
+    [[nodiscard]] constexpr Tuple<TElements...>
+    MakeTuple(Forwarding<TElements>... elements) noexcept;
+
+    /// \brief Create a tuple of lvalue references to provided arguments.
+    template <typename... TElements>
+    [[nodiscard]] constexpr Tuple<Mutable<TElements>...>
+    Tie(Mutable<TElements>... elements) noexcept;
+
+    /// \brief Create a tuple of the perfectly-forwarded elements provided.
+    template <typename... TElements>
+    [[nodiscard]] constexpr Tuple<Forwarding<TElements>...>
+    ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
+
+    /// \brief Concatenate a set of tuples.
+    template <Concepts::ForwardingRecord... TRecords>
+    [[nodiscard]] constexpr decltype(auto)
+    Concatenate(Forwarding<TRecords>... tuples) noexcept;
+
+    /// \brief Flatten a tuple recursively.
+    template <Concepts::ForwardingRecord TTuple>
+    [[nodiscard]] constexpr decltype(auto)
+    Flatten(Forwarding<TTuple> tuple) noexcept;
+
     // Record.
     // =======
 
@@ -331,34 +359,6 @@ namespace Syntropy::Records
     template <typename TElement, typename... TElements>
     [[nodiscard]] constexpr Movable<TElement>
     Get(Movable<Tuple<TElements...>> tuple) noexcept;
-
-    // Utilities.
-    // ==========
-
-    /// \brief Create a tuple instance, deducing template types from arguments.
-    template <typename... TElements>
-    [[nodiscard]] constexpr Tuple<TElements...>
-    MakeTuple(Forwarding<TElements>... elements) noexcept;
-
-    /// \brief Create a tuple of lvalue references to provided arguments.
-    template <typename... TElements>
-    [[nodiscard]] constexpr Tuple<Mutable<TElements>...>
-    Tie(Mutable<TElements>... elements) noexcept;
-
-    /// \brief Create a tuple of the perfectly-forwarded elements provided.
-    template <typename... TElements>
-    [[nodiscard]] constexpr Tuple<Forwarding<TElements>...>
-    ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
-
-    /// \brief Concatenate a set of tuples.
-    template <Concepts::ForwardingRecord... TRecords>
-    [[nodiscard]] constexpr decltype(auto)
-    Concatenate(Forwarding<TRecords>... tuples) noexcept;
-
-    /// \brief Flatten a tuple recursively.
-    template <Concepts::ForwardingRecord TTuple>
-    [[nodiscard]] constexpr decltype(auto)
-    Flatten(Forwarding<TTuple> tuple) noexcept;
 
     // Swap.
     // =====

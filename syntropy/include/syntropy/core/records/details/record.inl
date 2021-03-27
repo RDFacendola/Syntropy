@@ -97,81 +97,33 @@ namespace Syntropy::Records
         return make_from_record(Templates::EnumerationSequenceOf<TRecord>{});
     }
 
-}
+    // Swap.
+    // =====
 
-// ===========================================================================
-
-namespace Syntropy::Algorithm::Extensions
-{
-    /************************************************************************/
-    /* SWAP EXTENSIONS                                                      */
-    /************************************************************************/
-
-    template <Records::Concepts::Record TRecord>
-    constexpr void
-    Swap<TRecord>::
-    operator()(Mutable<TRecord> lhs, Mutable<TRecord> rhs)
-    const noexcept
-    {
-        auto swap = [&]<Int... TIndex>
-            (Syntropy::Templates::Sequence<TIndex...>)
-            {
-                (Algorithm::Swap(Records::Get<TIndex>(lhs),
-                                 Records::Get<TIndex>(rhs)), ...);
-            };
-
-        swap(Records::Templates::EnumerationSequenceOf<TRecord>{});
-    }
-
-    template <Records::Concepts::Record TRecord,
-              Records::Concepts::Record URecord>
-    requires Records::Templates::SameRank<TRecord, URecord>
-    constexpr TRecord
-    Exchange<TRecord, URecord>::
-    operator()(Mutable<TRecord> lhs, Immutable<URecord> rhs)
-    const noexcept
-    {
-        auto exchange = [&]<Int... TIndex>(
-            Syntropy::Templates::Sequence<TIndex...>)
-        {
-            return TRecord{
-                Algorithm::Exchange(Records::Get<TIndex>(lhs),
-                                    Records::Get<TIndex>(rhs))... };
-        };
-
-        return exchange(Records::Templates::EnumerationSequenceOf<TRecord>{});
-    }
-
-    template <Syntropy::Records::Concepts::Record TRecord,
-              Syntropy::Records::Concepts::Record URecord>
-    requires Records::Templates::SameRank<TRecord, URecord>
-    constexpr TRecord
-    Exchange<TRecord, URecord>::
-    operator()(Mutable<TRecord> lhs, Movable<URecord> rhs)
-    const noexcept
+    template <Concepts::Record TRecord, Concepts::ForwardingRecord URecord>
+    requires Templates::SameRank<TRecord,
+                                 Syntropy::Templates::UnqualifiedOf<URecord>>
+    [[nodiscard]] constexpr TRecord
+    Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept
     {
         auto exchange = [&]<Int... TIndex>(
             Syntropy::Templates::Sequence<TIndex...>) mutable
         {
             return TRecord{
                 Algorithm::Exchange(Records::Get<TIndex>(lhs),
-                                    Records::Get<TIndex>(Move(rhs)))... };
+                                    Records::Get<TIndex>(Forward(rhs)))... };
         };
 
         return exchange(Records::Templates::EnumerationSequenceOf<TRecord>{});
     }
 
-    /************************************************************************/
-    /* COMPARE EXTENSIONS                                                   */
-    /************************************************************************/
+    // Compare.
+    // ========
 
-    template <Records::Concepts::Record TRecord,
-              Records::Concepts::Record URecord>
-    requires Records::Templates::SameRank<TRecord, URecord>
+    template <Concepts::Record TRecord, Concepts::Record URecord>
+    requires Templates::SameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
-    AreEqual<TRecord, URecord>::
-    operator()(Immutable<TRecord> lhs, Immutable<URecord> rhs)
-    const noexcept
+    AreEqual(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
         auto are_equal = [&]<Int... TIndex>(
             Syntropy::Templates::Sequence<TIndex...>)
@@ -183,13 +135,10 @@ namespace Syntropy::Algorithm::Extensions
         return are_equal(lhs, rhs);
     }
 
-    template <Records::Concepts::Record TRecord,
-              Records::Concepts::Record URecord>
-    requires Records::Templates::SameRank<TRecord, URecord>
+    template <Concepts::Record TRecord, Concepts::Record URecord>
+    requires Templates::SameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
-    AreEquivalent<TRecord, URecord>::
-    operator()(Immutable<TRecord> lhs, Immutable<URecord> rhs)
-    const noexcept
+    AreEquivalent(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
         auto are_equivalent = [&]<Int... TIndex>(
             Syntropy::Templates::Sequence<TIndex...>)
@@ -202,13 +151,10 @@ namespace Syntropy::Algorithm::Extensions
         return are_equal(lhs, rhs);
     }
 
-    template <Records::Concepts::Record TRecord,
-              Records::Concepts::Record URecord>
-    requires Records::Templates::SameRank<TRecord, URecord>
+    template <Concepts::Record TRecord, Concepts::Record URecord>
+    requires Templates::SameRank<TRecord, URecord>
     [[nodiscard]] constexpr Ordering
-    Compare<TRecord, URecord>::
-    operator()(Immutable<TRecord> lhs, Immutable<URecord> rhs)
-    const noexcept
+    Compare(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
         auto compare = [&]<Int TIndex>(
             Ordering result, Syntropy::Templates::IntConstant<TIndex>)

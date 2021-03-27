@@ -43,7 +43,7 @@ namespace Syntropy::Algorithm
     AreEquivalent(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
         -> decltype(Details::RouteAreEquivalent(lhs, rhs));
 
-    /// \brief Compare lhs against rhs.ß
+    /// \brief Compare lhs against rhs.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     Compare(Immutable<TType> lhs, Immutable<UType> rhs) noexcept

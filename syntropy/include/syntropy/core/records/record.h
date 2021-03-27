@@ -14,7 +14,7 @@
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/sequence.h"
 
-#include "syntropy/core/support/compare.h"
+#include "syntropy/core/support/ordering.h"
 #include "syntropy/core/support/swap.h"
 #include "syntropy/core/support/compare.h"
 
@@ -32,11 +32,11 @@ namespace Syntropy::Records::Templates
     /* RECORD                                                               */
     /************************************************************************/
 
-    /// \brief Exposes a member kValue equal to the rank of a record.
+    /// \brief Int constant equal to the rank of a record.
     template <typename TRecord>
-    struct RankTrait
+    struct RankTrait // : Syntropy::Templates::IntConstant<rank>
     {
-        // Int kValue = <record rank>
+
     };
 
 }
@@ -162,76 +162,40 @@ namespace Syntropy::Records
     template <typename TType, Concepts::ForwardingRecord TRecord>
     [[nodiscard]] constexpr TType
     MakeFromRecord(Forwarding<TRecord> record) noexcept;
-}
 
-// ===========================================================================
+    // Swap.
+    // =====
 
-namespace Syntropy::Algorithm::Extensions
-{
-    /************************************************************************/
-    /* SWAP EXTENSIONS                                                      */
-    /************************************************************************/
+    /// \brief Member-wise swap two records and returns the value of the
+    ///        former.
+    template <Concepts::Record TRecord, Concepts::ForwardingRecord URecord>
+    requires Templates::SameRank<TRecord,
+                                 Syntropy::Templates::UnqualifiedOf<URecord>>
+    [[nodiscard]] constexpr TRecord
+    Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept;
 
-    /// \brief Swap two elements.
-    template <Records::Concepts::Record TRecord>
-    struct Swap<TRecord>
-    {
-        constexpr void
-        operator()(Mutable<TRecord> lhs, Mutable<TRecord> rhs)
-        const noexcept;
-    };
+    // Comparison.
+    // ===========
 
-    /// \brief Swap two records and return the old value of the first.
-    template <Records::Concepts::Record TRecord,
-              Records::Concepts::Record URecord>
-    requires Records::Templates::SameRank<TRecord, URecord>
-    struct Exchange<TRecord, URecord>
-    {
-        constexpr TRecord
-        operator()(Mutable<TRecord> lhs, Immutable<URecord> rhs)
-        const noexcept;
+    /// \brief Check whether two records are member-wise equal.
+    /// \remarks Equality implies equivalence.
+    template <Concepts::Record TRecord, Concepts::Record URecord>
+    requires Templates::SameRank<TRecord, URecord>
+    [[nodiscard]] constexpr Bool
+    AreEqual(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
-        constexpr TRecord
-        operator()(Mutable<TRecord> lhs, Movable<URecord> rhs)
-        const noexcept;
-    };
+    /// \brief Check whether two record are member-wise equivalent.
+    /// \brief Equivalence doesn't imply equality.
+    template <Concepts::Record TRecord, Concepts::Record URecord>
+    requires Templates::SameRank<TRecord, URecord>
+    [[nodiscard]] constexpr Bool
+    AreEquivalent(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
-    /************************************************************************/
-    /* COMPARE EXTENSIONS                                                   */
-    /************************************************************************/
-
-    /// \brief Check whether two records are equal.
-    template <Records::Concepts::Record TRecord,
-              Records::Concepts::Record URecord>
-    requires Records::Templates::SameRank<TRecord, URecord>
-    struct AreEqual<TRecord, URecord>
-    {
-        [[nodiscard]] constexpr Bool
-        operator()(Immutable<TRecord> lhs, Immutable<URecord> rhs)
-        const noexcept;
-    };
-
-    /// \brief Check whether two records are equivalent.
-    template <Records::Concepts::Record TRecord,
-              Records::Concepts::Record URecord>
-    requires Records::Templates::SameRank<TRecord, URecord>
-    struct AreEquivalent<TRecord, URecord>
-    {
-        [[nodiscard]] constexpr Bool
-        operator()(Immutable<TRecord> lhs, Immutable<URecord> rhs)
-        const noexcept;
-    };
-
-    /// \brief Compare two records.
-    template <Records::Concepts::Record TRecord,
-              Records::Concepts::Record URecord>
-    requires Records::Templates::SameRank<TRecord, URecord>
-    struct Compare<TRecord, URecord>
-    {
-        [[nodiscard]] constexpr Ordering
-        operator()(Immutable<TRecord> lhs, Immutable<URecord> rhs)
-        const noexcept;
-    };
+    /// \brief Member-wise compare two records.
+    template <Concepts::Record TRecord, Concepts::Record URecord>
+    requires Templates::SameRank<TRecord, URecord>
+    [[nodiscard]] constexpr Ordering
+    Compare(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
 }
 
