@@ -375,14 +375,33 @@ namespace Syntropy::Records
     requires (sizeof...(TElements) == sizeof...(UElements))
     [[nodiscard]] constexpr Tuple<TElements...>
     Exchange(Mutable<Tuple<TElements...>> lhs,
-             Immutable<Tuple<UElements...>> rhs) noexcept;
+             Forwarding<Tuple<UElements...>> rhs) noexcept;
 
-    /// \brief Swap lhs with rhs and return the old value of lhs.
+    // Comparison.
+    // ===========
+
+    /// \brief Check whether two tuples are member-wise equal.
+    /// \remarks Equality implies equivalence.
     template <typename... TElements, typename... UElements>
     requires (sizeof...(TElements) == sizeof...(UElements))
-    [[nodiscard]] constexpr Tuple<TElements...>
-    Exchange(Mutable<Tuple<TElements...>> lhs,
-             Movable<Tuple<UElements...>> rhs) noexcept;
+    [[nodiscard]] constexpr Bool
+    AreEqual(Immutable<Tuple<TElements...>> lhs,
+             Immutable<Tuple<UElements...>> rhs) noexcept;
+
+    /// \brief Check whether two tuples are member-wise equivalent.
+    /// \brief Equivalence doesn't imply equality.
+    template <typename... TElements, typename... UElements>
+    requires (sizeof...(TElements) == sizeof...(UElements))
+    [[nodiscard]] constexpr Bool
+    AreEquivalent(Immutable<Tuple<TElements...>> lhs,
+                  Immutable<Tuple<UElements...>> rhs) noexcept;
+
+    /// \brief Member-wise compare two tuples.
+    template <typename... TElements, typename... UElements>
+    requires (sizeof...(TElements) == sizeof...(UElements))
+    [[nodiscard]] constexpr Ordering
+    Compare(Immutable<Tuple<TElements...>> lhs,
+            Immutable<Tuple<UElements...>> rhs) noexcept;
 
 }
 

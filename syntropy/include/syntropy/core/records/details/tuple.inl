@@ -276,18 +276,39 @@ namespace Syntropy::Records
     requires (sizeof...(TElements) == sizeof...(UElements))
     [[nodiscard]] constexpr Tuple<TElements...>
     Exchange(Mutable<Tuple<TElements...>> lhs,
+             Forwarding<Tuple<UElements...>> rhs) noexcept
+    {
+        return Records::Exchange(lhs, Forward<Tuple<UElements...>>(rhs));
+    }
+
+    // Comparison.
+    // ===========
+
+    template <typename... TElements, typename... UElements>
+    requires (sizeof...(TElements) == sizeof...(UElements))
+    [[nodiscard]] constexpr Bool
+    AreEqual(Immutable<Tuple<TElements...>> lhs,
              Immutable<Tuple<UElements...>> rhs) noexcept
     {
-        return Records::Exchange(lhs, rhs);
+        return Records::AreEqual(lhs, rhs);
     }
 
     template <typename... TElements, typename... UElements>
     requires (sizeof...(TElements) == sizeof...(UElements))
-    [[nodiscard]]constexpr Tuple<TElements...>
-    Exchange(Mutable<Tuple<TElements...>> lhs,
-             Movable<Tuple<UElements...>> rhs) noexcept
+    [[nodiscard]] constexpr Bool
+    AreEquivalent(Immutable<Tuple<TElements...>> lhs,
+                  Immutable<Tuple<UElements...>> rhs) noexcept
     {
-        return Records::Exchange(lhs, Move(rhs));
+        return Records::AreEquivalent(lhs, rhs);
+    }
+
+    template <typename... TElements, typename... UElements>
+    requires (sizeof...(TElements) == sizeof...(UElements))
+    [[nodiscard]] constexpr Ordering
+    Compare(Immutable<Tuple<TElements...>> lhs,
+            Immutable<Tuple<UElements...>> rhs) noexcept
+    {
+        return Records::Compare(lhs, rhs);
     }
 
 }
