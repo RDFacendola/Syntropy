@@ -102,7 +102,7 @@ namespace Syntropy::Records
     template <typename TRecordReference>
     requires Record<Templates::UnqualifiedOf<TRecordReference>>
     using
-    EnumerationOf = Templates::MakeSequence<RankOf<TRecordReference>>;
+    SequenceOf = Templates::MakeSequence<RankOf<TRecordReference>>;
 
     /// \brief List of types of a record's elements.
     template <typename TRecordReference,
@@ -110,7 +110,7 @@ namespace Syntropy::Records
     using
     ElementTypeListOf = decltype(
         Details::ElementTypeListOf<ElementTypeTrait,TRecord>(
-            EnumerationOf<TRecord>{}));
+            SequenceOf<TRecord>{}));
 
     /// \brief Index of the first element with type TElement in a record.
     template <typename TElement, typename TRecordReference>
