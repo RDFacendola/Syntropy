@@ -57,16 +57,14 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr auto
     SliceFront(Immutable<TRange> range) noexcept
     {
-        return Records::MakeTuple(Ranges::Front(range),
-                                 Ranges::PopFront(range));
+        return MakeTuple(Ranges::Front(range), Ranges::PopFront(range));
     }
 
     template <Concepts::RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
     SliceBack(Immutable<TRange> range) noexcept
     {
-        return Records::MakeTuple(Ranges::Back(range),
-                                 Ranges::PopBack(range));
+        return MakeTuple(Ranges::Back(range), Ranges::PopBack(range));
     }
 
     template <Concepts::RandomAccessRange TRange, typename TCardinality>
@@ -74,8 +72,8 @@ namespace Syntropy::Ranges
     SliceFront(Immutable<TRange> range,
                Immutable<TCardinality> count) noexcept
     {
-        return Records::MakeTuple(Ranges::Front(range, count),
-                                 Ranges::PopFront(range, count));
+        return MakeTuple(Ranges::Front(range, count),
+                         Ranges::PopFront(range, count));
     }
 
     template <Concepts::RandomAccessRange TRange, typename TCardinality>
@@ -83,8 +81,8 @@ namespace Syntropy::Ranges
     SliceBack(Immutable<TRange> range,
               Immutable<TCardinality> count) noexcept
     {
-        return Records::MakeTuple(Ranges::Back(range, count),
-                                 Ranges::PopBack(range, count));
+        return MakeTuple(Ranges::Back(range, count),
+                         Ranges::PopBack(range, count));
     }
 
 }

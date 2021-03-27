@@ -25,7 +25,7 @@ namespace Syntropy::Ranges
     {
         auto zip_front = [](Immutable<TRanges>... ranges)
         {
-            return Records::MakeTuple(Front(ranges)...);
+            return MakeTuple(Front(ranges)...);
         };
 
         return Records::Apply(zip_front, ranges_);
@@ -78,7 +78,7 @@ namespace Syntropy::Ranges
     {
         auto zip_back = [](Immutable<TRanges>... ranges)
         {
-            return Records::MakeTuple(Back(ranges)...);
+            return MakeTuple(Back(ranges)...);
         };
 
         return Records::Apply(zip_back, ranges_);
@@ -106,7 +106,7 @@ namespace Syntropy::Ranges
     {
         auto zip_select = [index](Immutable<TRanges>... ranges)
         {
-            return Records::MakeTuple(Ranges::At(ranges, index)...);
+            return MakeTuple(Ranges::At(ranges, index)...);
         };
 
         return Records::Apply(zip_select, ranges_);
@@ -118,7 +118,7 @@ namespace Syntropy::Ranges
     {
         auto zip_data = [](Immutable<TRanges>... ranges)
         {
-            return Records::MakeTuple( Data(ranges)... );
+            return MakeTuple( Data(ranges)... );
         };
 
         return Records::Apply(zip_data, ranges_);
@@ -162,7 +162,7 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr auto
     Unzip(Immutable<TRange> range) noexcept
     {
-        return Records::MakeTuple(range);
+        return MakeTuple(range);
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -170,7 +170,7 @@ namespace Syntropy::Ranges
     Zip(Immutable<TRanges>... ranges) noexcept
     {
         return MakeZipRangeFromTuple(
-            Records::Concatenate(Unzip(ranges)...));
+            Concatenate(Unzip(ranges)...));
     }
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>

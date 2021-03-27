@@ -13,7 +13,7 @@ int main()
 {
     std::cout << "Hello, Syntropy\n";
 
-
+    Syntropy::Tuple<int, float> t{ 10, 20.0f };
 
     std::cout << "\ngg\n";
 

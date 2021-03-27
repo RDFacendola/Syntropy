@@ -7,7 +7,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Records
+namespace Syntropy
 {
     /************************************************************************/
     /* TUPLE                                                                */
@@ -25,7 +25,7 @@ namespace Syntropy::Records
     }
 
     template <typename TElement, typename... TElements>
-    template<ForwardingRecord TTuple, Int... VIndexes>
+    template<Records::ForwardingRecord TTuple, Int... VIndexes>
     constexpr Tuple<TElement, TElements...>
     ::Tuple(UnwindTag,
             Syntropy::Templates::Sequence<VIndexes...>,
@@ -112,7 +112,7 @@ namespace Syntropy::Records
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Immutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
@@ -122,7 +122,7 @@ namespace Syntropy::Records
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Mutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
@@ -132,11 +132,11 @@ namespace Syntropy::Records
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Immovable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
-        using TElement = ElementTypeOf<TIndex, Tuple<TElements...>>;
+        using TElement = Records::ElementTypeOf<TIndex, Tuple<TElements...>>;
 
         return static_cast<Immovable<TElement>>(
                    static_cast<Immutable<TTupleBase>>(tuple).element_);
@@ -144,11 +144,11 @@ namespace Syntropy::Records
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Movable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
-        using TElement = ElementTypeOf<TIndex, Tuple<TElements...>>;
+        using TElement = Records::ElementTypeOf<TIndex, Tuple<TElements...>>;
 
         return static_cast<Movable<TElement>>(
             static_cast<Mutable<TTupleBase>>(tuple).element_);
@@ -179,7 +179,7 @@ namespace Syntropy::Records
                    Forward<TElements>(elements)...);
     }
 
-    template <ForwardingRecord... TRecords>
+    template <Records::ForwardingRecord... TRecords>
     [[nodiscard]] constexpr auto
     Concatenate(Forwarding<TRecords>... tuples) noexcept
         -> decltype(Details::Concatenate(Forward<TRecords>(tuples)...))
@@ -187,7 +187,7 @@ namespace Syntropy::Records
         return Details::Concatenate(Forward<TRecords>(tuples)...);
     }
 
-    template <ForwardingRecord TTuple>
+    template <Records::ForwardingRecord TTuple>
     [[nodiscard]] constexpr auto
     Flatten(Forwarding<TTuple> tuple) noexcept
         -> decltype(Details::Flatten(Forward<TTuple>(tuple)))
@@ -197,15 +197,6 @@ namespace Syntropy::Records
 
     // Swap.
     // =====
-
-    template <typename... TElements, typename... UElements>
-    requires (sizeof...(TElements) == sizeof...(UElements))
-    constexpr void
-    Swap(Mutable<Tuple<TElements...>> lhs,
-         Mutable<Tuple<UElements...>> rhs) noexcept
-    {
-        Records::Swap(lhs, rhs);
-    }
 
     template <typename... TElements, typename... UElements>
     requires (sizeof...(TElements) == sizeof...(UElements))
@@ -263,5 +254,9 @@ namespace Syntropy::Records
     }
 
 }
+
+// ===========================================================================
+
+#include "record.details.inl"
 
 // ===========================================================================

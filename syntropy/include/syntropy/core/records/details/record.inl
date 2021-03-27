@@ -27,13 +27,13 @@ namespace Syntropy::Records
     // Element access.
     // ===============
 
-    template <typename TElement, typename TRecordReference, Record TRecord>
+    template <typename TElement, typename TRecordReference>
     [[nodiscard]] constexpr auto
-    Get(Forwarding<TRecord> record) noexcept
-        -> decltype(Get<ElementIndexOf<TElement,TRecord>>(
+    Get(Forwarding<TRecordReference> record) noexcept
+        -> decltype(Get<ElementIndexOf<TElement,TRecordReference>>(
                 Forward<TRecordReference>(record)))
     {
-        return Get<ElementIndexOf<TElement,TRecord>>(
+        return Get<ElementIndexOf<TElement,TRecordReference>>(
             Forward<TRecordReference>(record));
     }
 

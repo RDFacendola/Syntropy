@@ -21,7 +21,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Records
+namespace Syntropy
 {
     /************************************************************************/
     /* TUPLE                                                                */
@@ -40,24 +40,24 @@ namespace Syntropy::Records
     template <typename TElement, typename... TElements>
     struct Tuple<TElement, TElements...> : private Tuple<TElements...>
     {
-        template <Int VIndex, typename... UElements>
+        template <Int TIndex, typename... UElements>
         friend constexpr
-        Immutable<ElementTypeOf<VIndex, Tuple<UElements...>>>
+        Immutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
         Get(Immutable<Tuple<UElements...>> tuple) noexcept;
 
-        template <Int VIndex, typename... UElements>
+        template <Int TIndex, typename... UElements>
         friend constexpr
-        Mutable<ElementTypeOf<VIndex, Tuple<UElements...>>>
+        Mutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
         Get(Mutable<Tuple<UElements...>> tuple) noexcept;
 
-        template <Int VIndex, typename... UElements>
+        template <Int TIndex, typename... UElements>
         friend constexpr
-        Immovable<ElementTypeOf<VIndex, Tuple<UElements...>>>
+        Immovable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
         Get(Immovable<Tuple<UElements...>> tuple) noexcept;
 
-        template <Int VIndex, typename... UElements>
+        template <Int TIndex, typename... UElements>
         friend constexpr
-        Movable<ElementTypeOf<VIndex, Tuple<UElements...>>>
+        Movable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
         Get(Movable<Tuple<UElements...>> tuple) noexcept;
 
     public:
@@ -170,7 +170,7 @@ namespace Syntropy::Records
               Forwarding<UElements>... elements) noexcept;
 
         /// \brief Construct a tuple unwinding another tuple elements.
-        template<ForwardingRecord TTuple, Int... VIndexes>
+        template<Records::ForwardingRecord TTuple, Int... VIndexes>
         constexpr
         Tuple(UnwindTag,
               Syntropy::Templates::Sequence<VIndexes...>,
@@ -257,7 +257,7 @@ namespace Syntropy::Records
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Immutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -265,7 +265,7 @@ namespace Syntropy::Records
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Mutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -273,7 +273,7 @@ namespace Syntropy::Records
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Immovable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -281,7 +281,7 @@ namespace Syntropy::Records
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Syntropy::Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Movable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
     // Utilities.
@@ -303,26 +303,19 @@ namespace Syntropy::Records
     ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
-    template <ForwardingRecord... TRecords>
+    template <Records::ForwardingRecord... TRecords>
     [[nodiscard]] constexpr auto
     Concatenate(Forwarding<TRecords>... tuples) noexcept
         -> decltype(Details::Concatenate(Forward<TRecords>(tuples)...));
 
     /// \brief Flatten a tuple recursively.
-    template <ForwardingRecord TTuple>
+    template <Records::ForwardingRecord TTuple>
     [[nodiscard]] constexpr auto
     Flatten(Forwarding<TTuple> tuple) noexcept
         -> decltype(Details::Flatten(Forward<TTuple>(tuple)));
 
     // Swap.
     // =====
-
-    /// \brief Member-wise swap two tuples.
-    template <typename... TElements, typename... UElements>
-    requires (sizeof...(TElements) == sizeof...(UElements))
-    constexpr void
-    Swap(Mutable<Tuple<TElements...>> lhs,
-         Mutable<Tuple<UElements...>> rhs) noexcept;
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
     template <typename... TElements, typename... UElements>
@@ -378,12 +371,12 @@ namespace Syntropy::Records
 
     /// \brief Partial template specialization for tuples.
     template <typename... TElements>
-    struct RankTrait<Tuple<TElements...>>
+    struct Records::RankTrait<Tuple<TElements...>>
         : Templates::IntConstant<sizeof...(TElements)> {};
 
     /// \brief Partial template specialization for tuples.
     template <Int TIndex, typename... TElements>
-    struct ElementTypeTrait<TIndex, Tuple<TElements...>>
+    struct Records::ElementTypeTrait<TIndex, Tuple<TElements...>>
     {
         using Type = Templates::ElementOf<TIndex,
                                           Templates::TypeList<TElements...>>;

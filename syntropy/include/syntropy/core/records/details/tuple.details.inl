@@ -5,7 +5,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Records::Details
+namespace Syntropy::Details
 {
     /************************************************************************/
     /* TUPLE                                                                */
@@ -14,11 +14,11 @@ namespace Syntropy::Records::Details
     // Concatenate.
     // =========
 
-    template <ForwardingRecord... TRecords>
+    template <Records::ForwardingRecord... TRecords>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TRecords>... tuples) noexcept
     {
-        auto tuple_cat = [&]<ForwardingRecord TTuple,
+        auto tuple_cat = [&]<Records::ForwardingRecord TTuple,
                              Int... VTupleIndex,
                              Int... VElementIndex>
              (Forwarding<TTuple> tuple,
@@ -39,25 +39,23 @@ namespace Syntropy::Records::Details
     // Flatten.
     // ========
 
-    template <ForwardingRecord TTuple>
+    template <Records::ForwardingRecord TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept
     {
         // The argument is a tuple: flatten each element recursively and
         // eturn their concatenation.
 
-        using Records::Concatenate;
-
         auto flat = [&]<Int... VTupleIndex>(
             Forwarding<TTuple> tuple,
             Templates::Sequence<VTupleIndex...>)
         {
-            return Concatenate(
+            return Details::Concatenate(
                 Details::Flatten(Get<VTupleIndex>(Forward<TTuple>(tuple)))...);
         };
 
         return flat(Forward<TTuple>(tuple),
-                    SequenceOf<Templates::UnqualifiedOf<TTuple>>{});
+                    Records::SequenceOf<Templates::UnqualifiedOf<TTuple>>{});
     }
 
     template <typename TElement>

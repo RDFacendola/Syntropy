@@ -111,7 +111,7 @@ namespace Syntropy::Ranges
     private:
 
         /// \brief Underlying ranges.
-        Records::Tuple<TRanges...> ranges_;
+        Tuple<TRanges...> ranges_;
 
     };
 

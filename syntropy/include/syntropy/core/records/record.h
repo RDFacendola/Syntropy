@@ -129,12 +129,10 @@ namespace Syntropy::Records
     /// \brief Access the first element of type TElement in a record.
     ///
     /// \remarks Ill-formed if no such element exist.
-    template <typename TElement,
-              typename TRecordReference,
-              Record TRecord = Templates::QualifiedOf<TRecordReference>>
+    template <typename TElement, typename TRecordReference>
     [[nodiscard]] constexpr auto
-    Get(Forwarding<TRecord> record) noexcept
-        -> decltype(Get<ElementIndexOf<TElement,TRecord>>(
+    Get(Forwarding<TRecordReference> record) noexcept
+        -> decltype(Get<ElementIndexOf<TElement,TRecordReference>>(
                 Forward<TRecordReference>(record)));
 
     // Functional.
