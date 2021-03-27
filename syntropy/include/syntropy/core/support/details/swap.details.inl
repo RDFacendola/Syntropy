@@ -73,7 +73,7 @@ namespace Syntropy::Algorithm::Details
     /************************************************************************/
 
     template <typename TType>
-    [[nodiscard]] constexpr auto
+    constexpr auto
     InvokeSwap(Mutable<TType> lhs, Mutable<TType> rhs, ExtensionPriority)
         noexcept -> decltype(Extensions::Swap<TType>{}(lhs, rhs))
     {
@@ -81,7 +81,7 @@ namespace Syntropy::Algorithm::Details
     }
 
     template <typename TType>
-    [[nodiscard]] constexpr auto
+    constexpr auto
     InvokeSwap(Mutable<TType> lhs, Mutable<TType> rhs, MemberFunctionPriority)
         noexcept -> decltype(lhs.Swap(rhs))
     {
@@ -89,7 +89,7 @@ namespace Syntropy::Algorithm::Details
     }
 
     template <typename TType>
-    [[nodiscard]] constexpr auto
+    constexpr auto
     InvokeSwap(Mutable<TType> lhs,
                Mutable<TType> rhs,
                NonMemberFunctionPriority)
@@ -107,7 +107,7 @@ namespace Syntropy::Algorithm::Details
     }
 
     template <typename TType>
-    [[nodiscard]] constexpr auto
+    constexpr auto
     RouteSwap(Mutable<TType> lhs, Mutable<TType> rhs)
         noexcept -> decltype(InvokeSwap(lhs, rhs, kMaxPriority))
     {

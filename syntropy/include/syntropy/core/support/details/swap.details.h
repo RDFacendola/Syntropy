@@ -67,19 +67,19 @@ namespace Syntropy::Algorithm::Details
 
     /// \brief Custom extension.
     template <typename TType>
-    [[nodiscard]] constexpr auto
+    constexpr auto
     InvokeSwap(Mutable<TType> lhs, Mutable<TType> rhs, ExtensionPriority)
         noexcept -> decltype(Extensions::Swap<TType>{}(lhs, rhs));
 
     /// \brief Member-function.
     template <typename TType>
-    [[nodiscard]] constexpr auto
+    constexpr auto
     InvokeSwap(Mutable<TType> lhs, Mutable<TType> rhs, MemberFunctionPriority)
         noexcept -> decltype(lhs.Swap(rhs));
 
     /// \brief Non-member function, possibly using ADL.
     template <typename TType>
-    [[nodiscard]] constexpr auto
+    constexpr auto
     InvokeSwap(Mutable<TType> lhs,
                Mutable<TType> rhs,
                NonMemberFunctionPriority)
@@ -93,7 +93,7 @@ namespace Syntropy::Algorithm::Details
 
     /// \brief Routes the invocation.
     template <typename TType>
-    [[nodiscard]] constexpr auto
+    constexpr auto
     RouteSwap(Mutable<TType> lhs, Mutable<TType> rhs)
         noexcept -> decltype(InvokeSwap(lhs, rhs, kMaxPriority));
 
