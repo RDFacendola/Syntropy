@@ -49,21 +49,17 @@ namespace Syntropy::Records
         -> decltype(Details::RouteGet<TIndex>(Forward<TRecord>(record)));
 
     /************************************************************************/
-    /* RECORD                                                               */
+    /* CONCEPTS                                                             */
     /************************************************************************/
 
-    /// \brief Concept for a fixed-size record, for which indexed
-    ///        compile-time access to its elements is provided.
+    /// \brief Concept for a record whose fields can be accessed at
+    ///        compile-time by index.
     template <typename TRecord>
     concept Record = requires
     {
         /// \brief Rank of the record.
         { RankTrait<TRecord>::kValue } -> Concepts::IsIntegral;
     };
-
-    /************************************************************************/
-    /* FORWARDING RECORD                                                    */
-    /************************************************************************/
 
     /// \brief Concept for a Record that can be perfectly-forwarded.
     template <typename TRecord>
