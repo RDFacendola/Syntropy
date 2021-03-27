@@ -8,8 +8,8 @@
 #include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/core/ranges/sized_range.h"
-#include "syntropy/core/support/compare.h"
-#include "syntropy/core/support/swap.h"
+#include "syntropy/core/algorithms/compare.h"
+#include "syntropy/core/algorithms/swap.h"
 
 #include "syntropy/memory/allocators/allocator.h"
 #include "syntropy/memory/foundation/buffer.h"

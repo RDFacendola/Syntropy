@@ -9,7 +9,7 @@
 
 #include "syntropy/language/templates/priority.h"
 
-#include "syntropy/core/support/swap_extensions.h"
+#include "syntropy/core/algorithms/swap_extensions.h"
 
 #include "syntropy/core/support/details/support.details.h"
 

@@ -30,8 +30,8 @@
 #include "syntropy/core/support/event.h"
 #include "syntropy/core/support/scope_guard.h"
 #include "syntropy/core/support/visitor.h"
-#include "syntropy/core/support/swap.h"
-#include "syntropy/core/support/compare.h"
+#include "syntropy/core/algorithms/swap.h"
+#include "syntropy/core/algorithms/compare.h"
 
 #include "syntropy/core/records/record.h"
 #include "syntropy/core/records/tuple.h"
