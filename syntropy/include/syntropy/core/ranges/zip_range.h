@@ -85,9 +85,6 @@ namespace Syntropy
         [[nodiscard]] constexpr auto
         PopFront() const noexcept;
 
-
-
-
         /// \brief Discard the last element in the range and return the range
         ///        to the remaining elements.
         ///
