@@ -19,7 +19,7 @@ namespace Syntropy::Ranges
     // ForwardRange.
     // =============
 
-    template <Concepts::ForwardRange TRange, typename TFunction>
+    template <ForwardRange TRange, typename TFunction>
     constexpr void
     ForEach(Immutable<TRange> range, TFunction function) noexcept
     {
@@ -31,13 +31,13 @@ namespace Syntropy::Ranges
         }
     }
 
-    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Templates::RangeCardinalityTypeOf<URange>
+    template <ForwardRange TRange, ForwardRange URange>
+    constexpr RangeCardinalityTypeOf<URange>
     Copy(Immutable<TRange> destination, Immutable<URange> source) noexcept
     {
         auto source_view = Ranges::ViewOf(source);
         auto destination_view = Ranges::ViewOf(destination);
-        auto count = Templates::RangeCardinalityTypeOf<URange>{ 0 };
+        auto count = RangeCardinalityTypeOf<URange>{ 0 };
 
         for (; !Ranges::IsEmpty(source_view) &&
                !Ranges::IsEmpty(destination_view);
@@ -52,13 +52,13 @@ namespace Syntropy::Ranges
         return count;
     }
 
-    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Templates::RangeCardinalityTypeOf<URange>
+    template <ForwardRange TRange, ForwardRange URange>
+    constexpr RangeCardinalityTypeOf<URange>
     Move(Immutable<TRange> destination, Immutable<URange> source) noexcept
     {
         auto source_view = Ranges::ViewOf(source);
         auto destination_view = Ranges::ViewOf(destination);
-        auto count = Templates::RangeCardinalityTypeOf<URange>{ 0 };
+        auto count = RangeCardinalityTypeOf<URange>{ 0 };
 
         for (; !Ranges::IsEmpty(source_view) &&
                !Ranges::IsEmpty(destination_view);
@@ -74,13 +74,13 @@ namespace Syntropy::Ranges
         return count;
     }
 
-    template <Concepts::ForwardRange TRange>
-    constexpr Templates::RangeCardinalityTypeOf<TRange>
+    template <ForwardRange TRange>
+    constexpr RangeCardinalityTypeOf<TRange>
     Swap(Immutable<TRange> lhs, Immutable<TRange> rhs) noexcept
     {
         auto lhs_view = Ranges::ViewOf(lhs);
         auto rhs_view = Ranges::ViewOf(rhs);
-        auto count = Templates::RangeCardinalityTypeOf<TRange>{ 0 };
+        auto count = RangeCardinalityTypeOf<TRange>{ 0 };
 
         for (; !Ranges::IsEmpty(lhs_view) &&
                !Ranges::IsEmpty(rhs_view);

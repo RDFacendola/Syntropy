@@ -112,7 +112,7 @@ namespace Syntropy::Memory
 
     /// \brief Get the object representation of bytes in the contiguous
     ///        range rhs.
-    template <Ranges::Concepts::ContiguousRange TRange>
+    template <Ranges::ContiguousRange TRange>
     [[nodiscard]] auto
     RangeBytesOf(Immutable<TRange> rhs) noexcept;
 
@@ -128,7 +128,7 @@ namespace Syntropy::Memory
     ///        range object representation.
     /// \remarks If rhs is not exactly a range TRange, accessing the returned
     ///          value results in undefined behavior.
-    template <Ranges::Concepts::ContiguousRange TRange, typename TTraits>
+    template <Ranges::ContiguousRange TRange, typename TTraits>
     [[nodiscard]] TRange
     FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
 

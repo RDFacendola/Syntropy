@@ -16,7 +16,7 @@ namespace Syntropy::Ranges
     // Range.
     // =====
 
-    template <Concepts::Range TRange>
+    template <Range TRange>
     [[nodiscard]] constexpr auto
     ViewOf(Forwarding<TRange> range) noexcept
         -> decltype(Details::RouteViewOf(Forward<TRange>(range)))
@@ -88,7 +88,7 @@ namespace Syntropy::Ranges
     {
         return Details::RouteSelect(Ranges::ViewOf(range), offset, count);
     }
-    
+
     template <typename TRange>
     [[nodiscard]] constexpr auto
     Data(Immutable<TRange> range) noexcept

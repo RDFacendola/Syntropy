@@ -15,14 +15,14 @@ namespace Syntropy::Ranges
     // SizedRange.
     // ===========
 
-    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    template <SizedRange TRange, SizedRange URange>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         return (PtrOf(lhs) == PtrOf(rhs));
     }
 
-    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    template <SizedRange TRange, SizedRange URange>
     [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
@@ -50,7 +50,7 @@ namespace Syntropy::Ranges
         return false;
     }
 
-    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    template <SizedRange TRange, SizedRange URange>
     [[nodiscard]] constexpr Ordering
     Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
@@ -81,7 +81,9 @@ namespace Syntropy::Ranges
             return Ordering::kEquivalent;
         }
 
-        return Ranges::IsEmpty(lhs_view) ? Ordering::kLess : Ordering::kGreater;
+        return Ranges::IsEmpty(lhs_view) ?
+               Ordering::kLess :
+               Ordering::kGreater;
     }
 
 }

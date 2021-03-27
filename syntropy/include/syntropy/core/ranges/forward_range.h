@@ -17,7 +17,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges::Concepts
+namespace Syntropy::Ranges
 {
     /************************************************************************/
     /* FORWARD RANGE                                                        */
@@ -41,12 +41,6 @@ namespace Syntropy::Ranges::Concepts
         { Ranges::IsEmpty(range) };
     };
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges
-{
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
@@ -55,7 +49,7 @@ namespace Syntropy::Ranges
     // =============
 
     /// \brief Apply a function to each element in a range.
-    template <Concepts::ForwardRange TRange, typename TFunction>
+    template <ForwardRange TRange, typename TFunction>
     constexpr void
     ForEach(Immutable<TRange> range, TFunction function) noexcept;
 
@@ -63,24 +57,24 @@ namespace Syntropy::Ranges
     ///        source to the destination until either is exhausted.
     ///
     /// \return Returns the number of copied elements.
-    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Templates::RangeCardinalityTypeOf<URange>
+    template <ForwardRange TRange, ForwardRange URange>
+    constexpr RangeCardinalityTypeOf<URange>
     Copy(Immutable<TRange> destination, Immutable<URange> source) noexcept;
 
     /// \brief Advance both ranges in lockstep, moving elements from the
     ///        source to the destination until either is exhausted.
     ///
     /// \return Returns the number of moved elements.
-    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Templates::RangeCardinalityTypeOf<URange>
+    template <ForwardRange TRange, ForwardRange URange>
+    constexpr RangeCardinalityTypeOf<URange>
     Move(Immutable<TRange> destination, Immutable<URange> source) noexcept;
 
      /// \brief Advance both ranges in lockstep, swapping elements
      ///        between lhs and rhs until either is exhausted.
      ///
      /// \return Returns the number of moved elements.
-    template <Concepts::ForwardRange TRange>
-    constexpr Templates::RangeCardinalityTypeOf<TRange>
+    template <ForwardRange TRange>
+    constexpr RangeCardinalityTypeOf<TRange>
     Swap(Immutable<TRange> lhs, Immutable<TRange> rhs) noexcept;
 
 }

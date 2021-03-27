@@ -17,8 +17,7 @@ namespace Syntropy::Ranges
     // ContiguousRange.
     // ================
 
-    template <Concepts::ContiguousRange TRange,
-              Concepts::ContiguousRange URange>
+    template <ContiguousRange TRange, ContiguousRange URange>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
@@ -48,8 +47,7 @@ namespace Syntropy::Ranges
         return false;
     }
 
-    template <Concepts::ContiguousRange TRange,
-              Concepts::ContiguousRange URange>
+    template <ContiguousRange TRange, ContiguousRange URange>
     [[nodiscard]] constexpr Bool
     Intersect(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {

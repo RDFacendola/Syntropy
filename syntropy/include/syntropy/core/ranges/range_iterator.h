@@ -20,7 +20,7 @@ namespace Syntropy::Ranges
     /// \brief Wraps a range and adapt it for iteration via range-based for
     ///        loop.
     /// \author Raffaele D. Facendola - December 2020.
-    template <Concepts::ForwardRange TRangeView>
+    template <ForwardRange TRangeView>
     class RangeIterator
     {
     public:
@@ -30,7 +30,7 @@ namespace Syntropy::Ranges
         RangeIterator() noexcept = default;
 
         /// \brief Wrap a range for iteration.
-        template <Concepts::ForwardRange TRange>
+        template <ForwardRange TRange>
         constexpr
         RangeIterator(Immutable<TRange> range) noexcept;
 
@@ -67,9 +67,8 @@ namespace Syntropy::Ranges
     };
 
     /// \brief Deduction guieds for RangeIterator.
-    template<Concepts::ForwardRange TRange>
-    RangeIterator(Immutable<TRange>)
-        -> RangeIterator<Templates::RangeViewTypeOf<TRange>>;
+    template<ForwardRange TRange>
+    RangeIterator(Immutable<TRange>) -> RangeIterator<RangeViewTypeOf<TRange>>;
 
 }
 
@@ -82,11 +81,11 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Get an iterator to the first element in a range.
-    template <Ranges::Concepts::ForwardRange TRange>
+    template <Ranges::ForwardRange TRange>
     constexpr auto begin(Immutable<TRange> range) noexcept;
 
     /// \brief Get an iterator past the last element in a range.
-    template <Ranges::Concepts::ForwardRange TRange>
+    template <Ranges::ForwardRange TRange>
     constexpr auto end(Immutable<TRange> range) noexcept;
 }
 

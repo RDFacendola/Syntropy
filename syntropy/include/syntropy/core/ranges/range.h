@@ -26,7 +26,7 @@
 namespace Syntropy::Ranges
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* FUNCTIONS                                                            */
     /************************************************************************/
 
     // Range.
@@ -111,12 +111,6 @@ namespace Syntropy::Ranges
     Data(Immutable<TRange> range) noexcept
         -> decltype(Details::RouteData(Ranges::ViewOf(range)));
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Concepts
-{
     /************************************************************************/
     /* RANGE                                                                */
     /************************************************************************/
@@ -130,30 +124,25 @@ namespace Syntropy::Ranges::Concepts
         /// \brief Get a view to a range' elements.
         { Ranges::ViewOf(range) };
     };
-}
 
-// ===========================================================================
-
-namespace Syntropy::Ranges::Templates
-{
     /************************************************************************/
     /* TYPE TRAITS                                                          */
     /************************************************************************/
 
     /// \brief Type of a range's view.
     template <typename TRange>
-    using RangeViewTypeOf = Syntropy::Templates::UnqualifiedOf<decltype(
-        Ranges::ViewOf(Syntropy::Templates::Declval<TRange>()))>;
+    using RangeViewTypeOf = Templates::UnqualifiedOf<decltype(
+        Ranges::ViewOf(Templates::Declval<TRange>()))>;
 
     /// \brief Type of a range's cardinality.
     template <typename TRange>
-    using RangeCardinalityTypeOf = Syntropy::Templates::UnqualifiedOf<decltype(
-        Ranges::Count(Syntropy::Templates::Declval<TRange>()))>;
+    using RangeCardinalityTypeOf = Templates::UnqualifiedOf<decltype(
+        Ranges::Count(Templates::Declval<TRange>()))>;
 
     /// \brief Type of a range elements.
     template <typename TRange>
-    using RangeElementTypeOf = Syntropy::Templates::UnqualifiedOf<decltype(
-        Ranges::Front(Syntropy::Templates::Declval<TRange>()))>;
+    using RangeElementTypeOf = Templates::UnqualifiedOf<decltype(
+        Ranges::Front(Templates::Declval<TRange>()))>;
 
 }
 

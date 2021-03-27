@@ -1,17 +1,17 @@
 
 /// \file zip_range.inl
 ///
-/// \author Raffaele D. Facendola - Nov 2020
+/// \author Raffaele D. Facendola - November 2020
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
     /* ZIP RANGE                                                            */
     /************************************************************************/
 
-    template <Concepts::ForwardRange... TRanges>
+    template <Ranges::ForwardRange... TRanges>
     constexpr ZipRange<TRanges...>
     ::ZipRange(Immutable<TRanges>... ranges) noexcept
         : ranges_{ ranges... }
@@ -19,7 +19,7 @@ namespace Syntropy::Ranges
 
     }
 
-    template <Concepts::ForwardRange... TRanges>
+    template <Ranges::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto) ZipRange<TRanges...>
     ::GetFront() const noexcept
     {
@@ -31,7 +31,7 @@ namespace Syntropy::Ranges
         return Records::Apply(zip_front, ranges_);
     }
 
-    template <Concepts::ForwardRange... TRanges>
+    template <Ranges::ForwardRange... TRanges>
     [[nodiscard]] constexpr auto ZipRange<TRanges...>
     ::PopFront() const noexcept
     {
@@ -46,7 +46,7 @@ namespace Syntropy::Ranges
         return Records::Apply(zip_pop_front, ranges_);
     }
 
-    template <Concepts::ForwardRange... TRanges>
+    template <Ranges::ForwardRange... TRanges>
     [[nodiscard]] constexpr Bool ZipRange<TRanges...>
     ::IsEmpty() const noexcept
     {
@@ -60,7 +60,7 @@ namespace Syntropy::Ranges
         return Records::Apply(zip_is_empty, ranges_);
     }
 
-    template <Concepts::ForwardRange... TRanges>
+    template <Ranges::ForwardRange... TRanges>
     [[nodiscard]] constexpr auto ZipRange<TRanges...>
     ::GetCount() const noexcept
     {
@@ -72,7 +72,7 @@ namespace Syntropy::Ranges
         return Records::Apply(zip_min_count, ranges_);
     }
 
-    template <Concepts::ForwardRange... TRanges>
+    template <Ranges::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto) ZipRange<TRanges...>
     ::GetBack() const noexcept
     {
@@ -84,7 +84,7 @@ namespace Syntropy::Ranges
         return Records::Apply(zip_back, ranges_);
     }
 
-    template <Concepts::ForwardRange... TRanges>
+    template <Ranges::ForwardRange... TRanges>
     [[nodiscard]] constexpr auto ZipRange<TRanges...>
     ::PopBack() const noexcept
     {
@@ -99,7 +99,7 @@ namespace Syntropy::Ranges
         return Records::Apply(zip_pop_back, ranges_);
     }
 
-    template <Concepts::ForwardRange... TRanges>
+    template <Ranges::ForwardRange... TRanges>
     template <typename TIndex>
     [[nodiscard]] constexpr decltype(auto) ZipRange<TRanges...>
     ::At(Immutable<TIndex> index) const noexcept
@@ -112,7 +112,7 @@ namespace Syntropy::Ranges
         return Records::Apply(zip_select, ranges_);
     }
 
-    template <Concepts::ForwardRange... TRanges>
+    template <Ranges::ForwardRange... TRanges>
     [[nodiscard]] constexpr auto ZipRange<TRanges...>
     ::GetData() const noexcept
     {
@@ -128,7 +128,7 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    template <Concepts::ForwardRange... TRanges>
+    template <Ranges::ForwardRange... TRanges>
     [[nodiscard]] constexpr ZipRange<TRanges...>
     MakeZipRange(Immutable<TRanges>... ranges) noexcept
     {
@@ -151,21 +151,45 @@ namespace Syntropy::Ranges
             Syntropy::Records::SequenceOf<RangesType>{});
     }
 
-    template <Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr auto
-    Unzip(Immutable<ZipRange<TRanges...>> range) noexcept
+    template <Int VIndex, Ranges::ForwardRange... TRanges>
+    [[nodiscard]] constexpr decltype(auto)
+    Get(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        return range.ranges_;
+        return Records::Get<VIndex>(Unzip(range));
     }
 
-    template <Concepts::ForwardRange TRange>
-    [[nodiscard]] constexpr auto
-    Unzip(Immutable<TRange> range) noexcept
+    template <Int VIndex, Ranges::ForwardRange... TRanges>
+    [[nodiscard]] constexpr decltype(auto)
+    Get(Mutable<ZipRange<TRanges...>> range) noexcept
     {
-        return MakeTuple(range);
+        return Records::Get<VIndex>(Unzip(range));
     }
 
-    template <Concepts::ForwardRange... TRanges>
+    template <Int VIndex, Ranges::ForwardRange... TRanges>
+    [[nodiscard]] constexpr decltype(auto)
+    Get(Immovable<ZipRange<TRanges...>> range) noexcept
+    {
+        return Records::Get<VIndex>(Unzip(range));
+    }
+
+    template <Int VIndex, Ranges::ForwardRange... TRanges>
+    [[nodiscard]] constexpr decltype(auto)
+    Get(Movable<ZipRange<TRanges...>> range) noexcept
+    {
+        return Records::Get<VIndex>(Unzip(range));
+    }
+
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges
+{
+    /************************************************************************/
+    /* ZIP RANGE                                                            */
+    /************************************************************************/
+
+    template <ForwardRange... TRanges>
     [[nodiscard]] constexpr ZipRange<TRanges...>
     Zip(Immutable<TRanges>... ranges) noexcept
     {
@@ -173,32 +197,18 @@ namespace Syntropy::Ranges
             Concatenate(Unzip(ranges)...));
     }
 
-    template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr decltype(auto)
-    Get(Immutable<ZipRange<TRanges...>> range) noexcept
+    template <ForwardRange... TRanges>
+    [[nodiscard]] constexpr auto
+    Unzip(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        return Records::Get<VIndex>(Unzip(range));
+        return range.ranges_;
     }
 
-    template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr decltype(auto)
-    Get(Mutable<ZipRange<TRanges...>> range) noexcept
+    template <ForwardRange TRange>
+    [[nodiscard]] constexpr auto
+    Unzip(Immutable<TRange> range) noexcept
     {
-        return Records::Get<VIndex>(Unzip(range));
-    }
-
-    template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr decltype(auto)
-    Get(Immovable<ZipRange<TRanges...>> range) noexcept
-    {
-        return Records::Get<VIndex>(Unzip(range));
-    }
-
-    template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr decltype(auto)
-    Get(Movable<ZipRange<TRanges...>> range) noexcept
-    {
-        return Records::Get<VIndex>(Unzip(range));
+        return MakeTuple(range);
     }
 
 }

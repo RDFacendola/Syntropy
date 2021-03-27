@@ -21,7 +21,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges::Concepts
+namespace Syntropy::Ranges
 {
     /************************************************************************/
     /* SIZED RANGE                                                          */
@@ -39,12 +39,6 @@ namespace Syntropy::Ranges::Concepts
             { Ranges::Count(range) };
         };
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges
-{
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
@@ -56,7 +50,7 @@ namespace Syntropy::Ranges
     ///
     /// \remarks Equality implies equivalence, therefore if this method returns
     ///          true AreEquivalent also returns true.
-    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    template <SizedRange TRange, SizedRange URange>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
@@ -65,12 +59,12 @@ namespace Syntropy::Ranges
     /// \remarks Equality implies equivalence but not the other way around!
     ///          If AreEqual returns false this method can either return true
     ///          or false.
-    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    template <SizedRange TRange, SizedRange URange>
     [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     /// \brief Compare two range views lexicographically.
-    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    template <SizedRange TRange, SizedRange URange>
     [[nodiscard]] constexpr Ordering
     Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 

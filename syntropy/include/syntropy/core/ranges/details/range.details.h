@@ -105,7 +105,7 @@ namespace Syntropy::Ranges::Details
     /// \brief Type of a range's cardinality.
     template <typename TRangeView>
     using RangeCardinalityTypeOf = Templates::UnqualifiedOf<decltype(
-        RouteCount(Syntropy::Templates::Declval<TRangeView>()))>;
+        RouteCount(Templates::Declval<TRangeView>()))>;
 
     /************************************************************************/
     /* IS EMPTY                                                             */

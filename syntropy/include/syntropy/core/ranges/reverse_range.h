@@ -18,7 +18,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
     /* REVERSE RANGE                                                        */
@@ -26,10 +26,10 @@ namespace Syntropy::Ranges
 
     /// \brief Adapter class used to reverse bidirectional ranges.
     /// \author Raffaele D. Facendola - November 2020.
-    template <Concepts::BidirectionalRange TRange>
+    template <Ranges::BidirectionalRange TRange>
     class ReverseRange
     {
-        template <Concepts::BidirectionalRange URange>
+        template <Ranges::BidirectionalRange URange>
         friend constexpr URange
         Reverse(Immutable<ReverseRange<URange>> range) noexcept;
 
@@ -44,7 +44,7 @@ namespace Syntropy::Ranges
         ReverseRange(Immutable<ReverseRange> rhs) = default;
 
         /// \brief Create a new reverse range.
-        template <Concepts::BidirectionalRange URange = TRange>
+        template <Ranges::BidirectionalRange URange = TRange>
         constexpr explicit
         ReverseRange(Immutable<URange> range) noexcept;
 
@@ -99,20 +99,26 @@ namespace Syntropy::Ranges
     };
 
     /// \brief Deduction guieds for SliceRange.
-    template<Concepts::BidirectionalRange TRange>
+    template<Ranges::BidirectionalRange TRange>
     ReverseRange(Immutable<TRange>) -> ReverseRange<TRange>;
 
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges
+{
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* REVERSE RANGE                                                        */
     /************************************************************************/
 
     /// \brief Get a reversed range.
-    template <Concepts::BidirectionalRange TRange>
+    template <BidirectionalRange TRange>
     [[nodiscard]] constexpr auto
     Reverse(Immutable<TRange> range) noexcept;
 
     /// \brief Get a reversed range.
-    template <Concepts::BidirectionalRange TRange>
+    template <BidirectionalRange TRange>
     [[nodiscard]] constexpr TRange
     Reverse(Immutable<ReverseRange<TRange>> range) noexcept;
 
