@@ -30,26 +30,19 @@
 namespace Syntropy::Records
 {
     /************************************************************************/
-    /* RANK TRAIT                                                           */
+    /* INTERFACE                                                            */
     /************************************************************************/
 
-    /// \brief Int constant equal to the rank of a record.
+    /// \brief Number of fields in a record.
     template <typename TRecord>
     struct RankTrait
     {
         // : Syntropy::Templates::IntConstant<rank>
     };
 
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    // Record.
-    // =======
-
-    /// \brief Access a record element by index.
+    /// \brief Access a record field by index.
     ///
-    /// \remarks Ill-formed if no such element exists.
+    /// \remarks Ill-formed if no such field exists.
     template <Int TIndex, typename TRecord>
     [[nodiscard]] constexpr auto
     Get(Forwarding<TRecord> record) noexcept
