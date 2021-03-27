@@ -40,6 +40,13 @@ namespace Syntropy::Records
         // : Syntropy::Templates::IntConstant<rank>
     };
 
+    /// \brief Type of an element in a record, by index.
+    template <Int TIndex, typename TRecord>
+    struct ElementTypeTrait
+    {
+        // : Syntropy::Templates::Alias<element type>;
+    };
+
     /// \brief Access a record element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
@@ -87,8 +94,7 @@ namespace Syntropy::Records
     template <Int TIndex,
               typename TRecordReference,
               Record TRecord = Templates::UnqualifiedOf<TRecordReference>>
-    using ElementTypeOf =
-        decltype(Records::Get<TIndex>(Templates::Declval<TRecord>()));
+    using ElementTypeOf = typename ElementTypeTrait<TIndex, TRecord>::Type;
 
     /// \brief Index of the first element with type TElement in a record.
     template <typename TElement,

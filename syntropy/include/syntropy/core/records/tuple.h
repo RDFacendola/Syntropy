@@ -381,6 +381,14 @@ namespace Syntropy::Records
     struct RankTrait<Tuple<TElements...>>
         : Templates::IntConstant<sizeof...(TElements)> {};
 
+    /// \brief Partial template specialization for tuples.
+    template <Int TIndex, typename... TElements>
+    struct ElementTypeTrait<TIndex, Tuple<TElements...>>
+    {
+        using Type = Templates::ElementOf<TIndex,
+                                          Templates::TypeList<TElements...>>;
+    };
+
 }
 
 // ===========================================================================
