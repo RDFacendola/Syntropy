@@ -109,7 +109,7 @@ namespace Syntropy::Records
               Record TRecord = Templates::UnqualifiedOf<TRecordReference>>
     using
     ElementTypeListOf = decltype(
-        Details::EnumerateTypes<ElementTypeTrait,TRecord>(
+        Details::ElementTypeListOf<ElementTypeTrait,TRecord>(
             EnumerationOf<TRecord>{}));
 
     /// \brief Index of the first element with type TElement in a record.

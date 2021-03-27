@@ -75,11 +75,12 @@ namespace Syntropy::Records::Details
     /* TEMPLATE MACHINERY                                                   */
     /***********************************************************************/
 
+    /// \brief Determine the list of element types in a record.
     template <template <Int, typename> typename TElementTypeTrait,
               typename TRecord,
               Int... TIndex>
     auto
-    EnumerateTypes(Templates::Sequence<TIndex...>) noexcept
+    ElementTypeListOf(Templates::Sequence<TIndex...>) noexcept
         -> Templates::TypeList<typename TElementTypeTrait<TIndex,
                                                           TRecord>::Type...>;
 
