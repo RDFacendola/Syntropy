@@ -107,8 +107,8 @@ namespace Syntropy::Records
     ///        elements in a record.
     template <typename TRecordReference>
     requires Record<TRecordReference>
-    using EnumerationSequenceOf =
-        Syntropy::Templates::MakeSequence<RankOf<TRecordReference>>;
+    using EnumerationOf =
+        Templates::MakeSequence<RankOf<TRecordReference>>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */

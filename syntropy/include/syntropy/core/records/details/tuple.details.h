@@ -392,7 +392,7 @@ namespace Syntropy::Records::Details
     template <ForwardingRecord TTuple>
     struct EnumerateTupleElementIndexesHelper<TTuple>
     {
-        using Type = EnumerationSequenceOf<TTuple>;
+        using Type = EnumerationOf<TTuple>;
     };
 
     /// \brief Generate a sequence that can be used to access tuple elements.

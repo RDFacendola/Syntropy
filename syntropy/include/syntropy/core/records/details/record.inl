@@ -52,7 +52,7 @@ namespace Syntropy::Records
                     Forward<TRecord>(record))...);
             };
 
-        return apply(EnumerationSequenceOf<TRecord>{});
+        return apply(EnumerationOf<TRecord>{});
     }
 
     template <typename TFunction, ForwardingRecord TRecord>
@@ -67,7 +67,7 @@ namespace Syntropy::Records
                                                ...);
             };
 
-        for_each_apply(EnumerationSequenceOf<TRecord>{});
+        for_each_apply(EnumerationOf<TRecord>{});
     }
 
     template <Int TIndex,
@@ -108,7 +108,7 @@ namespace Syntropy::Records
                              ...);
             };
 
-        return make_from_record(EnumerationSequenceOf<TRecord>{});
+        return make_from_record(EnumerationOf<TRecord>{});
     }
 
     // Swap.
@@ -127,7 +127,7 @@ namespace Syntropy::Records
                                     Records::Get<TIndex>(Forward(rhs)))... };
         };
 
-        return exchange(EnumerationSequenceOf<TRecord>{});
+        return exchange(EnumerationOf<TRecord>{});
     }
 
     // Compare.
@@ -191,7 +191,7 @@ namespace Syntropy::Records
         };
 
         return lockstep_compare(
-            EnumerationSequenceOf<TRecord>{});
+            EnumerationOf<TRecord>{});
     }
 
 }

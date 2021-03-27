@@ -57,7 +57,7 @@ namespace Syntropy::Records::Details
         };
 
         return flat(Forward<TTuple>(tuple),
-                    EnumerationSequenceOf<Templates::UnqualifiedOf<TTuple>>{});
+                    EnumerationOf<Templates::UnqualifiedOf<TTuple>>{});
     }
 
     template <typename TElement>
