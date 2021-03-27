@@ -10,7 +10,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/core/support/ordering.h"
+#include "syntropy/core/foundation/ordering.h"
 
 #include <compare>
 
