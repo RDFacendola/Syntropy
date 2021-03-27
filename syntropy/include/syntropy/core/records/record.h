@@ -33,16 +33,16 @@ namespace Syntropy::Records
     /* INTERFACE                                                            */
     /************************************************************************/
 
-    /// \brief Number of fields in a record.
+    /// \brief Number of elements in a record.
     template <typename TRecord>
     struct RankTrait
     {
         // : Syntropy::Templates::IntConstant<rank>
     };
 
-    /// \brief Access a record field by index.
+    /// \brief Access a record element by index.
     ///
-    /// \remarks Ill-formed if no such field exists.
+    /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename TRecord>
     [[nodiscard]] constexpr auto
     Get(Forwarding<TRecord> record) noexcept
@@ -52,7 +52,7 @@ namespace Syntropy::Records
     /* CONCEPTS                                                             */
     /************************************************************************/
 
-    /// \brief Concept for a record whose fields can be accessed at
+    /// \brief Concept for a record whose elements can be accessed at
     ///        compile-time by index.
     template <typename TRecord>
     concept Record = requires
@@ -70,33 +70,39 @@ namespace Syntropy::Records
     /* RECORD                                                               */
     /************************************************************************/
 
-    /// \brief Number of fields in a record.
-    template <typename TRecord,
-              Record URecord = Templates::UnqualifiedOf<TRecord>>
+    /// \brief Number of elements in a record.
+    template <typename TRecordReference,
+              Record TRecord = Templates::UnqualifiedOf<TRecordReference>>
     inline constexpr Int
-    RankOf = RankTrait<URecord>::kValue;
+    RankOf = RankTrait<TRecord>::kValue;
 
     /// \brief True if two records have the same rank, false otherwise.
-    template <typename TRecord, typename URecord>
-    requires Record<Templates::UnqualifiedOf<TRecord>>
-          && Record<Templates::UnqualifiedOf<URecord>>
-    inline constexpr Bool IsSameRank =
-        (RankOf<TRecord> == RankOf<URecord>);
+    template <typename TRecordReference, typename URecordReference>
+    requires Record<Templates::UnqualifiedOf<TRecordReference>>
+          && Record<Templates::UnqualifiedOf<URecordReference>>
+    inline constexpr Bool
+    IsSameRank = (RankOf<TRecordReference> == RankOf<URecordReference>);
 
     /// \brief Type of a record element.
-    template <Int TIndex, Record TRecord>
-    using ElementTypeOf = Templates::UnqualifiedOf<decltype(
-        Records::Get<TIndex>(Templates::Declval<TRecord>()))>;
+    template <Int TIndex,
+              typename TRecordReference,
+              Record TRecord = Templates::UnqualifiedOf<TRecordReference>>
+    using ElementTypeOf =
+        decltype(Records::Get<TIndex>(Templates::Declval<TRecord>()));
 
     /// \brief Index of the first element with type TElement in a record.
-    template <typename TElement, Record TRecord>
-    inline constexpr Int ElementIndexOf = 0;
+    template <typename TElement,
+              typename TRecordReference,
+              Record TRecord = Templates::UnqualifiedOf<TRecordReference>>
+    inline constexpr Int
+    ElementIndexOf = 0;
 
     /// \brief Generates a sequence that can be used to enumerate all
     ///        elements in a record.
-    template <Record TRecord>
+    template <typename TRecordReference>
+    requires Record<TRecordReference>
     using EnumerationSequenceOf =
-        Syntropy::Templates::MakeSequence<RankOf<TRecord>>;
+        Syntropy::Templates::MakeSequence<RankOf<TRecordReference>>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
