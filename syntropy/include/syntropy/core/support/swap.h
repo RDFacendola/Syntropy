@@ -17,20 +17,6 @@
 
 // ===========================================================================
 
-namespace Syntropy::Concepts
-{
-    /************************************************************************/
-    /* SWAP                                                                 */
-    /************************************************************************/
-
-    /// \brief Concept for types whose instances are swappable.
-    template <typename TType>
-    concept IsSwappable = IsAssignableFrom<Mutable<TType>, Movable<TType>>
-        && IsMoveConstructible<TType>;
-}
-
-// ===========================================================================
-
 namespace Syntropy::Algorithm
 {
     /************************************************************************/
