@@ -213,6 +213,14 @@ namespace Syntropy
     // Swap.
     // =====
 
+    template <typename... TElements>
+    constexpr void
+    Swap(Mutable<Tuple<TElements...>> lhs,
+         Mutable<Tuple<TElements...>> rhs) noexcept
+    {
+        return Records::Swap(lhs, rhs);
+    }
+
     template <typename... TElements, typename... UElements>
     requires (sizeof...(TElements) == sizeof...(UElements))
     [[nodiscard]] constexpr Tuple<TElements...>

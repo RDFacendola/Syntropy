@@ -294,6 +294,12 @@ namespace Syntropy
     // Swap.
     // =====
 
+    /// \brief Member-wise swap two tuples.
+    template <typename... TElements>
+    constexpr void
+    Swap(Mutable<Tuple<TElements...>> lhs,
+         Mutable<Tuple<TElements...>> rhs) noexcept;
+
     /// \brief Swap lhs with rhs and return the old value of lhs.
     template <typename... TElements, typename... UElements>
     requires (sizeof...(TElements) == sizeof...(UElements))
