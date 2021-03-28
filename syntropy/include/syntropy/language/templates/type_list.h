@@ -75,6 +75,16 @@ namespace Syntropy::Templates
     /* TYPE TRAITS                                                          */
     /************************************************************************/
 
+    /// \brief Get the type of the first element in a list.
+    template <IsTypeList TTypes>
+    using
+    HeadOf = Details::HeadOf<TTypes>;
+
+    /// \brief Drops the first element in a list and return the remaining ones.
+    template <IsTypeList TTypes>
+    using
+    RestOf = Details::RestOf<TTypes>;
+
     /// \brief Get the numer of elements in a type list.
     template <IsTypeList TTypes>
     inline constexpr Int
