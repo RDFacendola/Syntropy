@@ -44,12 +44,7 @@ namespace Syntropy::Templates::Details
     /// \brief Types
     template <typename TType>
     concept RatioType = RatioTypeHelper<TType>;
-}
 
-// ===========================================================================
-
-namespace Syntropy::Templates::Details
-{
     /************************************************************************/
     /* RATIO HELPER                                                         */
     /************************************************************************/
