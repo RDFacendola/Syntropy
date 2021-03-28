@@ -42,26 +42,22 @@ namespace Syntropy
     {
         template <Int TIndex, typename... UElements>
         friend constexpr
-        Immutable<Templates::ElementOf<TIndex,
-                                       Templates::TypeList<UElements...>>>
+        Immutable<Templates::PackElementOf<TIndex, UElements...>>
         Get(Immutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int TIndex, typename... UElements>
         friend constexpr
-        Mutable<Templates::ElementOf<TIndex,
-                                     Templates::TypeList<UElements...>>>
+        Mutable<Templates::PackElementOf<TIndex, UElements...>>
         Get(Mutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int TIndex, typename... UElements>
         friend constexpr
-        Immovable<Templates::ElementOf<TIndex,
-                                       Templates::TypeList<UElements...>>>
+        Immovable<Templates::PackElementOf<TIndex, UElements...>>
         Get(Immovable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int TIndex, typename... UElements>
         friend constexpr
-        Movable<Templates::ElementOf<TIndex,
-                                     Templates::TypeList<UElements...>>>
+        Movable<Templates::PackElementOf<TIndex, UElements...>>
         Get(Movable<Tuple<UElements...>> tuple) noexcept;
 
     public:
@@ -238,8 +234,7 @@ namespace Syntropy
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Templates::ElementOf<TIndex,
-                                   Templates::TypeList<TElements...>>>
+    Immutable<Templates::PackElementOf<TIndex, TElements...>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access a tuple element by index.
@@ -247,8 +242,7 @@ namespace Syntropy
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Templates::ElementOf<TIndex,
-                                 Templates::TypeList<TElements...>>>
+    Mutable<Templates::PackElementOf<TIndex, TElements...>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access a tuple element by index.
@@ -256,8 +250,7 @@ namespace Syntropy
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Templates::ElementOf<TIndex,
-                                   Templates::TypeList<TElements...>>>
+    Immovable<Templates::PackElementOf<TIndex, TElements...>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access a tuple element by index.
@@ -265,8 +258,7 @@ namespace Syntropy
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Templates::ElementOf<TIndex,
-                                 Templates::TypeList<TElements...>>>
+    Movable<Templates::PackElementOf<TIndex, TElements...>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
     // Utilities.

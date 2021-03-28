@@ -16,7 +16,8 @@ namespace Syntropy
     template <typename TElement, typename... TElements>
     template <typename UElement, typename... UElements>
     constexpr Tuple<TElement, TElements...>
-    ::Tuple(ElementwiseTag,            Forwarding<UElement> element,
+    ::Tuple(ElementwiseTag,
+            Forwarding<UElement> element,
             Forwarding<UElements>... elements) noexcept
         : BaseClass(Forward<UElements>(elements)...)
         , element_(Forward<UElement>(element))
@@ -112,8 +113,7 @@ namespace Syntropy
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Templates::ElementOf<TIndex,
-                                   Templates::TypeList<TElements...>>>
+    Immutable<Templates::PackElementOf<TIndex, TElements...>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept
     {
         using TupleType = Tuple<TElements...>;
@@ -125,8 +125,7 @@ namespace Syntropy
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Templates::ElementOf<TIndex,
-                                 Templates::TypeList<TElements...>>>
+    Mutable<Templates::PackElementOf<TIndex, TElements...>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept
     {
         using TupleType = Tuple<TElements...>;
@@ -138,8 +137,7 @@ namespace Syntropy
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Templates::ElementOf<TIndex,
-                                   Templates::TypeList<TElements...>>>
+    Immovable<Templates::PackElementOf<TIndex, TElements...>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept
     {
         using TupleType = Tuple<TElements...>;
@@ -156,8 +154,7 @@ namespace Syntropy
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Templates::ElementOf<TIndex,
-                                 Templates::TypeList<TElements...>>>
+    Movable<Templates::PackElementOf<TIndex, TElements...>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
         using TupleType = Tuple<TElements...>;
