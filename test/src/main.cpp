@@ -73,11 +73,11 @@ int main(int argc, char** argv)
 
         using TSpan = Syntropy::Templates::UnqualifiedOf<decltype(span1)>;
 
-        static_assert(Syntropy::Ranges::Concepts::ForwardRange<TSpan>, "nope!");
-        static_assert(Syntropy::Ranges::Concepts::SizedRange<TSpan>, "nope!");
-        static_assert(Syntropy::Ranges::Concepts::BidirectionalRange<TSpan>, "nope!");
-        static_assert(Syntropy::Ranges::Concepts::RandomAccessRange<TSpan>, "nope!");
-        static_assert(Syntropy::Ranges::Concepts::ContiguousRange<TSpan>, "nope!");
+        static_assert(Syntropy::Ranges::Templates::ForwardRange<TSpan>, "nope!");
+        static_assert(Syntropy::Ranges::Templates::SizedRange<TSpan>, "nope!");
+        static_assert(Syntropy::Ranges::Templates::BidirectionalRange<TSpan>, "nope!");
+        static_assert(Syntropy::Ranges::Templates::RandomAccessRange<TSpan>, "nope!");
+        static_assert(Syntropy::Ranges::Templates::ContiguousRange<TSpan>, "nope!");
 
         auto x0 = Syntropy::Ranges::Front(span);
         auto y0 = Syntropy::Ranges::PopFront(span);

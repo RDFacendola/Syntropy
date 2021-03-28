@@ -132,7 +132,7 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Convert rhs to a pointer to a typeless read-only object.
-    template <Concepts::IsImmutable TType>
+    template <Templates::IsImmutable TType>
     TypelessPtr
     ToTypelessPtr(BasePtr<TType> rhs) noexcept;
 
@@ -140,7 +140,7 @@ namespace Syntropy
     ///
     /// \remarks If the pointee refers to a read-only object, accessing
     ///          the result of this method results in undefined behavior.
-    template <Concepts::IsMutable TType>
+    template <Templates::IsMutable TType>
     RWTypelessPtr
     ToTypelessPtr(BasePtr<TType> rhs) noexcept;
 

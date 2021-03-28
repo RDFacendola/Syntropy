@@ -13,7 +13,7 @@ namespace Syntropy::Memory
     /* SIZE                                                                 */
     /************************************************************************/
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     ::Size(Int count) noexcept
         : count_(count)
@@ -21,8 +21,8 @@ namespace Syntropy::Memory
 
     }
 
-    template <Concepts::RatioType TUnit>
-    template <Concepts::RatioType UUnit>
+    template <Templates::RatioType TUnit>
+    template <Templates::RatioType UUnit>
     constexpr Size<TUnit>
     ::Size(Immutable<Size<UUnit>> rhs) noexcept
         : count_(ToInt(FromBytes<Size<TUnit>>(rhs)))
@@ -30,7 +30,7 @@ namespace Syntropy::Memory
 
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     ::operator Int() const noexcept
     {
@@ -41,7 +41,7 @@ namespace Syntropy::Memory
     /* AIRTHMETIC OPERATIONS                                                */
     /************************************************************************/
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Mutable<Size<TUnit>>
     operator++(Mutable<Size<TUnit>> rhs) noexcept
     {
@@ -50,7 +50,7 @@ namespace Syntropy::Memory
         return rhs;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     operator++(Mutable<Size<TUnit>> rhs, int) noexcept
     {
@@ -61,7 +61,7 @@ namespace Syntropy::Memory
         return copy;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr
     Mutable<Size<TUnit>> operator--(Mutable<Size<TUnit>> rhs) noexcept
     {
@@ -70,7 +70,7 @@ namespace Syntropy::Memory
         return rhs;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     operator--(Mutable<Size<TUnit>> rhs, int) noexcept
     {
@@ -81,7 +81,7 @@ namespace Syntropy::Memory
         return copy;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Mutable<Size<TUnit>>
     operator+=(Mutable<Size<TUnit>> lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
@@ -90,7 +90,7 @@ namespace Syntropy::Memory
         return lhs;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Mutable<Size<TUnit>>
     operator-=(Mutable<Size<TUnit>> lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
@@ -99,7 +99,7 @@ namespace Syntropy::Memory
         return lhs;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Mutable<Size<TUnit>>
     operator*=(Mutable<Size<TUnit>> lhs, Int rhs) noexcept
     {
@@ -108,7 +108,7 @@ namespace Syntropy::Memory
         return lhs;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Mutable<Size<TUnit>>
     operator/=(Mutable<Size<TUnit>> lhs, Int rhs) noexcept
     {
@@ -117,7 +117,7 @@ namespace Syntropy::Memory
         return lhs;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Mutable<Size<TUnit>>
     operator%=(Mutable<Size<TUnit>> lhs, Int rhs) noexcept
     {
@@ -126,63 +126,63 @@ namespace Syntropy::Memory
         return lhs;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     operator-(Immutable<Size<TUnit>> rhs) noexcept
     {
         return Size<TUnit>{ -ToInt(rhs) };
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     operator+(Immutable<Size<TUnit>> lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
         return Size<TUnit>{ ToInt(lhs) + ToInt(rhs) };
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     operator-(Immutable<Size<TUnit>> lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
         return Size<TUnit>{ ToInt(lhs) - ToInt(rhs) };
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     operator*(Immutable<Size<TUnit>> lhs, Int rhs) noexcept
     {
         return Size<TUnit>{ ToInt(lhs) * rhs };
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     operator*(Int lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
         return Size<TUnit>{ lhs * ToInt(rhs) };
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     operator/(Immutable<Size<TUnit>> lhs, Int rhs) noexcept
     {
         return Size<TUnit>{ ToInt(lhs) / rhs };
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Int
     operator/(Immutable<Size<TUnit>> lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
         return ToInt(lhs) / ToInt(rhs);
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     operator%(Immutable<Size<TUnit>> lhs, Int rhs) noexcept
     {
         return Size<TUnit>{ ToInt(lhs) % rhs };
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Size<TUnit>
     operator%(Immutable<Size<TUnit>> lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
@@ -193,7 +193,7 @@ namespace Syntropy::Memory
     /* COMPARISON                                                           */
     /************************************************************************/
 
-     template <Concepts::RatioType TUnit, Concepts::RatioType UUnit>
+     template <Templates::RatioType TUnit, Templates::RatioType UUnit>
      [[nodiscard]] constexpr Ordering
      operator<=>(Immutable<Size<TUnit>> lhs,
                  Immutable<Size<UUnit>> rhs) noexcept
@@ -206,7 +206,7 @@ namespace Syntropy::Memory
          return ToInt(common_lhs) <=> ToInt(common_rhs);
      }
 
-     template <Concepts::RatioType TUnit, Concepts::RatioType UUnit>
+     template <Templates::RatioType TUnit, Templates::RatioType UUnit>
      [[nodiscard]] constexpr Bool
      operator==(Immutable<Size<TUnit>> lhs,
                 Immutable<Size<UUnit>> rhs) noexcept
@@ -223,15 +223,15 @@ namespace Syntropy::Memory
      /* CONVERSION                                                           */
      /************************************************************************/
 
-    template <typename TSize, Concepts::RatioType TUnitTo>
-    requires Concepts::IsSame<TSize, Size<TUnitTo>>
+    template <typename TSize, Templates::RatioType TUnitTo>
+    requires Templates::IsSame<TSize, Size<TUnitTo>>
     [[nodiscard]] constexpr TSize
     ToSize(Int rhs) noexcept
     {
         return Size<TUnitTo>{ rhs };
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     [[nodiscard]] constexpr Int
     ToInt(Immutable<Size<TUnit>> rhs) noexcept
     {
@@ -244,7 +244,7 @@ namespace Syntropy::Memory
         return ToSize<Bytes>(rhs);
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     [[nodiscard]] constexpr Bytes
     ToBytes(Immutable<Size<TUnit>> rhs) noexcept
     {
@@ -252,9 +252,9 @@ namespace Syntropy::Memory
     }
 
     template <typename TSize,
-              Concepts::RatioType TUnitFrom,
-              Concepts::RatioType TUnitTo>
-    requires Concepts::IsSame<TSize, Size<TUnitTo>>
+              Templates::RatioType TUnitFrom,
+              Templates::RatioType TUnitTo>
+    requires Templates::IsSame<TSize, Size<TUnitTo>>
     [[nodiscard]] constexpr TSize
     ToSize(Immutable<Size<TUnitFrom>> rhs) noexcept
     {
@@ -287,7 +287,7 @@ namespace Syntropy::Memory
     /* POINTERS                                                             */
     /************************************************************************/
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Mutable<RWBytePtr>
     operator+=(Mutable<RWBytePtr> lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
@@ -296,7 +296,7 @@ namespace Syntropy::Memory
         return lhs;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Mutable<RWBytePtr>
     operator-=(Mutable<RWBytePtr> lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
@@ -305,21 +305,21 @@ namespace Syntropy::Memory
         return lhs;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr RWBytePtr
     operator+(RWBytePtr lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
         return lhs + ToInt(ToBytes(rhs));
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr RWBytePtr
     operator-(RWBytePtr lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
         return lhs - ToInt(ToBytes(rhs));
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Mutable<BytePtr>
     operator+=(Mutable<BytePtr> lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
@@ -328,7 +328,7 @@ namespace Syntropy::Memory
         return lhs;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr Mutable<BytePtr>
     operator-=(Mutable<BytePtr> lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
@@ -337,14 +337,14 @@ namespace Syntropy::Memory
         return lhs;
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr BytePtr
     operator+(BytePtr lhs, Immutable<Size<TUnit>> rhs) noexcept
     {
         return lhs + ToInt(ToBytes(rhs));
     }
 
-    template <Concepts::RatioType TUnit>
+    template <Templates::RatioType TUnit>
     constexpr BytePtr
     operator-(BytePtr lhs, Immutable<Size<TUnit>> rhs) noexcept
     {

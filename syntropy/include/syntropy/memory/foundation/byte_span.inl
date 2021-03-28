@@ -89,7 +89,7 @@ namespace Syntropy::Memory
     [[nodiscard]] inline TRange
     FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
     {
-        if constexpr (Concepts::IsSame<TRange, BaseByteSpan<TTraits>>)
+        if constexpr (Templates::IsSame<TRange, BaseByteSpan<TTraits>>)
         {
             return rhs;
         }

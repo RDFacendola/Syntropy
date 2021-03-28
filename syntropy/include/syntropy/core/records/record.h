@@ -68,7 +68,7 @@ namespace Syntropy::Records
     concept Record = requires
     {
         /// \brief Rank of the record.
-        { RankTrait<TRecord>::kValue } -> Concepts::IsIntegral;
+        { RankTrait<TRecord>::kValue } -> Templates::IsIntegral;
     };
 
     /// \brief Concept for a reference to a record.

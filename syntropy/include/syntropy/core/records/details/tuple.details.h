@@ -52,7 +52,7 @@ namespace Syntropy::Details
     template <typename... TTypes>
     inline constexpr Bool
     ExplicitIfTupleDefaultConstructor
-        = !Concepts::IsImplicitlyDefaultConstructible<
+        = !Templates::IsImplicitlyDefaultConstructible<
             Templates::TypeList<TTypes...>>;
 
     // (2)
@@ -61,7 +61,7 @@ namespace Syntropy::Details
     ///        true otherwise.
     template <typename... TTypes>
     inline constexpr Bool
-    ExplicitIfTupleDirectConstructor = !(Concepts::IsConvertible<
+    ExplicitIfTupleDirectConstructor = !(Templates::IsConvertible<
         Immutable<TTypes>, TTypes> && ...);
 
     // (3)
@@ -79,7 +79,7 @@ namespace Syntropy::Details
     inline constexpr Bool
     ExplicitIfTupleConvertingConstructor
     <Templates::TypeList<TTypes...>, UTypes...>
-        = !(Concepts::IsConvertible<Movable<UTypes>, TTypes> && ...);
+        = !(Templates::IsConvertible<Movable<UTypes>, TTypes> && ...);
 
     // (4)
 
@@ -95,7 +95,7 @@ namespace Syntropy::Details
     inline constexpr Bool
     ExplicitIfTupleConvertingCopyConstructor
     <Templates::TypeList<TTypes...>, UTypes...>
-        = !(Concepts::IsConvertible<Immutable<UTypes>,
+        = !(Templates::IsConvertible<Immutable<UTypes>,
                                               TTypes> && ...);
 
     // (5)
@@ -112,7 +112,7 @@ namespace Syntropy::Details
     inline constexpr Bool
     ExplicitIfTupleConvertingMoveConstructor
     <Templates::TypeList<TTypes...>, UTypes...>
-        = !(Concepts::IsConvertible<Movable<UTypes>, TTypes> && ...);
+        = !(Templates::IsConvertible<Movable<UTypes>, TTypes> && ...);
 
     /************************************************************************/
     /* TUPLE REQUIREMENTS                                                   */
@@ -123,14 +123,14 @@ namespace Syntropy::Details
     /// \brief Requires all tuple elements to be default constructible.
     template <typename... TElements>
     concept TupleDefaultConstructor
-        = Concepts::IsDefaultConstructible<Templates::TypeList<TElements...>>;
+        = Templates::IsDefaultConstructible<Templates::TypeList<TElements...>>;
 
     // (2)
 
     /// \brief Requires all tuple elements to be copy-constructible.
     template <typename... TElements>
     concept TupleDirectConstructor
-        = Concepts::IsCopyConstructible<Templates::TypeList<TElements...>>;
+        = Templates::IsCopyConstructible<Templates::TypeList<TElements...>>;
 
     // (3)
 
@@ -145,7 +145,7 @@ namespace Syntropy::Details
     template <typename TTypeList, typename... UTypeLists>
     inline constexpr Bool
     EnableIfTupleConvertingConstructorHelper<true, TTypeList, UTypeLists...>
-        = Concepts::IsConstructibleFrom<
+        = Templates::IsConstructibleFrom<
             TTypeList,
             Templates::MovableOf<UTypeLists>...>;
 
@@ -173,7 +173,7 @@ namespace Syntropy::Details
     inline constexpr Bool
     EnableIfTupleConvertingCopyConstructorHelper
         <true, TTypeList, UTypeLists...>
-            = Concepts::IsConstructibleFrom<
+            = Templates::IsConstructibleFrom<
                 TTypeList,
                 Templates::ImmutableOf<UTypeLists>...>;
 
@@ -186,13 +186,13 @@ namespace Syntropy::Details
         true,
         Templates::TypeList<TType>,
         Templates::TypeList<UType>>
-             =  Concepts::IsConstructibleFrom<TType,
+             =  Templates::IsConstructibleFrom<TType,
                                                      Immutable<UType>>
-            && !Concepts::IsConvertible<Immutable<Tuple<UType>>,
+            && !Templates::IsConvertible<Immutable<Tuple<UType>>,
                                                   TType>
-            && !Concepts::IsConstructibleFrom<TType,
+            && !Templates::IsConstructibleFrom<TType,
                                                       Immutable<Tuple<UType>>>
-            && !Concepts::IsSame<TType, UType>;
+            && !Templates::IsSame<TType, UType>;
 
     /// \brief Enable converting tuple copy-constructor if both TTypeList
     ///        and UTypes have the same rank, all types in TTypeList can be
@@ -221,7 +221,7 @@ namespace Syntropy::Details
     inline constexpr Bool
     EnableIfTupleConvertingMoveConstructorHelper
         <true, TTypeList, UTypeLists...>
-            = Concepts::IsConstructibleFrom<
+            = Templates::IsConstructibleFrom<
                 TTypeList,
                 Templates::MovableOf<UTypeLists>...>;
 
@@ -234,10 +234,10 @@ namespace Syntropy::Details
         true,
         Templates::TypeList<TType>,
         Templates::TypeList<UType>>
-             = Concepts::IsConstructibleFrom<TType, Movable<UType>>
-            && !Concepts::IsConvertible<Tuple<UType>, TType>
-            && !Concepts::IsConvertible<TType, Tuple<UType>>
-            && !Concepts::IsSame<TType, UType>;
+             = Templates::IsConstructibleFrom<TType, Movable<UType>>
+            && !Templates::IsConvertible<Tuple<UType>, TType>
+            && !Templates::IsConvertible<TType, Tuple<UType>>
+            && !Templates::IsSame<TType, UType>;
 
     /// \brief Enable converting tuple move-constructor if both TTypeList and
     ///        UTypes have the same rank, all types in TTypeList can be
@@ -263,7 +263,7 @@ namespace Syntropy::Details
     template <typename TTypeList>
     using EnableIfTupleCopyAssignment
         = RWPtr<Templates::EnableIf<
-            Concepts::IsCopyAssignable<TTypeList>>>;
+            Templates::IsCopyAssignable<TTypeList>>>;
 
     // (2)
 
@@ -272,7 +272,7 @@ namespace Syntropy::Details
     template <typename TTypeList>
     using EnableIfTupleMoveAssignment
         = RWPtr<Templates::EnableIf<
-            Concepts::IsMoveAssignable<TTypeList>>>;
+            Templates::IsMoveAssignable<TTypeList>>>;
 
     // (3)
 
@@ -282,8 +282,8 @@ namespace Syntropy::Details
     template <typename TTypeList, typename UTypeList>
     using EnableIfTupleConvertingCopyAssignment
         = RWPtr<Templates::EnableIf<
-             ! Concepts::IsSame<TTypeList, UTypeList>
-            && Concepts::IsAssignableFrom<
+             ! Templates::IsSame<TTypeList, UTypeList>
+            && Templates::IsAssignableFrom<
                    TTypeList,
                    Templates::ImmutableOf<UTypeList>>>>;
 
@@ -295,8 +295,8 @@ namespace Syntropy::Details
     template <typename TTypeList, typename UTypeList>
     using EnableIfTupleConvertingMoveAssignment
         = RWPtr<Templates::EnableIf<
-             ! Concepts::IsSame<TTypeList, UTypeList>
-            && Concepts::IsAssignableFrom<
+             ! Templates::IsSame<TTypeList, UTypeList>
+            && Templates::IsAssignableFrom<
                 TTypeList,
                 UTypeList>>>;
 

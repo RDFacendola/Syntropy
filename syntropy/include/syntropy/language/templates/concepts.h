@@ -14,7 +14,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Concepts
+namespace Syntropy::Templates
 {
     /************************************************************************/
     /* CONCEPTS                                                             */
@@ -92,7 +92,7 @@ namespace Syntropy::Concepts
     // Properties concepts.
     // ====================
 
-    /// \brief Concepts for standard-layout types.
+    /// \brief Templates for standard-layout types.
     template <typename TType>
     concept IsStandardLayoutType = Details::IsStandardLayoutType<TType>;
 
@@ -238,7 +238,7 @@ namespace Syntropy::Concepts
     // Templates concepts.
     // ===================
 
-    /// \brief Concepts for types that are template specialization
+    /// \brief Templates for types that are template specialization
     ///        of a type template.
     template<typename TType, template <typename...> typename TTemplate>
     concept IsTemplateSpecializationOf

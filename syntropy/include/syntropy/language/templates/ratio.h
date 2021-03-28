@@ -16,9 +16,9 @@
 
 // ===========================================================================
 
-namespace Syntropy::Concepts
+namespace Syntropy::Templates
 {
-    /// \brief Concepts for ratio types.
+    /// \brief Templates for ratio types.
     template <typename TType>
     concept RatioType = Details::RatioType<TType>;
 }

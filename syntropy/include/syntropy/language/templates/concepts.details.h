@@ -13,7 +13,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Concepts::Details
+namespace Syntropy::Templates::Details
 {
     /************************************************************************/
     /* CONCEPTS                                                             */
@@ -105,7 +105,7 @@ namespace Syntropy::Concepts::Details
     // Properties concepts.
     // ====================
 
-    /// \brief Concepts for standard-layout types.
+    /// \brief Templates for standard-layout types.
     template <typename TType>
     concept IsStandardLayoutType = std::is_standard_layout_v<TType>;
 

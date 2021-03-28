@@ -18,7 +18,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Concepts
+namespace Syntropy::Templates
 {
     /************************************************************************/
     /* ALLOCATOR CONCEPTS                                                   */
@@ -142,7 +142,7 @@ namespace Syntropy::Memory
     /// \brief Represents a polymorphic allocator used to type-erase the
     ///        concrete type of an underlying allocator.
     /// \author Raffaele D. Facendola - April 2020
-    template <Concepts::Allocator TAllocator>
+    template <Templates::Allocator TAllocator>
     class PolymorphicAllocator : public BaseAllocator
     {
     public:

@@ -26,7 +26,7 @@ namespace Syntropy::Memory
     /* POLYMORPHIC ALLOCATOR                                                */
     /************************************************************************/
 
-    template <Concepts::Allocator TAllocator>
+    template <Templates::Allocator TAllocator>
     template <typename... TArguments>
     inline PolymorphicAllocator<TAllocator>
     ::PolymorphicAllocator(Forwarding<TArguments>... arguments) noexcept
@@ -35,28 +35,28 @@ namespace Syntropy::Memory
 
     }
 
-    template <Concepts::Allocator TAllocator>
+    template <Templates::Allocator TAllocator>
     [[nodiscard]] inline RWByteSpan PolymorphicAllocator<TAllocator>
     ::Allocate(Bytes size, Alignment alignment) noexcept
     {
         return allocator_.Allocate(size, alignment);
     }
 
-    template <Concepts::Allocator TAllocator>
+    template <Templates::Allocator TAllocator>
     inline void PolymorphicAllocator<TAllocator>
     ::Deallocate(Immutable<RWByteSpan> block, Alignment alignment) noexcept
     {
         allocator_.Deallocate(block, alignment);
     }
 
-    template <Concepts::Allocator TAllocator>
+    template <Templates::Allocator TAllocator>
     [[nodiscard]] inline Mutable<TAllocator> PolymorphicAllocator<TAllocator>
     ::GetAllocator()
     {
         return allocator_;
     }
 
-    template <Concepts::Allocator TAllocator>
+    template <Templates::Allocator TAllocator>
     inline Immutable<TAllocator> PolymorphicAllocator<TAllocator>
     ::GetAllocator() const
     {

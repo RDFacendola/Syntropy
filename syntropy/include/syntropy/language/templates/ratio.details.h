@@ -24,7 +24,7 @@ namespace Syntropy::Templates
 
 // ===========================================================================
 
-namespace Syntropy::Concepts::Details
+namespace Syntropy::Templates::Details
 {
     /************************************************************************/
     /* IS RATIO TYPE                                                        */
