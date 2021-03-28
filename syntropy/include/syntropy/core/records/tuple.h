@@ -252,39 +252,43 @@ namespace Syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Record.
-    // =======
+    // Element access.
+    // ===============
 
-    /// \brief Access the VIndex-th element in a tuple.
+    /// \brief Access a tuple element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Immutable<Templates::ElementOf<TIndex,
+                                   Templates::TypeList<TElements...>>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple.
+    /// \brief Access a tuple element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Mutable<Templates::ElementOf<TIndex,
+                                 Templates::TypeList<TElements...>>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple.
+    /// \brief Access a tuple element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Immovable<Templates::ElementOf<TIndex,
+                                   Templates::TypeList<TElements...>>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple.
+    /// \brief Access a tuple element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Movable<Templates::ElementOf<TIndex,
+                                 Templates::TypeList<TElements...>>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
     // Utilities.

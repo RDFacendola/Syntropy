@@ -112,46 +112,64 @@ namespace Syntropy
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Immutable<Templates::ElementOf<TIndex,
+                                   Templates::TypeList<TElements...>>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
+        using TupleType = Tuple<TElements...>;
 
-        return static_cast<Immutable<TTupleBase>>(tuple).element_;
+        using TupleBaseType = Details::TupleBase<TIndex, TupleType>;
+
+        return static_cast<Immutable<TupleBaseType>>(tuple).element_;
     }
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Mutable<Templates::ElementOf<TIndex,
+                                 Templates::TypeList<TElements...>>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
+        using TupleType = Tuple<TElements...>;
 
-        return static_cast<Mutable<TTupleBase>>(tuple).element_;
+        using TupleBaseType = Details::TupleBase<TIndex, TupleType>;
+
+        return static_cast<Mutable<TupleBaseType>>(tuple).element_;
     }
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Immovable<Templates::ElementOf<TIndex,
+                                   Templates::TypeList<TElements...>>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
-        using TElement = Records::ElementTypeOf<TIndex, Tuple<TElements...>>;
+        using TupleType = Tuple<TElements...>;
 
-        return static_cast<Immovable<TElement>>(
-                   static_cast<Immutable<TTupleBase>>(tuple).element_);
+        using TupleBaseType = Details::TupleBase<TIndex, TupleType>;
+
+        using ElementTypeList = Templates::TypeList<TElements...>;
+
+        using ElementType = Templates::ElementOf<TIndex, ElementTypeList>;
+
+        return static_cast<Immovable<ElementType>>(
+                   static_cast<Immutable<TupleBaseType>>(tuple).element_);
     }
 
     template <Int TIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+    Movable<Templates::ElementOf<TIndex,
+                                 Templates::TypeList<TElements...>>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<TIndex, Tuple<TElements...>>;
-        using TElement = Records::ElementTypeOf<TIndex, Tuple<TElements...>>;
+        using TupleType = Tuple<TElements...>;
 
-        return static_cast<Movable<TElement>>(
-            static_cast<Mutable<TTupleBase>>(tuple).element_);
+        using TupleBaseType = Details::TupleBase<TIndex, TupleType>;
+
+        using ElementTypeList = Templates::TypeList<TElements...>;
+
+        using ElementType = Templates::ElementOf<TIndex, ElementTypeList>;
+
+        return static_cast<Movable<ElementType>>(
+            static_cast<Mutable<TupleBaseType>>(tuple).element_);
     }
 
     // Utilities.
