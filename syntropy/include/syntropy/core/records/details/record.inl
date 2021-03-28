@@ -27,51 +27,45 @@ namespace Syntropy::Records
     // Element access.
     // ===============
 
-    template <typename TElement, typename TRecordReference>
+    template <typename TElement, RecordReference TRecord>
     [[nodiscard]] constexpr auto
-    Get(Forwarding<TRecordReference> record) noexcept
-        -> decltype(Get<ElementIndexOf<TElement,TRecordReference>>(
-                Forward<TRecordReference>(record)))
+    Get(Forwarding<TRecord> record) noexcept
+        -> decltype(Records::Get<ElementIndexOf<TElement, TRecord>>(
+            Forward<TRecord>(record)))
     {
-        return Get<ElementIndexOf<TElement,TRecordReference>>(
-            Forward<TRecordReference>(record));
+        return Records::Get<ElementIndexOf<TElement, TRecord>>(
+            Forward<TRecord>(record));
     }
 
     // Functional.
     // ===========
 
-    template <typename TFunction, ForwardingRecord TRecord>
+    template <typename TFunction, RecordReference TRecord>
     constexpr decltype(auto)
     Apply(Forwarding<TFunction> function, Forwarding<TRecord> record) noexcept
     {
-        auto apply = [&]<Int... TIndex>
-            (Templates::Sequence<TIndex...>)
-            {
-                return function(Records::Get<TIndex>(
-                    Forward<TRecord>(record))...);
-            };
+        auto apply = [&]<Int... TIndex> (Templates::Sequence<TIndex...>)
+        {
+            return function(Records::Get<TIndex>(Forward<TRecord>(record))...);
+        };
 
         return apply(SequenceOf<TRecord>{});
     }
 
-    template <typename TFunction, ForwardingRecord TRecord>
+    template <typename TFunction, RecordReference TRecord>
     constexpr void
     ForEachApply(Forwarding<TFunction> function,
                  Forwarding<TRecord> record) noexcept
     {
-        auto for_each_apply = [&]<Int... TIndex>
-            (Templates::Sequence<TIndex...>)
-            {
-                (function(Records::Get<TIndex>(Forward<TRecord>(record))),
-                                               ...);
-            };
+        auto apply = [&]<Int... TIndex> (Templates::Sequence<TIndex...>)
+        {
+            (function(Records::Get<TIndex>(Forward<TRecord>(record))), ...);
+        };
 
-        for_each_apply(SequenceOf<TRecord>{});
+        apply(SequenceOf<TRecord>{});
     }
 
-    template <Int TIndex,
-              typename TFunction,
-              ForwardingRecord... TRecords>
+    template <Int TIndex, typename TFunction, RecordReference... TRecords>
     constexpr decltype(auto)
     ProjectApply(Forwarding<TFunction> function,
                  Forwarding<TRecords>... records) noexcept
@@ -79,51 +73,48 @@ namespace Syntropy::Records
         return function(Records::Get<TIndex>(Forward<TRecords>(records))...);
     }
 
-    template <typename TFunction, ForwardingRecord... TRecords>
+    template <typename TFunction, RecordReference... TRecords>
     constexpr void
     LockstepApply(Forwarding<TFunction> function,
                   Forwarding<TRecords>... records) noexcept
     {
         constexpr auto kMinRank = Math::Min(RankOf<TRecords>...);
 
-        auto lockstep_apply = [&]<Int... TIndex>
-            (Templates::Sequence<TIndex...>)
-            {
-                (ProjectApply<TIndex>(Forward<TFunction>(function),
-                                      records...), ...);
-            };
+        auto apply = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
+        {
+            (ProjectApply<TIndex>(Forward<TFunction>(function), records...),
+                                  ...);
+        };
 
-        lockstep_apply(Templates::MakeSequence<kMinRank>{});
+        apply(Templates::MakeSequence<kMinRank>{});
     }
 
-    template <typename TType, ForwardingRecord TRecord>
+    template <typename TType, RecordReference TRecord>
     [[nodiscard]] constexpr TType
     MakeFromRecord(Forwarding<TRecord> record) noexcept
     {
-        auto make_from_record = [&]<Int... TIndex>
-            (Templates::Sequence<TIndex...>)
-            {
-                return TType(Records::Get<TIndex>(Forward<TRecord>(record))
-                             ...);
-            };
+        auto make = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
+        {
+            return TType{ Records::Get<TIndex>(Forward<TRecord>(record))... };
+        };
 
-        return make_from_record(SequenceOf<TRecord>{});
+        return make(SequenceOf<TRecord>{});
     }
 
     // Swap.
     // =====
 
-    template <Record TRecord, ForwardingRecord URecord>
-    requires IsSameRank<TRecord, Templates::UnqualifiedOf<URecord>>
+    template <Record TRecord, RecordReference URecord>
     [[nodiscard]] constexpr TRecord
     Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept
     {
-        auto exchange = [&]<Int... TIndex>(
-            Templates::Sequence<TIndex...>) mutable
+        auto exchange = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            return TRecord{
+            return TRecord
+            {
                 Algorithms::Exchange(Records::Get<TIndex>(lhs),
-                                    Records::Get<TIndex>(Forward(rhs)))... };
+                                     Records::Get<TIndex>(Forward(rhs)))...
+            };
         };
 
         return exchange(SequenceOf<TRecord>{});
@@ -137,14 +128,13 @@ namespace Syntropy::Records
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
-        auto are_equal = [&]<Int... TIndex>(
-            Templates::Sequence<TIndex...>)
+        auto equal = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
             return (Algorithms::AreEqual(Records::Get<TIndex>(lhs),
-                                        Records::Get<TIndex>(rhs)) && ...);
+                                         Records::Get<TIndex>(rhs)) && ...);
         };
 
-        return are_equal(lhs, rhs);
+        return equal(lhs, rhs);
     }
 
     template <Record TRecord, Record URecord>
@@ -152,15 +142,14 @@ namespace Syntropy::Records
     [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
-        auto are_equivalent = [&]<Int... TIndex>(
-            Templates::Sequence<TIndex...>)
+        auto equivalent = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            return (Algorithms::AreEquivalent(
-                Records::Get<TIndex>(lhs),
-                Records::Get<TIndex>(rhs)) && ...);
+            return (Algorithms::AreEquivalent(Records::Get<TIndex>(lhs),
+                                              Records::Get<TIndex>(rhs))
+                    && ...);
         };
 
-        return are_equal(lhs, rhs);
+        return equivalent(lhs, rhs);
     }
 
     template <Record TRecord, Record URecord>
@@ -168,28 +157,25 @@ namespace Syntropy::Records
     [[nodiscard]] constexpr Ordering
     Compare(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
-        auto compare = [&]<Int TIndex>(
-            Ordering result, Templates::IntConstant<TIndex>)
+        auto compare_at = [&]<Int TIndex>(Ordering result)
         {
             return (result == Ordering::kEquivalent)
                 ? Algorithms::Compare(Records::Get<TIndex>(lhs),
-                                     Records::Get<TIndex>(rhs))
+                                      Records::Get<TIndex>(rhs))
                 : result;
         };
 
-        auto lockstep_compare = [&]<Int... TIndex>(
-            Templates::Sequence<TIndex...>)
+        auto compare = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
             auto result = Ordering::kEquivalent;
 
-            ((result = compare(
-                result,
-                Templates::IntConstant<TIndex>{})), ...);
+            ((result = compare_at<TIndex>(result))
+            , ...);
 
             return result;
         };
 
-        return lockstep_compare(SequenceOf<TRecord>{});
+        return compare(SequenceOf<TRecord>{});
     }
 
 }
