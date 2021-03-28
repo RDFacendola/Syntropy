@@ -9,77 +9,10 @@
 
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/templates/templates.h"
-#include "syntropy/language/templates/diagnostics.h"
-#include "syntropy/language/templates/sfinae.h"
-
 // ===========================================================================
 
 namespace Syntropy::Templates::Details
 {
-    /************************************************************************/
-    /* TYPE LIST                                                            */
-    /************************************************************************/
-
-    /// \brief Get the numer of elements in a type list.
-    template <typename TTypeList>
-    inline constexpr Int
-    CountOf = IllFormed<Int, TTypeList>::kValue;
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    inline constexpr Int CountOf<Syntropy::Templates::TypeList<TTypes...>>
-        = sizeof...(TTypes);
-
-    // =======================================================================
-
-    /// \brief Discards elements from UTypes until the first element is equal
-    ///        to TType or the list is exhausted.
-    template <typename TType, typename TFirst, typename... UTypes>
-    struct IndexOfHelper : IndexOfHelper<TType, UTypes...> {};
-
-    /// \brief Specialization for type lists starting with TType.
-    template <typename TType, typename... UTypes>
-    struct IndexOfHelper<TType, TType, UTypes...>
-        : Constant<Int, sizeof...(UTypes)> {};
-
-    /// \brief Index of the first occurrence of TType in TTypeList.
-    template <typename TType, typename TTypeList>
-    inline constexpr Int
-    IndexOf = IllFormed<Int, TType, TTypeList>::kValue;
-
-    /// \brief Specialization for type lists.
-    template <typename TType, typename... UTypes>
-    inline constexpr Int
-    IndexOf<TType, TypeList<UTypes...>>
-         = sizeof...(UTypes)
-         - IndexOfHelper<TType, UTypes...>::kValue - 1;
-
-    // =======================================================================
-
-    /// \brief Get the type of the TIndex-th element in TTypeList.
-    template <Int TIndex, typename TTypeList>
-    struct ElementOfHelper;
-
-    /// \brief Specialization for type lists. Recursive.
-    template <Int TIndex, typename TElement, typename... TElements>
-    struct ElementOfHelper<TIndex, TypeList<TElement, TElements...>>
-        : ElementOfHelper<TIndex - 1, TypeList<TElements...>>
-    {
-
-    };
-
-    /// \brief End of recursion.
-    template <typename TElement, typename... TElements>
-    struct ElementOfHelper<0, TypeList<TElement, TElements...>>
-    {
-        using Type = TElement;
-    };
-
-    /// \brief Get the type of the TIndex-th element in TTypeList.
-    template <Int TIndex, typename TTypeList>
-    using ElementOf = typename ElementOfHelper<TIndex, TTypeList>::Type;
-
     /************************************************************************/
     /* TYPE TRANSFORM                                                       */
     /************************************************************************/

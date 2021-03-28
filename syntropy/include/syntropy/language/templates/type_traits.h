@@ -21,22 +21,6 @@
 namespace Syntropy::Templates
 {
     /************************************************************************/
-    /* TYPE LIST                                                            */
-    /************************************************************************/
-
-    /// \brief Get the numer of elements in a type list.
-    template <typename TTypeList>
-    inline constexpr Int CountOf = Details::CountOf<TTypeList>;
-
-    /// \brief Get the index of the first occurence of TType in TTypeList.
-    template <typename TType, typename TTypeList>
-    inline constexpr Int IndexOf = Details::IndexOf<TType, TTypeList>;
-
-    /// \brief Get the type of an element in TTypeList, by index.
-    template <Int TIndex, typename TTypeList>
-    using ElementOf = Details::ElementOf<TIndex, TTypeList>;
-
-    /************************************************************************/
     /* TYPE TRANSFORM                                                       */
     /************************************************************************/
 
