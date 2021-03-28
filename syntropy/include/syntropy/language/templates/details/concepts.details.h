@@ -32,75 +32,67 @@ namespace Syntropy::Templates::Details
 
     /// \brief Concept for immutable reference-types.
     template <typename TType>
-    concept IsImmutable
-        = IsSame<Syntropy::Templates::ImmutableOf<TType>, TType>;
+    concept IsImmutable = IsSame<ImmutableOf<TType>, TType>;
 
     /// \brief Concept for mutable reference-types.
     template <typename TType>
-    concept IsMutable
-        = IsSame<Syntropy::Templates::MutableOf<TType>, TType>;
+    concept IsMutable = IsSame<MutableOf<TType>, TType>;
 
     /// \brief Concept for movable reerence-types.
     template <typename TType>
-    concept IsMovable
-        = IsSame<Syntropy::Templates::MovableOf<TType>, TType>;
+    concept IsMovable = IsSame<MovableOf<TType>, TType>;
 
     /// \brief Concept for immovable reference-types.
     template <typename TType>
-    concept IsImmovable
-        = IsSame<Syntropy::Templates::ImmovableOf<TType>, TType>;
+    concept IsImmovable = IsSame<ImmovableOf<TType>, TType>;
 
     /// \brief Concept for lvalue references.
     template <typename TType>
-    concept IsReference
-        = IsSame<Syntropy::Templates::ReferenceOf<TType>, TType>;
+    concept IsReference = IsSame<ReferenceOf<TType>, TType>;
 
     /// \brief Concept for rvalue references.
     template <typename TType>
-    concept IsForwarding
-        = IsSame<Syntropy::Templates::ForwardingOf<TType>, TType>;
+    concept IsForwarding = IsSame<ForwardingOf<TType>, TType>;
 
     // Fundamental types concepts.
     // ===========================
 
     /// \brief Concept for boolean types.
     template <typename TType>
-    concept IsBoolean
-         = IsSame<Templates::UnqualifiedOf<TType>, Bool>;
+    concept IsBoolean = IsSame<UnqualifiedOf<TType>, Bool>;
 
     /// \brief Concept for signed integral number types.
     template <typename TType>
     concept IsIntegral
-         = IsSame<Templates::UnqualifiedOf<TType>, Int>
-        || IsSame<Templates::UnqualifiedOf<TType>, Fix8>
-        || IsSame<Templates::UnqualifiedOf<TType>, Fix16>
-        || IsSame<Templates::UnqualifiedOf<TType>, Fix32>
-        || IsSame<Templates::UnqualifiedOf<TType>, Fix64>
-        || IsSame<Templates::UnqualifiedOf<TType>, Enum8>
-        || IsSame<Templates::UnqualifiedOf<TType>, Enum16>
-        || IsSame<Templates::UnqualifiedOf<TType>, Enum32>
-        || IsSame<Templates::UnqualifiedOf<TType>, Enum64>;
+         = IsSame<UnqualifiedOf<TType>, Int>
+        || IsSame<UnqualifiedOf<TType>, Fix8>
+        || IsSame<UnqualifiedOf<TType>, Fix16>
+        || IsSame<UnqualifiedOf<TType>, Fix32>
+        || IsSame<UnqualifiedOf<TType>, Fix64>
+        || IsSame<UnqualifiedOf<TType>, Enum8>
+        || IsSame<UnqualifiedOf<TType>, Enum16>
+        || IsSame<UnqualifiedOf<TType>, Enum32>
+        || IsSame<UnqualifiedOf<TType>, Enum64>;
 
     /// \brief Concept for real number types.
     template <typename TType>
-    concept IsReal
-         = IsSame<Templates::UnqualifiedOf<TType>, Float>;
+    concept IsReal = IsSame<UnqualifiedOf<TType>, Float>;
 
-     // Polymorphism.
-     // =============
+    // Polymorphism.
+    // =============
 
-     /// \brief Concept for types deriving from TBase ignoring
-     ///        constant-qualifiers.
-     template <typename TDerived, typename TBase>
-     concept IsDerivedFrom = std::is_base_of_v<TBase, TDerived>;
+    /// \brief Concept for types deriving from TBase ignoring
+    ///        constant-qualifiers.
+    template <typename TDerived, typename TBase>
+    concept IsDerivedFrom = std::is_base_of_v<TBase, TDerived>;
 
-     /// \brief Concept for polymorphic types.
-     template <typename TType>
-     concept IsPolymorphic = std::is_polymorphic_v<TType>;
+    /// \brief Concept for polymorphic types.
+    template <typename TType>
+    concept IsPolymorphic = std::is_polymorphic_v<TType>;
 
-     /// \brief Concept for final types.
-     template <typename TType>
-     concept IsFinal = std::is_final_v<TType>;
+    /// \brief Concept for final types.
+    template <typename TType>
+    concept IsFinal = std::is_final_v<TType>;
 
     // Properties concepts.
     // ====================
@@ -204,20 +196,18 @@ namespace Syntropy::Templates::Details
     /// \brief Concept for types that can be implicitly default constructed
     //         from an empty initializer list.
     template <typename TType>
-    concept IsImplicitlyDefaultConstructible
-        = requires()
-        {
-            { CopyConstruct<TType>({}) };
-        };
+    concept IsImplicitlyDefaultConstructible = requires()
+    {
+        { CopyConstruct<TType>({}) };
+    };
 
     /// \brief Concept for types that can be implicitly direct-constructed
     ///        from a initializer list.
     template <typename TType, typename... TArguments>
-    concept IsImplicitlyConstructibleFrom
-        = requires()
-        {
-            { CopyConstruct<TType>( { Declval<TArguments>()... }) };
-        };
+    concept IsImplicitlyConstructibleFrom = requires()
+    {
+        { CopyConstruct<TType>( { Declval<TArguments>()... }) };
+    };
 
     // Comparison concepts.
     // ====================
@@ -225,55 +215,53 @@ namespace Syntropy::Templates::Details
     /// \brief Concept for types which define both the equality and inequality
     ///        operators against a possibily different type.
     template <typename TType, typename UType>
-    concept IsEqualityComparableWith
-        = requires(Templates::ImmutableOf<TType> lhs,
-                   Templates::ImmutableOf<UType> rhs)
-        {
-            /// \brief Compare lhs and rhs for equality.
-            { lhs == rhs } -> IsBoolean;
+    concept IsEqualityComparableWith = requires(ImmutableOf<TType> lhs,
+                                                ImmutableOf<UType> rhs)
+    {
+        /// \brief Compare lhs and rhs for equality.
+        { lhs == rhs } -> IsBoolean;
 
-            /// \brief Compare lhs and rhs for inequality.
-            { lhs != rhs } -> IsBoolean;
+        /// \brief Compare lhs and rhs for inequality.
+        { lhs != rhs } -> IsBoolean;
 
-            /// \brief Compare rhs and lhs for equality.
-            { rhs == lhs } -> IsBoolean;
+        /// \brief Compare rhs and lhs for equality.
+        { rhs == lhs } -> IsBoolean;
 
-            /// \brief Compare rhs and lhs for inequality.
-            { rhs != lhs } -> IsBoolean;
-        };
+        /// \brief Compare rhs and lhs for inequality.
+        { rhs != lhs } -> IsBoolean;
+    };
 
     /// \brief Concept for types which define boh the less-than, greater-than,
     ///        less-than-or-equal-to and greater-than-or-equal-to operators
     ///        against a possibly different type.
     template <typename TType, typename UType>
-    concept IsPartiallyOrderedWith
-        = requires(Templates::ImmutableOf<TType> lhs,
-                   Templates::ImmutableOf<UType> rhs)
-        {
-            /// \brief Check whether lhs is less-than rhs.
-            { lhs < rhs } -> IsBoolean;
+    concept IsPartiallyOrderedWith = requires(ImmutableOf<TType> lhs,
+                                              ImmutableOf<UType> rhs)
+    {
+        /// \brief Check whether lhs is less-than rhs.
+        { lhs < rhs } -> IsBoolean;
 
-            /// \brief Check whether lhs is greater-than rhs.
-            { lhs > rhs } -> IsBoolean;
+        /// \brief Check whether lhs is greater-than rhs.
+        { lhs > rhs } -> IsBoolean;
 
-            /// \brief Check whether lhs is less-than or equal-to rhs.
-            { lhs <= lhs } -> IsBoolean;
+        /// \brief Check whether lhs is less-than or equal-to rhs.
+        { lhs <= lhs } -> IsBoolean;
 
-            /// \brief Check whether lhs is greater-than or equal-to rhs.
-            { lhs >= lhs } -> IsBoolean;
+        /// \brief Check whether lhs is greater-than or equal-to rhs.
+        { lhs >= lhs } -> IsBoolean;
 
-            /// \brief Check whether rhs is less-than lhs.
-            { rhs < lhs } -> IsBoolean;
+        /// \brief Check whether rhs is less-than lhs.
+        { rhs < lhs } -> IsBoolean;
 
-            /// \brief Check whether rhs is greater-than lhs.
-            { rhs > lhs } -> IsBoolean;
+        /// \brief Check whether rhs is greater-than lhs.
+        { rhs > lhs } -> IsBoolean;
 
-            /// \brief Check whether rhs is less-than or equal-to lhs.
-            { rhs <= lhs } -> IsBoolean;
+        /// \brief Check whether rhs is less-than or equal-to lhs.
+        { rhs <= lhs } -> IsBoolean;
 
-            /// \brief Check whether rhs is greater-than or equal-to lhs.
-            { rhs >= lhs } -> IsBoolean;
-        };
+        /// \brief Check whether rhs is greater-than or equal-to lhs.
+        { rhs >= lhs } -> IsBoolean;
+    };
 
     // Templates concepts.
     // ===================
