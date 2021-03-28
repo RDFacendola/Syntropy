@@ -334,16 +334,14 @@ namespace Syntropy
     // Comparison.
     // ===========
 
-    /// \brief Check whether two tuples compare equal.
-    ///
-    /// \return Returns true if each element in lhs compares equal to the
-    ///         corresponding element in rhs, returns false otherwise.
+    /// \brief Check whether two tuples are member-wise equivalent.
+    /// \brief Equivalence doesn't imply equality.
     template <typename... TElements, typename... UElements>
     [[nodiscard]] constexpr Bool
     operator==(Immutable<Tuple<TElements...>> lhs,
                Immutable<Tuple<UElements...>> rhs) noexcept;
 
-    /// \brief Compare two tuples lexicographically.
+    /// \brief Member-wise compare two tuples.
     template <typename... TElements, typename... UElements>
     [[nodiscard]] constexpr Ordering
     operator<=>(Immutable<Tuple<TElements...>> lhs,
@@ -358,7 +356,7 @@ namespace Syntropy
              Immutable<Tuple<UElements...>> rhs) noexcept;
 
     /// \brief Check whether two tuples are member-wise equivalent.
-    /// \brief Equivalence doesn't imply equality.
+    /// \remarks Equivalence doesn't imply equality.
     template <typename... TElements, typename... UElements>
     requires (sizeof...(TElements) == sizeof...(UElements))
     [[nodiscard]] constexpr Bool
@@ -379,14 +377,17 @@ namespace Syntropy
     /// \brief Partial template specialization for tuples.
     template <typename... TElements>
     struct Records::RankTrait<Tuple<TElements...>>
-        : Templates::IntConstant<sizeof...(TElements)> {};
+    {
+        static constexpr Int kValue = sizeof...(TElements);
+    };
 
     /// \brief Partial template specialization for tuples.
     template <Int TIndex, typename... TElements>
     struct Records::ElementTypeTrait<TIndex, Tuple<TElements...>>
     {
-        using Type = Templates::ElementOf<TIndex,
-                                          Templates::TypeList<TElements...>>;
+        using ElementTypeList = Templates::TypeList<TElements...>;
+
+        using Type = Templates::ElementOf<TIndex, ElementTypeList>;
     };
 
 }
