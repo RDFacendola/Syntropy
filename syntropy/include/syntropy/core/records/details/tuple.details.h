@@ -115,27 +115,22 @@ namespace Syntropy::Details
         = !(Concepts::IsConvertible<Movable<UTypes>, TTypes> && ...);
 
     /************************************************************************/
-    /* ENABLE IF - TUPLE CONSTRUCTOR                                        */
+    /* TUPLE REQUIREMENTS                                                   */
     /************************************************************************/
 
     // (1)
 
-    /// \brief Enable (implicit) default tuple constructor if all types TTypes
-    ///        are default constructible and all types have implicit
-    ///        default constructor.
-    template <typename TTypeList>
-    using EnableIfTupleDefaultConstructor
-        = RWPtr<Templates::EnableIf<
-            Concepts::IsDefaultConstructible<TTypeList>>>;
+    /// \brief Requires all tuple elements to be default constructible.
+    template <typename... TElements>
+    concept TupleDefaultConstructor
+        = Concepts::IsDefaultConstructible<Templates::TypeList<TElements...>>;
 
     // (2)
 
-    /// \brief Enable direct tuple constructor if all types TTypes are
-    ///        implicitly copy-constructible.
-    template <typename TTypeList>
-    using EnableIfTupleDirectConstructor
-        = RWPtr<Templates::EnableIf<
-            Concepts::IsCopyConstructible<TTypeList>>>;
+    /// \brief Requires all tuple elements to be copy-constructible.
+    template <typename... TElements>
+    concept TupleDirectConstructor
+        = Concepts::IsCopyConstructible<Templates::TypeList<TElements...>>;
 
     // (3)
 

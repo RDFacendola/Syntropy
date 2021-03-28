@@ -43,25 +43,25 @@ namespace Syntropy
         template <Int TIndex, typename... UElements>
         friend constexpr
         Immutable<Templates::ElementOf<TIndex,
-                                       Templates::TypeList<TElements...>>>
+                                       Templates::TypeList<UElements...>>>
         Get(Immutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int TIndex, typename... UElements>
         friend constexpr
         Mutable<Templates::ElementOf<TIndex,
-                                     Templates::TypeList<TElements...>>>
+                                     Templates::TypeList<UElements...>>>
         Get(Mutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int TIndex, typename... UElements>
         friend constexpr
         Immovable<Templates::ElementOf<TIndex,
-                                       Templates::TypeList<TElements...>>>
+                                       Templates::TypeList<UElements...>>>
         Get(Immovable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int TIndex, typename... UElements>
         friend constexpr
         Movable<Templates::ElementOf<TIndex,
-                                     Templates::TypeList<TElements...>>>
+                                     Templates::TypeList<UElements...>>>
         Get(Movable<Tuple<UElements...>> tuple) noexcept;
 
     public:
@@ -85,12 +85,9 @@ namespace Syntropy
 
         /// \brief Tuple default constructor. Enabled if all elements
         ///        are default-constructible.
-        template<
-            typename UElement = TElement,
-            Details::EnableIfTupleDefaultConstructor<
-                ArgumentList<UElement, TElements...>> = nullptr>
-        explicit (Details::ExplicitIfTupleDefaultConstructor
-            <UElement, TElements...>)
+        template<typename UElement = TElement>
+        requires Details::TupleDefaultConstructor<UElement, TElements...>
+        explicit (Details::ExplicitIfTupleDefaultConstructor<UElement, TElements...>)
         constexpr Tuple() noexcept
             : BaseClass{}
             , element_{}
@@ -100,12 +97,9 @@ namespace Syntropy
 
         /// \brief Tuple direct constructor. Enabled if all elements are
         ///        copy-constructible.
-        template<
-            typename UElement = TElement,
-            Details::EnableIfTupleDirectConstructor<
-                ArgumentList<UElement, TElements...>> = nullptr>
-        constexpr explicit (Details::ExplicitIfTupleDirectConstructor
-            <UElement, TElements...>)
+        template<typename UElement = TElement>
+        requires Details::TupleDirectConstructor<UElement, TElements...>
+        constexpr explicit (Details::ExplicitIfTupleDirectConstructor<UElement, TElements...>)
         Tuple(Immutable<TElement> element,
               Immutable<TElements>... elements) noexcept
             : Tuple(ElementwiseTag{}, element, elements...)
@@ -115,13 +109,10 @@ namespace Syntropy
 
         /// \brief Tuple converting constructor. Enabled if all tuple elements
         ///        are copy-constructible.
-        template<
-            typename UElement,
-            typename... UElements,
-            Details::EnableIfTupleConvertingConstructor
-                <ElementList, UElement, UElements...> = nullptr>
-        constexpr explicit (Details::ExplicitIfTupleConvertingConstructor
-            < ElementList, UElement, UElements...>)
+        template<typename UElement,
+                 typename... UElements,
+                 Details::EnableIfTupleConvertingConstructor<ElementList, UElement, UElements...> = nullptr>
+        constexpr explicit (Details::ExplicitIfTupleConvertingConstructor<ElementList, UElement, UElements...>)
         Tuple(Forwarding<UElement> element,
               Forwarding<UElements>... elements) noexcept
             : Tuple(ElementwiseTag{},
@@ -133,16 +124,13 @@ namespace Syntropy
 
         /// \brief Tuple converting copy constructor. Enabled if all tuple
         ///        elements are copy-constructible.
-        template<
-            typename UElement,
-            typename... UElements,
-            Details::EnableIfTupleConvertingCopyConstructor
-                <ElementList, UElement, UElements...> = nullptr>
-        explicit (Details::ExplicitIfTupleConvertingCopyConstructor
-            <ElementList, UElement, UElements...>)
+        template<typename UElement,
+                 typename... UElements,
+                 Details::EnableIfTupleConvertingCopyConstructor<ElementList, UElement, UElements...> = nullptr>
+        explicit (Details::ExplicitIfTupleConvertingCopyConstructor<ElementList, UElement, UElements...>)
         constexpr Tuple(Immutable<Tuple<UElement, UElements...>> rhs) noexcept
             : Tuple(UnwindTag{},
-                    Syntropy::Templates::SequenceFor<UElement, UElements...>{},
+                    Templates::SequenceFor<UElement, UElements...>{},
                     rhs)
         {
 
@@ -150,16 +138,13 @@ namespace Syntropy
 
         /// \brief Tuple converting move constructor. Enabled if all tuple
         ///        elements are move-constructible.
-        template<
-            typename UElement,
-            typename... UElements,
-            Details::EnableIfTupleConvertingMoveConstructor
-                <ElementList, UElement, UElements...> = nullptr>
-        constexpr explicit (Details::ExplicitIfTupleConvertingMoveConstructor
-            <ElementList, UElement, UElements...>)
+        template<typename UElement,
+                 typename... UElements,
+                 Details::EnableIfTupleConvertingMoveConstructor<ElementList, UElement, UElements...> = nullptr>
+        constexpr explicit (Details::ExplicitIfTupleConvertingMoveConstructor<ElementList, UElement, UElements...>)
          Tuple(Movable<Tuple<UElement, UElements...>> rhs) noexcept
             : Tuple(UnwindTag{},
-                    Syntropy::Templates::SequenceFor<UElement, UElements...>{},
+                    Templates::SequenceFor<UElement, UElements...>{},
                     Move(rhs))
         {
 
@@ -176,43 +161,36 @@ namespace Syntropy
         template<Records::RecordReference TTuple, Int... VIndexes>
         constexpr
         Tuple(UnwindTag,
-              Syntropy::Templates::Sequence<VIndexes...>,
+              Templates::Sequence<VIndexes...>,
               Forwarding<TTuple> tuple) noexcept;
 
         /// \brief Copy-assignment operator.
-        template <
-            typename TSelf = Tuple,
-            typename TSelfList = ElementList,
-            Details::EnableIfTupleCopyAssignment<TSelfList> = nullptr>
-        constexpr
-        Mutable<Tuple> operator=(
-            Syntropy::Templates::ExactOf<Immutable<TSelf>> rhs) noexcept;
+        template <typename TSelf = Tuple,
+                  typename TSelfList = ElementList,
+                  Details::EnableIfTupleCopyAssignment<TSelfList> = nullptr>
+        constexpr Mutable<Tuple>
+        operator=(Templates::ExactOf<Immutable<TSelf>> rhs) noexcept;
 
         /// \brief Move-assignment operator.
-        template <
-            typename TSelf = Tuple,
-            typename TSelfList = ElementList,
-            Details::EnableIfTupleMoveAssignment<TSelfList> = nullptr>
+        template <typename TSelf = Tuple,
+                  typename TSelfList = ElementList,
+                  Details::EnableIfTupleMoveAssignment<TSelfList> = nullptr>
         constexpr Mutable<Tuple>
-        operator=(Syntropy::Templates::ExactOf<Movable<TSelf>> rhs) noexcept;
+        operator=(Templates::ExactOf<Movable<TSelf>> rhs) noexcept;
 
         /// \brief Tuple converting copy-assignment operator.
-        template <
-            typename... UElements,
-            typename TSelfList = ElementList,
-            Details::EnableIfTupleConvertingCopyAssignment
-                <TSelfList, ArgumentList<UElements...>> = nullptr>
+        template <typename... UElements,
+                  typename TSelfList = ElementList,
+                  Details::EnableIfTupleConvertingCopyAssignment<TSelfList, ArgumentList<UElements...>> = nullptr>
         constexpr Mutable<Tuple>
-            operator=(Immutable<Tuple<UElements...>> rhs) noexcept;
+        operator=(Immutable<Tuple<UElements...>> rhs) noexcept;
 
         /// \brief Tuple converting move-assignment operator.
-        template <
-            typename... UElements,
-            typename TSelfList = ElementList,
-            Details::EnableIfTupleConvertingMoveAssignment
-                <TSelfList, ArgumentList<UElements...>> = nullptr>
+        template <typename... UElements,
+                  typename TSelfList = ElementList,
+                  Details::EnableIfTupleConvertingMoveAssignment<TSelfList, ArgumentList<UElements...>> = nullptr>
         constexpr Mutable<Tuple>
-            operator=(Movable<Tuple<UElements...>> rhs) noexcept;
+        operator=(Movable<Tuple<UElements...>> rhs) noexcept;
 
         /// \brief Default copy-constructor.
         constexpr

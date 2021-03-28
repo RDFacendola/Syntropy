@@ -28,7 +28,7 @@ namespace Syntropy
     template<Records::RecordReference TTuple, Int... VIndexes>
     constexpr Tuple<TElement, TElements...>
     ::Tuple(UnwindTag,
-            Syntropy::Templates::Sequence<VIndexes...>,
+            Templates::Sequence<VIndexes...>,
             Forwarding<TTuple> tuple) noexcept
         : Tuple(ElementwiseTag{}, Get<VIndexes>(Forward<TTuple>(tuple))...)
     {
@@ -41,7 +41,7 @@ namespace Syntropy
               Details::EnableIfTupleCopyAssignment<TSelfList>>
     constexpr
     Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>
-    ::operator=(Syntropy::Templates::ExactOf<Immutable<TSelf>> rhs) noexcept
+    ::operator=(Templates::ExactOf<Immutable<TSelf>> rhs) noexcept
     {
         Records::LockstepApply([](auto& lhs_element, const auto& rhs_element)
         {
@@ -56,7 +56,7 @@ namespace Syntropy
               typename TSelfList,
               Details::EnableIfTupleConvertingCopyAssignment<
                 TSelfList,
-                Syntropy::Templates::TypeList<UElements...>>>
+                Templates::TypeList<UElements...>>>
     constexpr
     Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>
     ::operator=(Immutable<Tuple<UElements...>> rhs) noexcept
@@ -75,7 +75,7 @@ namespace Syntropy
               Details::EnableIfTupleMoveAssignment<TSelfList>>
     constexpr Mutable<Tuple<TElement, TElements...>>
     Tuple<TElement, TElements...>
-    ::operator=(Syntropy::Templates::ExactOf<Movable<TSelf>> rhs) noexcept
+    ::operator=(Templates::ExactOf<Movable<TSelf>> rhs) noexcept
     {
         Records::LockstepApply([](auto& lhs_element, auto&& rhs_element)
         {
@@ -89,8 +89,8 @@ namespace Syntropy
     template <typename... UElements,
               typename TSelfList,
               Details::EnableIfTupleConvertingMoveAssignment<
-                TSelfList,
-                Syntropy::Templates::TypeList<UElements...>>>
+                  TSelfList,
+                  Templates::TypeList<UElements...>>>
     constexpr Mutable<Tuple<TElement, TElements...>>
     Tuple<TElement, TElements...>
     ::operator=(Movable<Tuple<UElements...>> rhs) noexcept
