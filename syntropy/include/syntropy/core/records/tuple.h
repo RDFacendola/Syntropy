@@ -3,7 +3,7 @@
 /// \brief This header is part of Syntropy core module.
 ///        It contains definitions for tuples.
 ///
-/// \author Raffaele D. Facendola - Sep 2020.
+/// \author Raffaele D. Facendola - September 2020.
 
 #pragma once
 
@@ -42,22 +42,26 @@ namespace Syntropy
     {
         template <Int TIndex, typename... UElements>
         friend constexpr
-        Immutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+        Immutable<Templates::ElementOf<TIndex,
+                                       Templates::TypeList<TElements...>>>
         Get(Immutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int TIndex, typename... UElements>
         friend constexpr
-        Mutable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+        Mutable<Templates::ElementOf<TIndex,
+                                     Templates::TypeList<TElements...>>>
         Get(Mutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int TIndex, typename... UElements>
         friend constexpr
-        Immovable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+        Immovable<Templates::ElementOf<TIndex,
+                                       Templates::TypeList<TElements...>>>
         Get(Immovable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int TIndex, typename... UElements>
         friend constexpr
-        Movable<Templates::ElementOf<TIndex, Syntropy::Templates::TypeList<TElements...>>>
+        Movable<Templates::ElementOf<TIndex,
+                                     Templates::TypeList<TElements...>>>
         Get(Movable<Tuple<UElements...>> tuple) noexcept;
 
     public:
@@ -65,13 +69,12 @@ namespace Syntropy
         /// \brief Type of the base class.
         using BaseClass = Tuple<TElements...>;
 
-        /// \brief Types of tuple elements.
-        using ElementList = Syntropy::Templates::TypeList<TElement,
-                                                          TElements...>;
+        /// \brief Element types.
+        using ElementList = Templates::TypeList<TElement, TElements...>;
 
         /// \brief Types of arguments.
         template <typename... UElements>
-        using ArgumentList = Syntropy::Templates::TypeList<UElements...>;
+        using ArgumentList = Templates::TypeList<UElements...>;
 
         /// \brief Tag type used to construct a tuple element-wise.
         struct ElementwiseTag {};
@@ -170,7 +173,7 @@ namespace Syntropy
               Forwarding<UElements>... elements) noexcept;
 
         /// \brief Construct a tuple unwinding another tuple elements.
-        template<Records::ForwardingRecord TTuple, Int... VIndexes>
+        template<Records::RecordReference TTuple, Int... VIndexes>
         constexpr
         Tuple(UnwindTag,
               Syntropy::Templates::Sequence<VIndexes...>,
@@ -303,13 +306,13 @@ namespace Syntropy
     ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
-    template <Records::ForwardingRecord... TRecords>
+    template <Records::RecordReference... TRecords>
     [[nodiscard]] constexpr auto
     Concatenate(Forwarding<TRecords>... tuples) noexcept
         -> decltype(Details::Concatenate(Forward<TRecords>(tuples)...));
 
     /// \brief Flatten a tuple recursively.
-    template <Records::ForwardingRecord TTuple>
+    template <Records::RecordReference TTuple>
     [[nodiscard]] constexpr auto
     Flatten(Forwarding<TTuple> tuple) noexcept
         -> decltype(Details::Flatten(Forward<TTuple>(tuple)));

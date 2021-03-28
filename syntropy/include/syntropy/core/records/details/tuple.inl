@@ -25,7 +25,7 @@ namespace Syntropy
     }
 
     template <typename TElement, typename... TElements>
-    template<Records::ForwardingRecord TTuple, Int... VIndexes>
+    template<Records::RecordReference TTuple, Int... VIndexes>
     constexpr Tuple<TElement, TElements...>
     ::Tuple(UnwindTag,
             Syntropy::Templates::Sequence<VIndexes...>,
@@ -179,7 +179,7 @@ namespace Syntropy
                    Forward<TElements>(elements)...);
     }
 
-    template <Records::ForwardingRecord... TRecords>
+    template <Records::RecordReference... TRecords>
     [[nodiscard]] constexpr auto
     Concatenate(Forwarding<TRecords>... tuples) noexcept
         -> decltype(Details::Concatenate(Forward<TRecords>(tuples)...))
@@ -187,7 +187,7 @@ namespace Syntropy
         return Details::Concatenate(Forward<TRecords>(tuples)...);
     }
 
-    template <Records::ForwardingRecord TTuple>
+    template <Records::RecordReference TTuple>
     [[nodiscard]] constexpr auto
     Flatten(Forwarding<TTuple> tuple) noexcept
         -> decltype(Details::Flatten(Forward<TTuple>(tuple)))

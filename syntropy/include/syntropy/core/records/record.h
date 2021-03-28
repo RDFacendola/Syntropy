@@ -75,11 +75,6 @@ namespace Syntropy::Records
     template <typename TRecord>
     concept RecordReference = Record<Templates::UnqualifiedOf<TRecord>>;
 
-    /// \brief Concept for a Record that can be perfectly-forwarded.
-    template <typename TRecord>
-    concept ForwardingRecord
-        = Record<Templates::UnqualifiedOf<TRecord>>;
-
     /************************************************************************/
     /* TYPE TRAITS                                                          */
     /************************************************************************/

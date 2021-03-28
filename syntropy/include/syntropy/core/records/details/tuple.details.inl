@@ -14,11 +14,11 @@ namespace Syntropy::Details
     // Concatenate.
     // =========
 
-    template <Records::ForwardingRecord... TRecords>
+    template <Records::RecordReference... TRecords>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TRecords>... tuples) noexcept
     {
-        auto tuple_cat = [&]<Records::ForwardingRecord TTuple,
+        auto tuple_cat = [&]<Records::RecordReference TTuple,
                              Int... VTupleIndex,
                              Int... VElementIndex>
              (Forwarding<TTuple> tuple,
@@ -39,7 +39,7 @@ namespace Syntropy::Details
     // Flatten.
     // ========
 
-    template <Records::ForwardingRecord TTuple>
+    template <Records::RecordReference TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept
     {
