@@ -75,30 +75,63 @@ namespace Syntropy::Templates
     /* TYPE TRAITS                                                          */
     /************************************************************************/
 
-    /// \brief Get the type of the first element in a list.
+    // TypeList.
+    // =========
+
+    /// \brief Type of the first element in a type list.
     template <IsTypeList TTypes>
     using
     HeadOf = Details::HeadOf<TTypes>;
 
-    /// \brief Drops the first element in a list and return the remaining ones.
+    /// \brief Drops the first element in a type list and return a list to
+    ///        the remaining ones.
     template <IsTypeList TTypes>
     using
     RestOf = Details::RestOf<TTypes>;
 
-    /// \brief Get the numer of elements in a type list.
+    /// \brief Number of elements in a type list.
     template <IsTypeList TTypes>
     inline constexpr Int
     CountOf = TTypes::kCount;
 
-    /// \brief Get the index of the first occurence of TType in TList.
+    /// \brief Index of the first element in a type list wih a given type.
     template <typename TType, IsTypeList TTypes>
     inline constexpr Int
     IndexOf = Details::IndexOf<TType, TTypes>;
 
-    /// \brief Get the type of an element in TList, by index.
+    /// \brief Type of a type list element, by index.
     template <Int TIndex, IsTypeList TTypes>
     using
     ElementOf = Details::ElementOf<TIndex, TTypes>;
+
+    // Parameter pack.
+    // ===============
+
+    /// \brief Type of the first element in a parameter pack.
+    template <typename... TTypes>
+    using
+    PackHeadOf = HeadOf<TypeList<TTypes...>>;
+
+    /// \brief Drop the first element in a parameter pack and return a list to
+    ///        the remaining ones.
+    template <typename... TTypes>
+    using
+    PackRestOf = RestOf<TypeList<TTypes...>>;
+
+    /// \brief Number of elements in a parameter pack.
+    template <typename... TTypes>
+    inline constexpr Int
+    PackCountOf = sizeof...(TTypes);
+
+    /// \brief Index of the first element in a parameter pack wih a given type.
+    template <typename TType, typename... TTypes>
+    inline constexpr Int
+    PackIndexOf = IndexOf<TType, TypeList<TTypes...>>;
+
+    /// \brief Type of a parameter pack element, by index.
+    template <Int TIndex, typename... TTypes>
+    using
+    PackElementOf = ElementOf<TIndex, TypeList<TTypes...>>;
 
 }
 
