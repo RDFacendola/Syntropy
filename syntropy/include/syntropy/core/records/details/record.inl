@@ -120,6 +120,19 @@ namespace Syntropy::Records
         return exchange(SequenceOf<TRecord>{});
     }
 
+    template <Record TRecord>
+    constexpr void
+    Swap(Mutable<TRecord> lhs, Mutable<TRecord> rhs) noexcept
+    {
+        auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
+        {
+            (Algorithms::Swap(Records::Get<TIndex>(lhs),
+                              Records::Get<TIndex>(rhs)), ...);
+        };
+
+        swap(SequenceOf<TRecord>{});
+    }
+
     // Compare.
     // ========
 

@@ -173,6 +173,11 @@ namespace Syntropy::Records
     // Swap.
     // =====
 
+    /// \brief Member-wise swap two records.
+    template <Record TRecord>
+    constexpr void
+    Swap(Mutable<TRecord> lhs, Mutable<TRecord> rhs) noexcept;
+
     /// \brief Member-wise swap two records and returns the value of the
     ///        former.
     template <Record TRecord, RecordReference URecord>
