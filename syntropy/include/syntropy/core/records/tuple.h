@@ -190,11 +190,11 @@ namespace Syntropy
 
         /// \brief Default copy-constructor.
         constexpr
-        Tuple(Immutable<Tuple> rhs) noexcept  = default;
+        Tuple(Immutable<Tuple> rhs) noexcept = default;
 
         /// \brief Default move-constructor.
         constexpr
-        Tuple(Movable<Tuple> rhs) noexcept  = default;
+        Tuple(Movable<Tuple> rhs) noexcept = default;
 
         /// \brief Head element.
         TElement element_;
@@ -214,13 +214,21 @@ namespace Syntropy
         Tuple(Immutable<Tuple>) noexcept = default;
 
         /// \brief Default copy-assignment.
-        constexpr Tuple&
+        constexpr Mutable<Tuple>
         operator=(Immutable<Tuple>) noexcept = default;
     };
 
     /// \brief Deduction rule.
     template <typename... TElements>
     Tuple(TElements...) -> Tuple<TElements...>;
+
+    /************************************************************************/
+    /* CONCEPT                                                              */
+    /************************************************************************/
+
+    /// \brief Concept for template arguments that bind to tuples only.
+    template <typename TTuple>
+    concept IsTuple = Templates::IsTemplateSpecializationOf<TTuple, Tuple>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
