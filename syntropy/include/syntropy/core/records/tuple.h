@@ -36,34 +36,69 @@ namespace Syntropy
     template <typename... TElements>
     struct Tuple;
 
+    /************************************************************************/
+    /* CONCEPT                                                              */
+    /************************************************************************/
+
+    /// \brief Concept for template arguments that bind to tuples only.
+    template <typename TTuple>
+    concept IsTuple = Templates::IsTemplateSpecializationOf<TTuple, Tuple>;
+
+    /************************************************************************/
+    /* TYPE TRAITS                                                          */
+    /************************************************************************/
+
+    /// \brief Tuple elements list.
+    template <IsTuple TTuple>
+    using
+    ElementListOf = typename TTuple::ElementList;
+
+    /// \brief Number of elements in a tuple.
+    template <IsTuple TTuple>
+    inline constexpr Int
+    CountOf = Templates::CountOf<ElementListOf<TTuple>>;
+
+    /// \brief Index of the first element in a tuple wih a given type.
+    template <typename TType, IsTuple TTuple>
+    inline constexpr Int
+    IndexOf = Templates::IndexOf<TType, ElementListOf<TTuple>>;
+
+    /// \brief Type of a tuple element, by index.
+    template <Int TIndex, IsTuple TTuple>
+    using
+    ElementOf = Templates::ElementOf<TIndex, ElementListOf<TTuple>>;
+
+    /************************************************************************/
+    /* TUPLE                                                                */
+    /************************************************************************/
+
     /// \brief Recursive tuple definition.
     template <typename TElement, typename... TElements>
     struct Tuple<TElement, TElements...> : private Tuple<TElements...>
     {
-        template <Int TIndex, typename... UElements>
-        friend constexpr
-        Immutable<Templates::PackElementOf<TIndex, UElements...>>
-        Get(Immutable<Tuple<UElements...>> tuple) noexcept;
+        template <Int TIndex, IsTuple TTuple>
+        friend constexpr Immutable<Templates::ElementOf<TIndex, TTuple>>
+        Get(Immutable<TTuple> tuple) noexcept;
 
-        template <Int TIndex, typename... UElements>
-        friend constexpr
-        Mutable<Templates::PackElementOf<TIndex, UElements...>>
-        Get(Mutable<Tuple<UElements...>> tuple) noexcept;
+        template <Int TIndex, IsTuple TTuple>
+        friend constexpr Mutable<Templates::ElementOf<TIndex, TTuple>>
+        Get(Mutable<TTuple> tuple) noexcept;
 
-        template <Int TIndex, typename... UElements>
-        friend constexpr
-        Immovable<Templates::PackElementOf<TIndex, UElements...>>
-        Get(Immovable<Tuple<UElements...>> tuple) noexcept;
+        template <Int TIndex, IsTuple TTuple>
+        friend constexpr Immovable<Templates::ElementOf<TIndex, TTuple>>
+        Get(Immovable<TTuple> tuple) noexcept;
 
-        template <Int TIndex, typename... UElements>
-        friend constexpr
-        Movable<Templates::PackElementOf<TIndex, UElements...>>
-        Get(Movable<Tuple<UElements...>> tuple) noexcept;
+        template <Int TIndex, IsTuple TTuple>
+        friend constexpr Movable<Templates::ElementOf<TIndex, TTuple>>
+        Get(Movable<TTuple> tuple) noexcept;
 
     public:
 
         /// \brief Type of the base class.
         using BaseClass = Tuple<TElements...>;
+
+        /// \brief Type of the tuple itself.
+        using SelfType = Tuple<TElement, TElements...>;
 
         /// \brief Element types.
         using ElementList = Templates::TypeList<TElement, TElements...>;
@@ -205,6 +240,12 @@ namespace Syntropy
     template <>
     struct Tuple<>
     {
+        /// \brief Type of the tuple itself.
+        using SelfType = Tuple<>;
+
+        /// \brief Element types.
+        using ElementList = Templates::TypeList<>;
+
         /// \brief Default constructor.
         constexpr
         Tuple() noexcept = default;
@@ -223,14 +264,6 @@ namespace Syntropy
     Tuple(TElements...) -> Tuple<TElements...>;
 
     /************************************************************************/
-    /* CONCEPT                                                              */
-    /************************************************************************/
-
-    /// \brief Concept for template arguments that bind to tuples only.
-    template <typename TTuple>
-    concept IsTuple = Templates::IsTemplateSpecializationOf<TTuple, Tuple>;
-
-    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
@@ -240,34 +273,30 @@ namespace Syntropy
     /// \brief Access a tuple element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
-    template <Int TIndex, typename... TElements>
-    [[nodiscard]] constexpr
-    Immutable<Templates::PackElementOf<TIndex, TElements...>>
-    Get(Immutable<Tuple<TElements...>> tuple) noexcept;
+    template <Int TIndex, IsTuple TTuple>
+    [[nodiscard]] constexpr Immutable<Templates::ElementOf<TIndex, TTuple>>
+    Get(Immutable<TTuple> tuple) noexcept;
 
     /// \brief Access a tuple element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
-    template <Int TIndex, typename... TElements>
-    [[nodiscard]] constexpr
-    Mutable<Templates::PackElementOf<TIndex, TElements...>>
-    Get(Mutable<Tuple<TElements...>> tuple) noexcept;
+    template <Int TIndex, IsTuple TTuple>
+    [[nodiscard]] constexpr Mutable<Templates::ElementOf<TIndex, TTuple>>
+    Get(Mutable<TTuple> tuple) noexcept;
 
     /// \brief Access a tuple element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
-    template <Int TIndex, typename... TElements>
-    [[nodiscard]] constexpr
-    Immovable<Templates::PackElementOf<TIndex, TElements...>>
-    Get(Immovable<Tuple<TElements...>> tuple) noexcept;
+    template <Int TIndex, IsTuple TTuple>
+    [[nodiscard]] constexpr Immovable<Templates::ElementOf<TIndex, TTuple>>
+    Get(Immovable<TTuple> tuple) noexcept;
 
     /// \brief Access a tuple element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
-    template <Int TIndex, typename... TElements>
-    [[nodiscard]] constexpr
-    Movable<Templates::PackElementOf<TIndex, TElements...>>
-    Get(Movable<Tuple<TElements...>> tuple) noexcept;
+    template <Int TIndex, IsTuple TTuple>
+    [[nodiscard]] constexpr Movable<Templates::ElementOf<TIndex, TTuple>>
+    Get(Movable<TTuple> tuple) noexcept;
 
     // Utilities.
     // ==========
