@@ -366,15 +366,16 @@ namespace Syntropy
     template <IsTuple TTuple>
     struct Records::RankTrait<TTuple>
     {
-        static constexpr Int kValue = TTuple::kCount;
+        static constexpr Int
+        kValue = TTuple::kCount;
     };
 
     /// \brief Partial template specialization for tuples.
     template <Int TIndex, IsTuple TTuple>
     struct Records::ElementTypeTrait<TIndex, TTuple>
     {
-        using Type = Templates::ElementOf<TIndex,
-                                          typename TTuple::ElementTypes>;
+        using
+        Type = Templates::ElementOf<TIndex, typename TTuple::ElementTypes>;
     };
 
 }
