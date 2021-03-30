@@ -205,7 +205,7 @@ namespace Syntropy
     }
 
     template <IsTuple TTuple, IsTuple UTuple>
-    requires AreSameCount<TTuple, UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr TTuple
     Exchange(Mutable<TTuple> lhs, Forwarding<UTuple> rhs) noexcept
     {
@@ -215,45 +215,42 @@ namespace Syntropy
     // Comparison.
     // ===========
 
-    template <typename... TElements, typename... UElements>
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Bool
-    operator==(Immutable<Tuple<TElements...>> lhs,
-               Immutable<Tuple<UElements...>> rhs) noexcept
+    operator==(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         return Records::AreEquivalent(lhs, rhs);
     }
 
-    template <typename... TElements, typename... UElements>
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Ordering
-    operator<=>(Immutable<Tuple<TElements...>> lhs,
-                Immutable<Tuple<UElements...>> rhs) noexcept
+    operator<=>(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         return Records::Compare(lhs, rhs);
     }
 
-    template <typename... TElements, typename... UElements>
-    requires (sizeof...(TElements) == sizeof...(UElements))
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<Tuple<TElements...>> lhs,
-             Immutable<Tuple<UElements...>> rhs) noexcept
+    AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         return Records::AreEqual(lhs, rhs);
     }
 
-    template <typename... TElements, typename... UElements>
-    requires (sizeof...(TElements) == sizeof...(UElements))
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<Tuple<TElements...>> lhs,
-                  Immutable<Tuple<UElements...>> rhs) noexcept
+    AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         return Records::AreEquivalent(lhs, rhs);
     }
 
-    template <typename... TElements, typename... UElements>
-    requires (sizeof...(TElements) == sizeof...(UElements))
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<Tuple<TElements...>> lhs,
-            Immutable<Tuple<UElements...>> rhs) noexcept
+    Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         return Records::Compare(lhs, rhs);
     }

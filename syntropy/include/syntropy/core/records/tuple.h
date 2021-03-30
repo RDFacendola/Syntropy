@@ -68,12 +68,6 @@ namespace Syntropy
     using
     ElementOf = Templates::ElementOf<TIndex, ElementListOf<TTuple>>;
 
-    /// \brief True if two tuples have the same number of elements, false
-    ///        otherwise.
-    template <IsTuple TTuple, IsTuple UTuple>
-    inline constexpr Bool
-    AreSameCount = (CountOf<TTuple> == CountOf<UTuple>);
-
     /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
@@ -344,7 +338,7 @@ namespace Syntropy
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
     template <IsTuple TTuple, IsTuple UTuple>
-    requires AreSameCount<TTuple, UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr TTuple
     Exchange(Mutable<TTuple> lhs, Forwarding<UTuple> rhs) noexcept;
 
@@ -353,39 +347,36 @@ namespace Syntropy
 
     /// \brief Check whether two tuples are member-wise equivalent.
     /// \brief Equivalence doesn't imply equality.
-    template <typename... TElements, typename... UElements>
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Bool
-    operator==(Immutable<Tuple<TElements...>> lhs,
-               Immutable<Tuple<UElements...>> rhs) noexcept;
+    operator==(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Member-wise compare two tuples.
-    template <typename... TElements, typename... UElements>
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Ordering
-    operator<=>(Immutable<Tuple<TElements...>> lhs,
-                Immutable<Tuple<UElements...>> rhs) noexcept;
+    operator<=>(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Check whether two tuples are member-wise equal.
     /// \remarks Equality implies equivalence.
-    template <typename... TElements, typename... UElements>
-    requires (sizeof...(TElements) == sizeof...(UElements))
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<Tuple<TElements...>> lhs,
-             Immutable<Tuple<UElements...>> rhs) noexcept;
+    AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Check whether two tuples are member-wise equivalent.
     /// \remarks Equivalence doesn't imply equality.
-    template <typename... TElements, typename... UElements>
-    requires (sizeof...(TElements) == sizeof...(UElements))
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<Tuple<TElements...>> lhs,
-                  Immutable<Tuple<UElements...>> rhs) noexcept;
+    AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Member-wise compare two tuples.
-    template <typename... TElements, typename... UElements>
-    requires (sizeof...(TElements) == sizeof...(UElements))
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<Tuple<TElements...>> lhs,
-            Immutable<Tuple<UElements...>> rhs) noexcept;
+    Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /************************************************************************/
     /* TYPE TRAITS                                                          */
