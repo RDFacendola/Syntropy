@@ -45,30 +45,6 @@ namespace Syntropy
     concept IsTuple = Templates::IsTemplateSpecializationOf<TTuple, Tuple>;
 
     /************************************************************************/
-    /* TYPE TRAITS                                                          */
-    /************************************************************************/
-
-    /// \brief Tuple elements list.
-    template <IsTuple TTuple>
-    using
-    ElementListOf = typename TTuple::ElementList;
-
-    /// \brief Number of elements in a tuple.
-    template <IsTuple TTuple>
-    inline constexpr Int
-    CountOf = Templates::CountOf<ElementListOf<TTuple>>;
-
-    /// \brief Index of the first element in a tuple wih a given type.
-    template <typename TType, IsTuple TTuple>
-    inline constexpr Int
-    IndexOf = Templates::IndexOf<TType, ElementListOf<TTuple>>;
-
-    /// \brief Type of a tuple element, by index.
-    template <Int TIndex, IsTuple TTuple>
-    using
-    ElementOf = Templates::ElementOf<TIndex, ElementListOf<TTuple>>;
-
-    /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
 
@@ -94,6 +70,10 @@ namespace Syntropy
 
     public:
 
+        /// \brief Number of elements in the tuple.
+        static constexpr Int
+        kRank = sizeof...(TElements) + 1;
+
         /// \brief Type of the base class.
         using BaseClass = Tuple<TElements...>;
 
@@ -101,7 +81,7 @@ namespace Syntropy
         using SelfType = Tuple<TElement, TElements...>;
 
         /// \brief Element types.
-        using ElementList = Templates::TypeList<TElement, TElements...>;
+        using ElementTypes = Templates::TypeList<TElement, TElements...>;
 
         /// \brief Types of arguments.
         template <typename... UElements>
@@ -142,8 +122,8 @@ namespace Syntropy
         ///        are copy-constructible.
         template<typename UElement,
                  typename... UElements,
-                 Details::EnableIfTupleConvertingConstructor<ElementList, UElement, UElements...> = nullptr>
-        constexpr explicit (Details::ExplicitIfTupleConvertingConstructor<ElementList, UElement, UElements...>)
+                 Details::EnableIfTupleConvertingConstructor<ElementTypes, UElement, UElements...> = nullptr>
+        constexpr explicit (Details::ExplicitIfTupleConvertingConstructor<ElementTypes, UElement, UElements...>)
         Tuple(Forwarding<UElement> element,
               Forwarding<UElements>... elements) noexcept
             : Tuple(ElementwiseTag{},
@@ -157,8 +137,8 @@ namespace Syntropy
         ///        elements are copy-constructible.
         template<typename UElement,
                  typename... UElements,
-                 Details::EnableIfTupleConvertingCopyConstructor<ElementList, UElement, UElements...> = nullptr>
-        explicit (Details::ExplicitIfTupleConvertingCopyConstructor<ElementList, UElement, UElements...>)
+                 Details::EnableIfTupleConvertingCopyConstructor<ElementTypes, UElement, UElements...> = nullptr>
+        explicit (Details::ExplicitIfTupleConvertingCopyConstructor<ElementTypes, UElement, UElements...>)
         constexpr Tuple(Immutable<Tuple<UElement, UElements...>> rhs) noexcept
             : Tuple(UnwindTag{},
                     Templates::SequenceFor<UElement, UElements...>{},
@@ -171,8 +151,8 @@ namespace Syntropy
         ///        elements are move-constructible.
         template<typename UElement,
                  typename... UElements,
-                 Details::EnableIfTupleConvertingMoveConstructor<ElementList, UElement, UElements...> = nullptr>
-        constexpr explicit (Details::ExplicitIfTupleConvertingMoveConstructor<ElementList, UElement, UElements...>)
+                 Details::EnableIfTupleConvertingMoveConstructor<ElementTypes, UElement, UElements...> = nullptr>
+        constexpr explicit (Details::ExplicitIfTupleConvertingMoveConstructor<ElementTypes, UElement, UElements...>)
          Tuple(Movable<Tuple<UElement, UElements...>> rhs) noexcept
             : Tuple(UnwindTag{},
                     Templates::SequenceFor<UElement, UElements...>{},
@@ -197,28 +177,28 @@ namespace Syntropy
 
         /// \brief Copy-assignment operator.
         template <typename TSelf = Tuple,
-                  typename TSelfList = ElementList,
+                  typename TSelfList = ElementTypes,
                   Details::EnableIfTupleCopyAssignment<TSelfList> = nullptr>
         constexpr Mutable<Tuple>
         operator=(Templates::ExactOf<Immutable<TSelf>> rhs) noexcept;
 
         /// \brief Move-assignment operator.
         template <typename TSelf = Tuple,
-                  typename TSelfList = ElementList,
+                  typename TSelfList = ElementTypes,
                   Details::EnableIfTupleMoveAssignment<TSelfList> = nullptr>
         constexpr Mutable<Tuple>
         operator=(Templates::ExactOf<Movable<TSelf>> rhs) noexcept;
 
         /// \brief Tuple converting copy-assignment operator.
         template <typename... UElements,
-                  typename TSelfList = ElementList,
+                  typename TSelfList = ElementTypes,
                   Details::EnableIfTupleConvertingCopyAssignment<TSelfList, ArgumentList<UElements...>> = nullptr>
         constexpr Mutable<Tuple>
         operator=(Immutable<Tuple<UElements...>> rhs) noexcept;
 
         /// \brief Tuple converting move-assignment operator.
         template <typename... UElements,
-                  typename TSelfList = ElementList,
+                  typename TSelfList = ElementTypes,
                   Details::EnableIfTupleConvertingMoveAssignment<TSelfList, ArgumentList<UElements...>> = nullptr>
         constexpr Mutable<Tuple>
         operator=(Movable<Tuple<UElements...>> rhs) noexcept;
@@ -240,11 +220,15 @@ namespace Syntropy
     template <>
     struct Tuple<>
     {
+        /// \brief Number of elements in the tuple.
+        static constexpr Int
+        kRank = 0;
+
         /// \brief Type of the tuple itself.
         using SelfType = Tuple<>;
 
         /// \brief Element types.
-        using ElementList = Templates::TypeList<>;
+        using ElementTypes = Templates::TypeList<>;
 
         /// \brief Default constructor.
         constexpr
@@ -383,19 +367,18 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Partial template specialization for tuples.
-    template <typename... TElements>
-    struct Records::RankTrait<Tuple<TElements...>>
+    template <IsTuple TTuple>
+    struct Records::RankTrait<TTuple>
     {
-        static constexpr Int kValue = sizeof...(TElements);
+        static constexpr Int kValue = TTuple::kCount;
     };
 
     /// \brief Partial template specialization for tuples.
-    template <Int TIndex, typename... TElements>
-    struct Records::ElementTypeTrait<TIndex, Tuple<TElements...>>
+    template <Int TIndex, IsTuple TTuple>
+    struct Records::ElementTypeTrait<TIndex, TTuple>
     {
-        using ElementTypeList = Templates::TypeList<TElements...>;
-
-        using Type = Templates::ElementOf<TIndex, ElementTypeList>;
+        using Type = Templates::ElementOf<TIndex,
+                                          typename TTuple::ElementTypes>;
     };
 
 }

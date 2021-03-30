@@ -135,7 +135,7 @@ namespace Syntropy
     {
         using BaseType = Details::TupleBase<TIndex, TTuple>;
 
-        using ElementType = ElementOf<TIndex, TTuple>;
+        using ElementType = Records::ElementTypeOf<TIndex, TTuple>;
 
         return static_cast<Immovable<ElementType>>(
                    static_cast<Immutable<BaseType>>(tuple).element_);
@@ -147,7 +147,7 @@ namespace Syntropy
     {
         using BaseType = Details::TupleBase<TIndex, TTuple>;
 
-        using ElementType = ElementOf<TIndex, TTuple>;
+        using ElementType = Records::ElementTypeOf<TIndex, TTuple>;
 
         return static_cast<Movable<ElementType>>(
             static_cast<Mutable<BaseType>>(tuple).element_);
