@@ -197,21 +197,19 @@ namespace Syntropy
     // Swap.
     // =====
 
-    template <typename... TElements>
+    template <IsTuple TTuple>
     constexpr void
-    Swap(Mutable<Tuple<TElements...>> lhs,
-         Mutable<Tuple<TElements...>> rhs) noexcept
+    Swap(Mutable<TTuple> lhs, Mutable<TTuple> rhs) noexcept
     {
         return Records::Swap(lhs, rhs);
     }
 
-    template <typename... TElements, typename... UElements>
-    requires (sizeof...(TElements) == sizeof...(UElements))
-    [[nodiscard]] constexpr Tuple<TElements...>
-    Exchange(Mutable<Tuple<TElements...>> lhs,
-             Forwarding<Tuple<UElements...>> rhs) noexcept
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires AreSameCount<TTuple, UTuple>
+    [[nodiscard]] constexpr TTuple
+    Exchange(Mutable<TTuple> lhs, Forwarding<UTuple> rhs) noexcept
     {
-        return Records::Exchange(lhs, Forward<Tuple<UElements...>>(rhs));
+        return Records::Exchange(lhs, Forward<UTuple>>(rhs));
     }
 
     // Comparison.

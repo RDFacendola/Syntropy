@@ -68,6 +68,12 @@ namespace Syntropy
     using
     ElementOf = Templates::ElementOf<TIndex, ElementListOf<TTuple>>;
 
+    /// \brief True if two tuples have the same number of elements, false
+    ///        otherwise.
+    template <IsTuple TTuple, IsTuple UTuple>
+    inline constexpr Bool
+    AreSameCount = (CountOf<TTuple> == CountOf<UTuple>);
+
     /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
@@ -332,17 +338,15 @@ namespace Syntropy
     // =====
 
     /// \brief Member-wise swap two tuples.
-    template <typename... TElements>
+    template <IsTuple TTuple>
     constexpr void
-    Swap(Mutable<Tuple<TElements...>> lhs,
-         Mutable<Tuple<TElements...>> rhs) noexcept;
+    Swap(Mutable<TTuple> lhs, Mutable<TTuple> rhs) noexcept;
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
-    template <typename... TElements, typename... UElements>
-    requires (sizeof...(TElements) == sizeof...(UElements))
-    [[nodiscard]] constexpr Tuple<TElements...>
-    Exchange(Mutable<Tuple<TElements...>> lhs,
-             Forwarding<Tuple<UElements...>> rhs) noexcept;
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires AreSameCount<TTuple, UTuple>
+    [[nodiscard]] constexpr TTuple
+    Exchange(Mutable<TTuple> lhs, Forwarding<UTuple> rhs) noexcept;
 
     // Comparison.
     // ===========
