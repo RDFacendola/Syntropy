@@ -112,7 +112,7 @@ namespace Syntropy
     // =======
 
     template <Int TIndex, IsTuple TTuple>
-    [[nodiscard]] constexpr Immutable<Templates::ElementOf<TIndex, TTuple>>
+    [[nodiscard]] constexpr Immutable<Records::ElementTypeOf<TIndex, TTuple>>
     Get(Immutable<TTuple> tuple) noexcept
     {
         using BaseType = Details::TupleBase<TIndex, TTuple>;
@@ -121,7 +121,7 @@ namespace Syntropy
     }
 
     template <Int TIndex, IsTuple TTuple>
-    [[nodiscard]] constexpr Mutable<Templates::ElementOf<TIndex, TTuple>>
+    [[nodiscard]] constexpr Mutable<Records::ElementTypeOf<TIndex, TTuple>>
     Get(Mutable<TTuple> tuple) noexcept
     {
         using BaseType = Details::TupleBase<TIndex, TTuple>;
@@ -130,7 +130,7 @@ namespace Syntropy
     }
 
     template <Int TIndex, IsTuple TTuple>
-    [[nodiscard]] constexpr Immovable<Templates::ElementOf<TIndex, TTuple>>
+    [[nodiscard]] constexpr Immovable<Records::ElementTypeOf<TIndex, TTuple>>
     Get(Immovable<TTuple> tuple) noexcept
     {
         using BaseType = Details::TupleBase<TIndex, TTuple>;
@@ -142,7 +142,7 @@ namespace Syntropy
     }
 
     template <Int TIndex, IsTuple TTuple>
-    [[nodiscard]] constexpr Movable<Templates::ElementOf<TIndex, TTuple>>
+    [[nodiscard]] constexpr Movable<Records::ElementTypeOf<TIndex, TTuple>>
     Get(Movable<TTuple> tuple) noexcept
     {
         using BaseType = Details::TupleBase<TIndex, TTuple>;

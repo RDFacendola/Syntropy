@@ -53,19 +53,19 @@ namespace Syntropy
     struct Tuple<TElement, TElements...> : private Tuple<TElements...>
     {
         template <Int TIndex, IsTuple TTuple>
-        friend constexpr Immutable<Templates::ElementOf<TIndex, TTuple>>
+        friend constexpr Immutable<Records::ElementTypeOf<TIndex, TTuple>>
         Get(Immutable<TTuple> tuple) noexcept;
 
         template <Int TIndex, IsTuple TTuple>
-        friend constexpr Mutable<Templates::ElementOf<TIndex, TTuple>>
+        friend constexpr Mutable<Records::ElementTypeOf<TIndex, TTuple>>
         Get(Mutable<TTuple> tuple) noexcept;
 
         template <Int TIndex, IsTuple TTuple>
-        friend constexpr Immovable<Templates::ElementOf<TIndex, TTuple>>
+        friend constexpr Immovable<Records::ElementTypeOf<TIndex, TTuple>>
         Get(Immovable<TTuple> tuple) noexcept;
 
         template <Int TIndex, IsTuple TTuple>
-        friend constexpr Movable<Templates::ElementOf<TIndex, TTuple>>
+        friend constexpr Movable<Records::ElementTypeOf<TIndex, TTuple>>
         Get(Movable<TTuple> tuple) noexcept;
 
     public:
@@ -82,10 +82,6 @@ namespace Syntropy
 
         /// \brief Element types.
         using ElementTypes = Templates::TypeList<TElement, TElements...>;
-
-        /// \brief Types of arguments.
-        template <typename... UElements>
-        using ArgumentList = Templates::TypeList<UElements...>;
 
         /// \brief Tag type used to construct a tuple element-wise.
         struct ElementwiseTag {};
@@ -192,14 +188,14 @@ namespace Syntropy
         /// \brief Tuple converting copy-assignment operator.
         template <typename... UElements,
                   typename TSelfList = ElementTypes,
-                  Details::EnableIfTupleConvertingCopyAssignment<TSelfList, ArgumentList<UElements...>> = nullptr>
+                  Details::EnableIfTupleConvertingCopyAssignment<TSelfList, Templates::TypeList<UElements...>> = nullptr>
         constexpr Mutable<Tuple>
         operator=(Immutable<Tuple<UElements...>> rhs) noexcept;
 
         /// \brief Tuple converting move-assignment operator.
         template <typename... UElements,
                   typename TSelfList = ElementTypes,
-                  Details::EnableIfTupleConvertingMoveAssignment<TSelfList, ArgumentList<UElements...>> = nullptr>
+                  Details::EnableIfTupleConvertingMoveAssignment<TSelfList, Templates::TypeList<UElements...>> = nullptr>
         constexpr Mutable<Tuple>
         operator=(Movable<Tuple<UElements...>> rhs) noexcept;
 
@@ -258,28 +254,28 @@ namespace Syntropy
     ///
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, IsTuple TTuple>
-    [[nodiscard]] constexpr Immutable<Templates::ElementOf<TIndex, TTuple>>
+    [[nodiscard]] constexpr Immutable<Records::ElementTypeOf<TIndex, TTuple>>
     Get(Immutable<TTuple> tuple) noexcept;
 
     /// \brief Access a tuple element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, IsTuple TTuple>
-    [[nodiscard]] constexpr Mutable<Templates::ElementOf<TIndex, TTuple>>
+    [[nodiscard]] constexpr Mutable<Records::ElementTypeOf<TIndex, TTuple>>
     Get(Mutable<TTuple> tuple) noexcept;
 
     /// \brief Access a tuple element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, IsTuple TTuple>
-    [[nodiscard]] constexpr Immovable<Templates::ElementOf<TIndex, TTuple>>
+    [[nodiscard]] constexpr Immovable<Records::ElementTypeOf<TIndex, TTuple>>
     Get(Immovable<TTuple> tuple) noexcept;
 
     /// \brief Access a tuple element by index.
     ///
     /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, IsTuple TTuple>
-    [[nodiscard]] constexpr Movable<Templates::ElementOf<TIndex, TTuple>>
+    [[nodiscard]] constexpr Movable<Records::ElementTypeOf<TIndex, TTuple>>
     Get(Movable<TTuple> tuple) noexcept;
 
     // Utilities.
