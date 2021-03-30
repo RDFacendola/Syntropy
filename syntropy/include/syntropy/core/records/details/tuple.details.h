@@ -123,14 +123,14 @@ namespace Syntropy::Details
     /// \brief Requires all tuple elements to be default constructible.
     template <typename... TElements>
     concept TupleDefaultConstructor
-        = Templates::IsDefaultConstructible<Templates::TypeList<TElements...>>;
+        = (Templates::IsDefaultConstructible<TElements> && ...);
 
     // (2)
 
     /// \brief Requires all tuple elements to be copy-constructible.
     template <typename... TElements>
     concept TupleDirectConstructor
-        = Templates::IsCopyConstructible<Templates::TypeList<TElements...>>;
+        = (Templates::IsCopyConstructible<TElements> && ...);
 
     // (3)
 
