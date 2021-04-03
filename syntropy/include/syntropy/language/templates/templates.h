@@ -66,6 +66,11 @@ namespace Syntropy::Templates
         using Type = TType;
     };
 
+    /// \brief Exposes a member Type equal to TypeList<TTypes...>.
+    template <typename... TTypes>
+    struct AliasList
+        : Alias<TypeList<TTypes...>> {};
+
     /************************************************************************/
     /* CONSTANTS                                                            */
     /************************************************************************/
