@@ -97,19 +97,6 @@ namespace Syntropy::Templates
     /// \brief False boolean constant.
     using False = BoolConstant<false>;
 
-    /************************************************************************/
-    /* EVALUATE                                                             */
-    /************************************************************************/
-
-    /// \brief Constant equal to the value of the constant TConstant.
-    /// \remarks If TConstant is not a specialization of Constant<>, the
-    ///          program is ill-formed.
-    template <typename TConstant>
-    inline constexpr auto Evaluate = IllFormed<void, TConstant>::kValue;
-
-    /// \brief Partial specialization for Constants.
-    template <typename TType, TType TValue>
-    inline constexpr TType Evaluate<Constant<TType,TValue>> = TValue;
 
 }
 
