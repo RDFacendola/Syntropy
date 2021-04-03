@@ -281,6 +281,20 @@ namespace Syntropy::Templates
     concept IsTemplateOf
         = (Details::IsTemplateSpecializationOf<TTypes, TTemplate> && ...);
 
+    // Sequence.
+    // =========
+
+    /// \brief True if all types are Sequences.
+    template <typename... TTypes>
+    concept IsSequence
+        = (Details::IsSequence<TTypes> && ...);
+
+    /// \brief True if all sequences are monotonically ncreasing contiguous
+    ///        sequences.
+    template <typename... TSequences>
+    concept IsContiguousSequence
+        = (Details::IsContiguousSequence<TSequences> && ...);
+
 }
 
 // ===========================================================================

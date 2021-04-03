@@ -32,7 +32,7 @@ namespace Syntropy::Templates
     ///          transformed accordingly.
     template <typename TType>
     using ExactOf
-        = typename Details::ExactOfHelper<TType>::Type;
+        = Details::ExactOf<TType>;
 
     /// \brief Qualifier-removing value type of TType.
     ///
@@ -40,7 +40,7 @@ namespace Syntropy::Templates
     ///          transformed accordingly.
     template <typename TType>
     using UnqualifiedOf
-        = typename Details::UnqualifiedOfHelper<TType>::Type;
+        = Details::UnqualifiedOf<TType>;
 
     /// \brief Qualifier-preserving value type of TType.
     ///
@@ -48,7 +48,7 @@ namespace Syntropy::Templates
     ///          transformed accordingly.
     template <typename TType>
     using QualifiedOf
-        = typename Details::QualifiedOfHelper<TType>::Type;
+        = Details::QualifiedOf<TType>;
 
     /// \brief Mutable reference type of TType.
     ///
@@ -56,7 +56,7 @@ namespace Syntropy::Templates
     ///          transformed accordingly.
     template <typename TType>
     using MutableOf
-        = typename Details::MutableOfHelper<TType>::Type;
+        = Details::MutableOf<TType>;
 
     /// \brief Immutable reference type of TType.
     ///
@@ -64,7 +64,7 @@ namespace Syntropy::Templates
     ///          transformed accordingly.
     template <typename TType>
     using ImmutableOf
-        = typename Details::ImmutableOfHelper<TType>::Type;
+        = Details::ImmutableOf<TType>;
 
     /// \brief Movable reference type of TType.
     ///
@@ -72,7 +72,7 @@ namespace Syntropy::Templates
     ///          transformed accordingly.
     template <typename TType>
     using MovableOf
-        = typename Details::MovableOfHelper<TType>::Type;
+        = Details::MovableOf<TType>;
 
     /// \brief Immovable reference type of TType.
     ///
@@ -80,7 +80,7 @@ namespace Syntropy::Templates
     ///          transformed accordingly.
     template <typename TType>
     using ImmovableOf
-        = typename Details::ImmovableOfHelper<TType>::Type;
+        = Details::ImmovableOf<TType>;
 
     /// \brief Either mutable or immutable reference type of TType.
     ///
@@ -88,7 +88,7 @@ namespace Syntropy::Templates
     ///          transformed accordingly.
     template <typename TType>
     using ReferenceOf
-        = typename Details::ReferenceOfHelper<TType>::Type;
+        = Details::ReferenceOf<TType>;
 
     /// \brief Forwarding reference type of TType.
     ///
@@ -97,7 +97,7 @@ namespace Syntropy::Templates
     ///          transformed accordingly.
     template <typename TType>
     using ForwardingOf
-        = typename Details::ForwardingOfHelper<TType>::Type;
+        = Details::ForwardingOf<TType>;
 
     /// \brief Function pointer type.
     ///
@@ -105,7 +105,7 @@ namespace Syntropy::Templates
     ///          transformed accordingly.
     template <typename TType>
     using FunctionOf
-        = typename Details::FunctionOfHelper<TType>::Type;
+        = Details::FunctionOf<TType>;
 
     /************************************************************************/
     /* DECLVAL                                                              */
@@ -155,6 +155,37 @@ namespace Syntropy::Templates
     inline constexpr
     Int ElementIndexOf
         = Details::ElementIndexOf<TType, TTypes...>;
+
+    /************************************************************************/
+    /* SEQUENCE TRAITS                                                      */
+    /************************************************************************/
+
+    /// \brief Generate a contiguous sequence of TCount integers, starting
+    ///        from 0.
+    template <Int TCount>
+    using MakeSequence
+        = Details::MakeSequence<TCount>;
+
+    /// \brief Generate a contiguous sequence the same size as a parameter
+    ///        pack.
+    template <typename... TTypes>
+    using SequenceFor
+        = Details::SequenceFor<TTypes...>;
+
+    /// \brief Add a value to each element in a sequence.
+    template <Int TValue, typename TSequence>
+    using SequenceAdd
+        = Details::SequenceAdd<TValue, TSequence>;
+
+    /// \brief Concatenate one or more sequences together.
+    template <typename TSequence, typename... TSequences>
+    using SequenceCat
+        = Details::SequenceCat<TSequence, TSequences...>;
+
+    /// \brief Create a sequence of a repeating value.
+    template <Int TValue, Int TCount>
+    using SequenceRepeat
+        = Details::SequenceRepeat<TValue, TCount>;
 
 }
 

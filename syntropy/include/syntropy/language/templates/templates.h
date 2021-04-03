@@ -17,6 +17,47 @@
 namespace Syntropy::Templates
 {
     /************************************************************************/
+    /* ALIAS                                                                */
+    /************************************************************************/
+
+    /// \brief Exposes a member Type equal to TType.
+    template <typename TType>
+    struct Alias
+    {
+        using Type = TType;
+    };
+
+    /************************************************************************/
+    /* CONSTANTS                                                            */
+    /************************************************************************/
+
+    /// \brief Exposes a member kValue equal to TValue.
+    template <typename TType, TType TValue>
+    struct Constant
+    {
+        static constexpr TType
+        kValue = TValue;
+    };
+
+    /// \brief Boolean constant.
+    template <Bool TValue>
+    using BoolConstant
+        = Constant<Bool, TValue>;
+
+    /// \brief Integer constant.
+    template <Int TValue>
+    using IntConstant
+        = Constant<Int, TValue>;
+
+    /// \brief True boolean constant.
+    using True
+        = BoolConstant<true>;
+
+    /// \brief False boolean constant.
+    using False
+        = BoolConstant<false>;
+
+    /************************************************************************/
     /* TYPE LIST                                                            */
     /************************************************************************/
 
@@ -55,51 +96,23 @@ namespace Syntropy::Templates
         using SelfType = TypeList<>;
     };
 
-    /************************************************************************/
-    /* ALIAS                                                                */
-    /************************************************************************/
-
-    /// \brief Exposes a member Type equal to TType.
-    template <typename TType>
-    struct Alias
-    {
-        using Type = TType;
-    };
-
     /// \brief Exposes a member Type equal to TypeList<TTypes...>.
     template <typename... TTypes>
     struct AliasList
         : Alias<TypeList<TTypes...>> {};
 
     /************************************************************************/
-    /* CONSTANTS                                                            */
+    /* SEQUENCE                                                             */
     /************************************************************************/
 
-    /// \brief Exposes a member kValue equal to TValue.
-    template <typename TType, TType TValue>
-    struct Constant
-    {
-        static constexpr TType
-        kValue = TValue;
-    };
+    /// \brief A compile-time sequence of integers.
+    template <Int... TSequence>
+    struct Sequence {};
 
-    /// \brief Boolean constant.
-    template <Bool TValue>
-    using BoolConstant
-        = Constant<Bool, TValue>;
-
-    /// \brief Integer constant.
-    template <Int TValue>
-    using IntConstant
-        = Constant<Int, TValue>;
-
-    /// \brief True boolean constant.
-    using True
-        = BoolConstant<true>;
-
-    /// \brief False boolean constant.
-    using False
-        = BoolConstant<false>;
+    /// \brief Exposes a member Type equal to Sequence<TSequence...>.
+    template <Int... TSequence>
+    struct AliasSequence
+        : Alias<Sequence<TSequence...>> {};
 
 }
 

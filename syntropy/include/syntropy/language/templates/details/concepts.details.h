@@ -292,6 +292,38 @@ namespace Syntropy::Templates::Details
     Bool IsTemplateSpecializationOf<TTemplate<TTypes...>, TTemplate>
         = true;
 
+    // IsSequence.
+    // ===========
+
+    /// \brief True if TType is a sequence.
+    template <typename TType>
+    inline constexpr
+    Bool IsSequence
+        = false;
+
+    /// \brief Partial template specialzation for sequences.
+    template <Int... TIndices>
+    inline constexpr
+    Bool IsSequence<Sequence<TIndices...>>
+        = true;
+
+    // IsContiguousSequence.
+    // =====================
+
+    /// \brief Constant equal to true if TSequence is a monotonically
+    ///        increasing contiguous sequence, equal to false otherwise.
+    template <typename TSequence>
+    inline constexpr
+    Bool IsContiguousSequence
+        = false;
+
+    /// \brief Partial specialization for sequences.
+    template <Int THead, Int... TRest>
+    inline constexpr Bool
+    IsContiguousSequence<Sequence<THead, TRest...>>
+         = IsSame<Sequence<THead, TRest...>,
+                  SequenceAdd<THead, MakeSequence<1 + sizeof...(TRest)>>>;
+
 }
 
 // ===========================================================================

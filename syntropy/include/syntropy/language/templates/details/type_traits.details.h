@@ -35,6 +35,11 @@ namespace Syntropy::Templates::Details
     struct ExactOfHelper<TypeList<TTypes...>>
         : AliasListHelper<ExactOfHelper<TTypes>...> {};
 
+    /// \brief Type identical to TType.
+    template <typename TType>
+    using ExactOf
+        = typename ExactOfHelper<TType>::Type;
+
     //
 
     /// \brief Qualifier-removing value type of TType.
@@ -46,6 +51,11 @@ namespace Syntropy::Templates::Details
     template <typename... TTypes>
     struct UnqualifiedOfHelper<TypeList<TTypes...>>
         : AliasListHelper<UnqualifiedOfHelper<TTypes>...> {};
+
+    /// \brief Qualifier-removing value type of TType.
+    template <typename TType>
+    using UnqualifiedOf
+        = typename UnqualifiedOfHelper<TType>::Type;
 
     //
 
@@ -59,6 +69,11 @@ namespace Syntropy::Templates::Details
     struct QualifiedOfHelper<TypeList<TTypes...>>
         : AliasListHelper<QualifiedOfHelper<TTypes>...> {};
 
+    /// \brief Qualifier-preserving value type of TType.
+    template <typename TType>
+    using QualifiedOf
+        = typename QualifiedOfHelper<TType>::Type;
+
     //
 
     /// \brief Mutable reference type of TType.
@@ -70,6 +85,11 @@ namespace Syntropy::Templates::Details
     template <typename... TTypes>
     struct MutableOfHelper<TypeList<TTypes...>>
         : AliasListHelper<MutableOfHelper<TTypes>...> {};
+
+    /// \brief Mutable reference type of TType.
+    template <typename TType>
+    using MutableOf
+        = typename MutableOfHelper<TType>::Type;
 
     //
 
@@ -84,6 +104,10 @@ namespace Syntropy::Templates::Details
     struct ImmutableOfHelper<TypeList<TTypes...>>
         : AliasListHelper<ImmutableOfHelper<TTypes>...> {};
 
+    /// \brief Immutable reference type of TType.
+    template <typename TType>
+    using ImmutableOf
+        = typename ImmutableOfHelper<TType>::Type;
     //
 
     /// \brief Movable reference type of TType.
@@ -95,6 +119,11 @@ namespace Syntropy::Templates::Details
     template <typename... TTypes>
     struct MovableOfHelper<TypeList<TTypes...>>
         : AliasListHelper<MovableOfHelper<TTypes>...> {};
+
+    /// \brief Movable reference type of TType.
+    template <typename TType>
+    using MovableOf
+        = typename MovableOfHelper<TType>::Type;
 
     //
 
@@ -109,6 +138,11 @@ namespace Syntropy::Templates::Details
     struct ImmovableOfHelper<TypeList<TTypes...>>
         : AliasListHelper<ImmovableOfHelper<TTypes>...> {};
 
+    /// \brief Immovable reference type of TType.
+    template <typename TType>
+    using ImmovableOf
+        = typename ImmovableOfHelper<TType>::Type;
+
     //
 
     /// \brief Either mutable or immutable reference type of TType.
@@ -121,11 +155,14 @@ namespace Syntropy::Templates::Details
     struct ReferenceOfHelper<TypeList<TTypes...>>
         : AliasListHelper<ReferenceOfHelper<TTypes>...> {};
 
+    /// \brief Either mutable or immutable reference type of TType.
+    template <typename TType>
+    using ReferenceOf
+        = typename ReferenceOfHelper<TType>::Type;
+
     //
 
     /// \brief Forwarding reference type of TType.
-    ///
-    /// \remarks This transform honors reference collapsing rule.
     template <typename TType>
     struct ForwardingOfHelper
         : Alias<std::add_rvalue_reference_t<TType>> {};
@@ -134,6 +171,11 @@ namespace Syntropy::Templates::Details
     template <typename... TTypes>
     struct ForwardingOfHelper<TypeList<TTypes...>>
         : AliasListHelper<ForwardingOfHelper<TTypes>...> {};
+
+    /// \brief Forwarding reference type of TType.
+    template <typename TType>
+    using ForwardingOf
+        = typename ForwardingOfHelper<TType>::Type;
 
     //
 
@@ -146,6 +188,11 @@ namespace Syntropy::Templates::Details
     template <typename... TTypes>
     struct FunctionOfHelper<TypeList<TTypes...>>
         : AliasListHelper<FunctionOfHelper<TTypes>...> {};
+
+    /// \brief Function pointer type.
+    template <typename TType>
+    using FunctionOf
+        = typename FunctionOfHelper<TType>::Type;
 
     /************************************************************************/
     /* TYPE LIST TRAITS                                                     */
@@ -257,6 +304,99 @@ namespace Syntropy::Templates::Details
         = ElementIndexOfHelper<0, TType, TTypes>::kValue;
 
     //
+
+    /************************************************************************/
+    /* SEQUENCE TRAITS                                                      */
+    /************************************************************************/
+
+    // MakeSequence.
+    // =============
+
+    /// \brief Generate a contiguous sequence of TCount integers, starting
+    ///        from 0.
+    template <Int TCount, Int... TSequence>
+    struct MakeSequenceHelper
+        : MakeSequenceHelper<TCount - 1, TCount - 1, TSequence...> {};
+
+    /// \brief End of recursion.
+    template <Int... TSequence>
+    struct MakeSequenceHelper<0, TSequence...>
+        : AliasSequence<TSequence...> {};
+
+    /// \brief Generate a contiguous sequence of TCount integers, starting
+    ///        from 0.
+    template <Int TCount>
+    using MakeSequence
+        = typename MakeSequenceHelper<TCount>::Type;
+
+    // SequenceFor.
+    // ============
+
+    /// \brief Helper alias template used to convert a parameter pack to an
+    ///        integer sequence of the same size.
+    template <typename... TTypes>
+    using SequenceFor
+        = MakeSequence<sizeof...(TTypes)>;
+
+    // SequenceAdd.
+    // ============
+
+    /// \brief Add a value to each element in a sequence.
+    template <Int TValue, typename TSequence>
+    struct SequenceAddHelper {};
+
+    /// \brief Add a value to each element in a sequence.
+    template <Int TValue, Int... TIndices>
+    struct SequenceAddHelper<TValue, Sequence<TIndices...>>
+        : AliasSequence<(TIndices + TValue)...> {};
+
+    /// \brief Add a value to each element in a sequence.
+    template <Int TValue, typename TSequence>
+    using SequenceAdd
+        = typename SequenceAddHelper<TValue, TSequence>::Type;
+
+    // SequenceCat.
+    // ============
+
+    /// \brief Concatenate one or more sequences together.
+    template <typename TSequence, typename... TSequences>
+    struct SequenceCatHelper {};
+
+    /// \brief Specialization for one-sequences.
+    template <Int... TSequence>
+    struct SequenceCatHelper<Sequence<TSequence...>>
+        : AliasSequence<TSequence...> {};
+
+    /// \brief Specialization for two sequences.
+    template <Int... TSequence, Int... USequence, typename... TSequences>
+    struct SequenceCatHelper<Sequence<TSequence...>,
+                             Sequence<USequence...>,
+                             TSequences...>
+        : SequenceCatHelper<Sequence<TSequence..., USequence...>,
+                            TSequences...> {};
+
+    /// \brief Concatenate zero or more sequences together.
+    template <typename TSequence, typename... TSequences>
+    using SequenceCat
+        = typename SequenceCatHelper<TSequence, TSequences...>::Type;
+
+    // SequenceRepeat.
+    // ===============
+
+    /// \brief Create a sequence of a repeating value.
+    template <Int TValue, Int TCount, Int... TSequence>
+    struct SequenceRepeatHelper
+        : SequenceRepeatHelper<TValue, TCount - 1, TValue, TSequence...> {};
+
+    /// \brief End of recursion.
+    template <Int TValue, Int... TSequence>
+    struct SequenceRepeatHelper<TValue, 0, TSequence...>
+        : AliasSequence<TSequence...> {};
+
+    /// \brief Create a sequence of a repeating value.
+    template <Int TValue, Int TCount>
+    using SequenceRepeat
+        = typename SequenceRepeatHelper<TValue, TCount>::Type;
 
 }
 
