@@ -17,7 +17,46 @@
 namespace Syntropy::Templates
 {
     /************************************************************************/
-    /* TYPES                                                                */
+    /* TYPE LIST                                                            */
+    /************************************************************************/
+
+    /// \brief An ordered sequence of types.
+    /// \author Raffaele D. Facendola - August 2020.
+    template <typename... TTypes>
+    struct TypeList;
+
+    /// \brief Specialization for non-empty type lists.
+    template <typename TType, typename... TTypes>
+    struct TypeList<TType, TTypes...>
+    {
+        /// \brief Number of elements in a type list.
+        static constexpr Int
+        kCount = 1 + sizeof...(TTypes);
+
+        /// \brief Type of the type-list itself.
+        using SelfType = TypeList<TType, TTypes...>;
+
+        /// \brief Type of the first type in the list.
+        using HeadType = TType;
+
+        /// \brief Type of the remaining types in the list.
+        using RestTypes = TypeList<TTypes...>;
+    };
+
+    /// \brief Specialization for empty lists.
+    template <>
+    struct TypeList<>
+    {
+        /// \brief Number of elements in a type list.
+        static constexpr Int
+        kCount = 0;
+
+        /// \brief Type of the type-list itself.
+        using SelfType = TypeList<>;
+    };
+
+    /************************************************************************/
+    /* ALIAS                                                                */
     /************************************************************************/
 
     /// \brief Exposes a member Type equal to TType.
