@@ -8,7 +8,6 @@
 #include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/language/templates/type_traits.h"
-#include "syntropy/language/templates/type_list.h"
 #include "syntropy/language/templates/templates.h"
 
 #include "syntropy/core/records/record_extensions.h"
@@ -87,16 +86,16 @@ namespace Syntropy::Records::Details
               typename URecord,
               template <typename> typename TRankTrait>
     inline constexpr Bool
-    IsSameRank =
-        (RankOf<TRecord, TRankTrait> == RankOf<URecord, TRankTrait>);
+    IsSameRank = (RankOf<TRecord, TRankTrait> == RankOf<URecord, TRankTrait>);
 
     /// \brief Type of a record element.
     template <Int TIndex,
               typename TRecord,
               template <Int, typename> typename TElementTypeTrait>
     using
-    ElementTypeOf = typename TElementTypeTrait<
-        TIndex, Templates::UnqualifiedOf<TRecord>>::Type;
+    ElementTypeOf =
+        typename TElementTypeTrait<TIndex,
+                                   Templates::UnqualifiedOf<TRecord>>::Type;
 
     /// \brief Generates a sequence that can be used to enumerate all
     ///        elements in a record.
@@ -130,10 +129,11 @@ namespace Syntropy::Records::Details
               template <typename> typename TRankTrait,
               template <Int, typename> typename TElementTypeTrait>
     inline constexpr Int
-    ElementIndexOf = Templates::IndexOf<TElement,
-                                        ElementTypeListOf<TRecord,
-                                                          TRankTrait,
-                                                          TElementTypeTrait>>;
+    ElementIndexOf
+        = Templates::ElementIndexOf<TElement,
+                                    ElementTypeListOf<TRecord,
+                                                      TRankTrait,
+                                                      TElementTypeTrait>>;
 
 }
 

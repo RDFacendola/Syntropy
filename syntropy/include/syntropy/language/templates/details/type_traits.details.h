@@ -226,12 +226,14 @@ namespace Syntropy::Templates::Details
 
     /// \brief Number of elements in a parameter pack.
     template <typename... TTypes>
-    inline constexpr Int ElementCountOf
+    inline constexpr
+    Int ElementCountOf
         = sizeof...(TTypes);
 
     /// \brief Specialization for type lists
     template <typename... TTypes>
-    inline constexpr Int ElementCountOf<TypeList<TTypes...>>
+    inline constexpr
+    Int ElementCountOf<TypeList<TTypes...>>
         = sizeof...(TTypes);
 
     //
@@ -250,7 +252,8 @@ namespace Syntropy::Templates::Details
     /// \brief Index of the first element in a type list or parameter pack with
     ///        a given type.
     template <typename TType, typename TTypes>
-    inline constexpr Int ElementIndexOf
+    inline constexpr
+    Int ElementIndexOf
         = ElementIndexOfHelper<0, TType, TTypes>::kValue;
 
     //

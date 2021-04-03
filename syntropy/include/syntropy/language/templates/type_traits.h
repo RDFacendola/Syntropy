@@ -79,7 +79,8 @@ namespace Syntropy::Templates
     /// \remarks Providing a TypeList yields a list whose elements have been
     ///          transformed accordingly.
     template <typename TType>
-    using ImmovableOf
+    using
+    ImmovableOf
         = typename Details::ImmovableOfHelper<TType>::Type;
 
     /// \brief Either mutable or immutable reference type of TType.
@@ -145,13 +146,15 @@ namespace Syntropy::Templates
 
     /// \brief Number of elements in a type list or a parameter pack.
     template <typename... TTypes>
-    inline constexpr Int ElementCountOf
+    inline constexpr
+    Int ElementCountOf
         = Details::ElementCountOf<TTypes...>;
 
     /// \brief Index of the first element in a type list or parameter pack with
     ///        a given type.
     template <typename TType, typename... TTypes>
-    inline constexpr Int ElementIndexOf
+    inline constexpr
+    Int ElementIndexOf
         = Details::ElementIndexOf<TType, TTypes...>;
 
 }

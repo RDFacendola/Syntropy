@@ -85,17 +85,21 @@ namespace Syntropy::Templates
 
     /// \brief Boolean constant.
     template <Bool TValue>
-    using BoolConstant = Constant<Bool, TValue>;
+    using BoolConstant
+        = Constant<Bool, TValue>;
 
     /// \brief Integer constant.
     template <Int TValue>
-    using IntConstant = Constant<Int, TValue>;
+    using IntConstant
+        = Constant<Int, TValue>;
 
     /// \brief True boolean constant.
-    using True = BoolConstant<true>;
+    using True
+        = BoolConstant<true>;
 
     /// \brief False boolean constant.
-    using False = BoolConstant<false>;
+    using False
+        = BoolConstant<false>;
 
 }
 

@@ -23,12 +23,14 @@ namespace Syntropy::Templates::Details
 
     /// \brief True if TType is a type-list.
     template <typename TType>
-    inline constexpr Bool IsTypeList
+    inline constexpr
+    Bool IsTypeList
         = false;
 
     /// \brief Partial template specialzation for type lists.
     template <typename... TTypes>
-    inline constexpr Bool IsTypeList<TypeList<TTypes...>>
+    inline constexpr
+    Bool IsTypeList<TypeList<TTypes...>>
         = true;
 
     // Core concepts.
@@ -279,14 +281,16 @@ namespace Syntropy::Templates::Details
     /// \brief Constant equal to true if TType is a specialization of
     ///        TTemplate, equal to false otherwise.
     template<typename TType, template <typename...> typename TTemplate>
-    constexpr Bool
-    IsTemplateSpecializationOf = false;
+    constexpr
+    Bool IsTemplateSpecializationOf
+        = false;
 
     /// \brief Partial template specialization for
     ///        template specializations (duh...).
     template<template <typename...> typename TTemplate, typename... TTypes>
-    constexpr Bool
-    IsTemplateSpecializationOf<TTemplate<TTypes...>, TTemplate> = true;
+    constexpr
+    Bool IsTemplateSpecializationOf<TTemplate<TTypes...>, TTemplate>
+        = true;
 
 }
 
