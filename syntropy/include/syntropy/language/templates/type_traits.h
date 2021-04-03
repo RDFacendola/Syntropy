@@ -122,6 +122,11 @@ namespace Syntropy::Templates
     /* TYPE LIST TRAITS                                                     */
     /************************************************************************/
 
+    /// \brief Concatenate all types in a single type list.
+    template <typename... TTypes>
+    using TypeListOf
+        = Details::TypeListOf<TTypes...>;
+
     /// \brief Type of the first element in a type list or parameter pack.
     template <typename... TTypes>
     using HeadTypeOf

@@ -153,6 +153,23 @@ namespace Syntropy::Templates::Details
 
     //
 
+    /// \brief Concatenate all types in a single type list.
+    template <typename... TTypes>
+    struct TypeListOfHelper
+        : AliasList<TTypes...> {};
+
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes, typename... UTypes>
+    struct TypeListOfHelper<TypeList<TTypes...>, UTypes...>
+        : TypeListOfHelper<TTypes..., UTypes...> {};
+
+    /// \brief Concatenate all types in a single type list.
+    template <typename... TTypes>
+    using TypeListOf
+        = typename TypeListOfHelper<TTypes...>::Type;
+
+    //
+
     /// \brief Type of the first element in a parameter pack.
     template <typename TType, typename... TTypes>
     struct HeadTypeOfHelper
