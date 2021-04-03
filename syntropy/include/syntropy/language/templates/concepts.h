@@ -20,6 +20,14 @@ namespace Syntropy::Templates
     /* CONCEPTS                                                             */
     /************************************************************************/
 
+    // Type lists.
+    // ===========
+
+    /// \brief True if all types are TypeLists.
+    template <typename... TTypes>
+    concept IsTypeList
+        = (Details::IsTypeList<TTypes> && ...);
+
     // Core concepts.
     // ==============
 

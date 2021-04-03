@@ -18,32 +18,51 @@ namespace Syntropy::Templates::Details
     /* CONCEPTS                                                             */
     /************************************************************************/
 
+    // Type lists.
+    // ===========
+
+    /// \brief True if TType is a type-list.
+    template <typename TType>
+    inline constexpr Bool IsTypeList
+        = false;
+
+    /// \brief Partial template specialzation for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsTypeList<TypeList<TTypes...>>
+        = true;
+
     // Core concepts.
     // ==============
 
     /// \brief Concept for types which are exactly equal to UType.
     template <typename TType, typename UType>
-    concept IsSame = std::is_same_v<TType, UType>;
+    concept IsSame
+        = std::is_same_v<TType, UType>;
 
     /// \brief Concept for types convertible to UType.
     template <typename TType, typename UType>
-    concept IsConvertible = std::is_convertible_v<TType, UType>;
+    concept IsConvertible
+        = std::is_convertible_v<TType, UType>;
 
     /// \brief Concept for immutable reference-types.
     template <typename TType>
-    concept IsImmutable = IsSame<ImmutableOf<TType>, TType>;
+    concept IsImmutable
+        = IsSame<ImmutableOf<TType>, TType>;
 
     /// \brief Concept for mutable reference-types.
     template <typename TType>
-    concept IsMutable = IsSame<MutableOf<TType>, TType>;
+    concept IsMutable
+        = IsSame<MutableOf<TType>, TType>;
 
     /// \brief Concept for movable reerence-types.
     template <typename TType>
-    concept IsMovable = IsSame<MovableOf<TType>, TType>;
+    concept IsMovable
+        = IsSame<MovableOf<TType>, TType>;
 
     /// \brief Concept for immovable reference-types.
     template <typename TType>
-    concept IsImmovable = IsSame<ImmovableOf<TType>, TType>;
+    concept IsImmovable
+        = IsSame<ImmovableOf<TType>, TType>;
 
     // Fundamental types concepts.
     // ===========================
