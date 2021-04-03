@@ -79,8 +79,7 @@ namespace Syntropy::Templates
     /// \remarks Providing a TypeList yields a list whose elements have been
     ///          transformed accordingly.
     template <typename TType>
-    using
-    ImmovableOf
+    using ImmovableOf
         = typename Details::ImmovableOfHelper<TType>::Type;
 
     /// \brief Either mutable or immutable reference type of TType.
