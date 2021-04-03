@@ -75,11 +75,12 @@ namespace Syntropy::Templates
     /* CONSTANTS                                                            */
     /************************************************************************/
 
-    /// \brief Exposes a member kValue equal to VValue.
+    /// \brief Exposes a member kValue equal to TValue.
     template <typename TType, TType TValue>
     struct Constant
     {
-        static constexpr TType kValue = TValue;
+        static constexpr TType
+        kValue = TValue;
     };
 
     /// \brief Boolean constant.
