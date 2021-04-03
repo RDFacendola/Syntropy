@@ -147,6 +147,97 @@ namespace Syntropy::Templates::Details
     struct FunctionOfHelper<TypeList<TTypes...>>
         : AliasListHelper<FunctionOfHelper<TTypes>...> {};
 
+    /************************************************************************/
+    /* TYPE LIST TRAITS                                                     */
+    /************************************************************************/
+
+    //
+
+    /// \brief Type of the first element in a parameter pack.
+    template <typename TType, typename... TTypes>
+    struct HeadTypeOfHelper
+        : Alias<TType> {};
+
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct HeadTypeOfHelper<TypeList<TTypes...>>
+        : Alias<typename TypeList<TTypes...>::HeadType> {};
+
+    /// \brief Type of the first element in a type list or parameter pack.
+    template <typename... TTypes>
+    using HeadTypeOf
+        = typename HeadTypeOfHelper<TTypes...>::Type;
+
+    //
+
+    /// \brief Discard the first element in a type list and return the
+    ///        remaining elements.
+    template <typename TType, typename... TTypes>
+    struct RestTypeOfHelper
+        : AliasList<TTypes...> {};
+
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct RestTypeOfHelper<TypeList<TTypes...>>
+        : Alias<typename TypeList<TTypes...>::RestTypes> {};
+
+    /// \brief Drops the first element in a type list or parameter pack and
+    ///        return a type list to the remaining ones.
+    template <typename... TTypes>
+    using RestTypeOf
+        = typename RestTypeOfHelper<TTypes...>::Type;
+
+    //
+
+    /// \brief Discards elements until the index drops to zero or the list is
+    ///        exhausted.
+    template <Int TIndex, typename... TTypes>
+    struct ElementTypeOfHelper
+        : ElementTypeOfHelper<TIndex - 1, RestTypeOfHelper<TTypes...>> {};
+
+    /// \brief End of recursion.
+    template <typename... TTypes>
+    struct ElementTypeOfHelper<0, TTypes...>
+        : Alias<HeadTypeOf<TTypes...>> {};
+
+    /// \brief Type of a type list or parameter pack element, by index.
+    template <Int TIndex, typename... TTypes>
+    using ElementTypeOf
+        = typename ElementTypeOfHelper<TIndex, TTypes...>::Type;
+
+    //
+
+    /// \brief Number of elements in a parameter pack.
+    template <typename... TTypes>
+    inline constexpr Int ElementCountOf
+        = sizeof...(TTypes);
+
+    /// \brief Specialization for type lists
+    template <typename... TTypes>
+    inline constexpr Int ElementCountOf<TypeList<TTypes...>>
+        = sizeof...(TTypes);
+
+    //
+
+    /// \brief Discards elements until the first element is equal to TType or
+    ///        the list is exhausted.
+    template <Int TIndex, typename TType, typename... TTypes>
+    struct ElementIndexOfHelper
+        : ElementIndexOfHelper<TIndex + 1, TType, RestTypeOf<TTypes...>> {};
+
+    /// \brief End of recursion.
+    template <Int TIndex, typename... TTypes>
+    struct ElementIndexOfHelper<TIndex, HeadTypeOf<TTypes...>, TTypes...>
+        : IntConstant<TIndex> {};
+
+    /// \brief Index of the first element in a type list or parameter pack with
+    ///        a given type.
+    template <typename TType, typename TTypes>
+    inline constexpr Int ElementIndexOf
+        = ElementIndexOfHelper<0, TType, TTypes>::kValue;
+
+    //
+
 }
 
 // ===========================================================================

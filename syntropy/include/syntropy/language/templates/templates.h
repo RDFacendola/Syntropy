@@ -97,7 +97,6 @@ namespace Syntropy::Templates
     /// \brief False boolean constant.
     using False = BoolConstant<false>;
 
-
 }
 
 // ===========================================================================

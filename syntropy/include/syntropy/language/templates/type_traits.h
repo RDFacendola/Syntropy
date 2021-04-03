@@ -118,6 +118,37 @@ namespace Syntropy::Templates
     template <typename TType>
     ForwardingOf<TType> Declval() noexcept;
 
+    /************************************************************************/
+    /* TYPE LIST TRAITS                                                     */
+    /************************************************************************/
+
+    /// \brief Type of the first element in a type list or parameter pack.
+    template <typename... TTypes>
+    using HeadTypeOf
+        = Details::HeadTypeOf<TTypes...>;
+
+    /// \brief Drops the first element in a type list or parameter pack and
+    ///        return a type list to the remaining ones.
+    template <typename... TTypes>
+    using RestTypeOf
+        = Details::RestTypeOf<TTypes...>;
+
+    /// \brief Type of a type list or parameter pack element, by index.
+    template <Int TIndex, typename... TTypes>
+    using ElementTypeOf
+        = Details::ElementTypeOf<TIndex, TTypes...>;
+
+    /// \brief Number of elements in a type list or a parameter pack.
+    template <typename... TTypes>
+    inline constexpr Int ElementCountOf
+        = Details::ElementCountOf<TTypes...>;
+
+    /// \brief Index of the first element in a type list or parameter pack with
+    ///        a given type.
+    template <typename TType, typename... TTypes>
+    inline constexpr Int ElementIndexOf
+        = Details::ElementIndexOf<TType, TTypes...>;
+
 }
 
 // ===========================================================================
