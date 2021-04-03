@@ -23,172 +23,196 @@ namespace Syntropy::Templates
     // Core concepts.
     // ==============
 
-    /// \brief Concept for types which are exactly equal to UType.
-    template <typename TType, typename UType>
-    concept IsSame = Details::IsSame<TType, UType>;
+    /// \brief True if all types in UTypes are equal to TType.
+    template <typename TType, typename... UTypes>
+    concept IsSame
+        = (Details::IsSame<TType, UTypes> && ...);
 
-    /// \brief Concept for types convertible to UType.
-    template <typename TType, typename UType>
-    concept IsConvertible = Details::IsConvertible<TType, UType>;
+    /// \brief True if all types in UTypes are convertible to TType.
+    template <typename TType, typename... UTypes>
+    concept IsConvertible
+        = (Details::IsConvertible<TType, UTypes> && ...);
 
-    /// \brief Concept for immutable reerence-types.
-    template <typename TType>
-    concept IsImmutable = Details::IsImmutable<TType>;
+    /// \brief True if all types are immutable.
+    template <typename... TTypes>
+    concept IsImmutable
+        = (Details::IsImmutable<TTypes> && ...);
 
-    /// \brief Concept for mutable reference-types.
-    template <typename TType>
-    concept IsMutable = Details::IsMutable<TType>;
+    /// \brief True if all types are mutable.
+    template <typename... TTypes>
+    concept IsMutable
+        = (Details::IsMutable<TTypes> && ...);
 
-    /// \brief Concept for movable reerence-types.
-    template <typename TType>
-    concept IsMovable = Details::IsMovable<TType>;
+    /// \brief True if all types are movable.
+    template <typename... TTypes>
+    concept IsMovable
+        = (Details::IsMovable<TTypes> && ...);
 
-    /// \brief Concept for immovable reference-types.
-    template <typename TType>
-    concept IsImmovable = Details::IsImmovable<TType>;
-
-    /// \brief Concept for
-    template <typename TType>
-    concept IsReference = Details::IsReference<TType>;
-
-    /// \brief Concept for rvalue references.
-    template <typename TType>
-    concept IsForwarding = Details::IsForwarding<TType>;
+    /// \brief True if all types are immovable.
+    template <typename... TTypes>
+    concept IsImmovable
+        = (Details::IsImmovable<TTypes> && ...);
 
     // Fundamental types concepts.
     // ===========================
 
-    /// \brief Concept for boolean types.
-    template <typename TType>
-    concept IsBoolean = Details::IsBoolean<TType>;
+    /// \brief True if all types are boolean.
+    template <typename... TTypes>
+    concept IsBoolean
+        = (Details::IsBoolean<TTypes> && ...);
 
-    /// \brief Concept for signed integral number types.
-    template <typename TType>
-    concept IsIntegral = Details::IsIntegral<TType>;
+    /// \brief True if all types are integral.
+    template <typename... TTypes>
+    concept IsIntegral
+        = (Details::IsIntegral<TTypes> && ...);
 
-    /// \brief Concept for real number types.
-    template <typename TType>
-    concept IsReal = Details::IsReal<TType>;
+    /// \brief True if all types are real.
+    template <typename... TTypes>
+    concept IsReal
+        = (Details::IsReal<TTypes> && ...);
 
     // Polymorphism.
     // =============
 
-    /// \brief Concept for types deriving from TBase.
-    template <typename TDerived, typename TBase>
-    concept IsDerivedFrom = Details::IsDerivedFrom<TDerived, TBase>;
+    /// \brief True if TDerived derives from all types in TBases.
+    template <typename TDerived, typename... TBases>
+    concept IsDerivedFrom
+        = (Details::IsDerivedFrom<TDerived, TBases> && ...);
 
-    /// \brief Concept for types which are base classes for TDerived.
-    template <typename TBase, typename TDerived>
-    concept IsBaseOf = Details::IsDerivedFrom<TDerived, TBase>;
+    /// \brief True if TBase is a base class for all types in TDerived.
+    template <typename TBase, typename... TDerived>
+    concept IsBaseOf
+        = (Details::IsDerivedFrom<TDerived, TBase> && ...);
 
-    /// \brief Constant for polymorphic types.
-    template <typename TType>
-    concept IsPolymorphic = Details::IsPolymorphic<TType>;
+    /// \brief True if all types are polymorphic.
+    template <typename... TTypes>
+    concept IsPolymorphic
+        = (Details::IsPolymorphic<TTypes> && ...);
 
-    /// \brief Constant for final types.
-    template <typename TType>
-    concept IsFinal = Details::IsFinal<TType>;
+    /// \brief True if all types are final.
+    template <typename... TTypes>
+    concept IsFinal
+        = (Details::IsFinal<TTypes> && ...);
 
     // Properties concepts.
     // ====================
 
-    /// \brief Templates for standard-layout types.
-    template <typename TType>
-    concept IsStandardLayoutType = Details::IsStandardLayoutType<TType>;
+    /// \brief True if all types are standard layout types.
+    template <typename... TTypes>
+    concept IsStandardLayoutType
+        = (Details::IsStandardLayoutType<TTypes> && ...);
 
-    /// \brief Concept for types that can be constructed by TArguments... .
+    /// \brief True is TType can be constructed by TArguments.
     template <typename TType, typename... TArguments>
     concept IsConstructibleFrom
         = Details::IsConstructibleFrom<TType, TArguments...>;
 
-    /// \brief Concept for default-constructible types.
-    template <typename TType>
-    concept IsDefaultConstructible = Details::IsDefaultConstructible<TType>;
+    /// \brief True if all types are default-constructible.
+    template <typename... TTypes>
+    concept IsDefaultConstructible
+        = (Details::IsDefaultConstructible<TTypes> && ...);
 
-    /// \brief Concept for types that can be value-initialized (T()),
-    ///        direct-list-initialized from and empty initializer list (T{})
-    ///        or default-initialized (T t).
-    template <typename TType>
-    concept IsDefaultInitializable = Details::IsDefaultInitializable<TType>;
+    /// \brief True if all types are default-initializable.
+    ///
+    /// \remarks A type T is default-initializable if it can be:
+    ///          T() - value-initialized
+    ///          T{} - direct-list-initialized from an empty initializer list
+    ///          T t - default-initialized.
+    template <typename... TTypes>
+    concept IsDefaultInitializable
+        = (Details::IsDefaultInitializable<TTypes> && ...);
 
-    /// \brief Concept for copy-constructible types.
-    template <typename TType>
-    concept IsCopyConstructible = Details::IsCopyConstructible<TType>;
+    /// \brief True if all types are copy-constructible.
+    template <typename... TTypes>
+    concept IsCopyConstructible
+        = (Details::IsCopyConstructible<TTypes> && ...);
 
-    /// \brief Concept for move-constructible types.
-    template <typename TType>
-    concept IsMoveConstructible = Details::IsMoveConstructible<TType>;
+    /// \brief True if all types are move-constructible.
+    template <typename... TTypes>
+    concept IsMoveConstructible
+        = (Details::IsMoveConstructible<TTypes> && ...);
 
-    /// \brief Concept for copy-assignable types.
-    template <typename TType>
-    concept IsCopyAssignable = Details::IsCopyAssignable<TType>;
+    /// \brief True if all types are copy-assignable.
+    template <typename... TTypes>
+    concept IsCopyAssignable
+        = (Details::IsCopyAssignable<TTypes> && ...);
 
-    /// \brief Concept for move-assignable types.
-    template <typename TType>
-    concept IsMoveAssignable = Details::IsMoveAssignable<TType>;
+    /// \brief True if all types are move-assignable.
+    template <typename... TTypes>
+    concept IsMoveAssignable
+        = (Details::IsMoveAssignable<TTypes> && ...);
 
-    /// \brief Concept for types that can be assigned from UType.
-    template <typename TType, typename UType>
-    concept IsAssignableFrom = Details::IsAssignableFrom<TType, UType>;
+    /// \brief True if TType can be assignable from all types in UTypes.
+    template <typename TType, typename... UTypes>
+    concept IsAssignableFrom
+        = (Details::IsAssignableFrom<TType, UTypes> && ...);
 
-    /// \brief Concept for types whose instances can safely be destroyed at
-    ///        the end of their lifetime.
-    template <typename TType>
-    concept IsDestructible = Details::IsDestructible<TType>;
+    /// \brief True if all types in UTypes can be assignable from TType.
+    template <typename TType, typename... UTypes>
+    concept IsAssignableTo
+        = (Details::IsAssignableFrom<UTypes, TType> && ...);
+
+    /// \brief True if all types can be safely destroyed at the end of their
+    ///        lifetime.
+    template <typename... TTypes>
+    concept IsDestructible
+        = (Details::IsDestructible<TTypes> && ...);
 
     // Trivial.
     // ========
 
-    /// \brief Concept for trivially default-constructible types.
-    template <typename TType>
+    /// \brief True if all types are trivially default-constructible.
+    template <typename... TTypes>
     concept IsTriviallyDefaultConstructible
-        = Details::IsTriviallyDefaultConstructible<TType>;
+        = (Details::IsTriviallyDefaultConstructible<TTypes> && ...);
 
-    /// \brief Concept for trivially copy-constructible types.
-    template <typename TType>
+    /// \brief True if all types are trivially copy-constructible.
+    template <typename... TTypes>
     concept IsTriviallyCopyConstructible
-        = Details::IsTriviallyCopyConstructible<TType>;
+        = (Details::IsTriviallyCopyConstructible<TTypes> && ...);
 
-    /// \brief Concept for trivially move-constructible types.
-    template <typename TType>
+    /// \brief True if all types are trivially move-constructible.
+    template <typename... TTypes>
     concept IsTriviallyMoveConstructible
-        = Details::IsTriviallyMoveConstructible<TType>;
+        = (Details::IsTriviallyMoveConstructible<TTypes> && ...);
 
-    /// \brief Concept for trivially copy-assignable types.
-    template <typename TType>
+    /// \brief True if all types are trivially copy-assignable.
+    template <typename... TTypes>
     concept IsTriviallyCopyAssignable
-        = Details::IsTriviallyCopyAssignable<TType>;
+        = (Details::IsTriviallyCopyAssignable<TTypes> && ...);
 
-    /// \brief Concept for trivially move-assignable types.
-    template <typename TType>
+    /// \brief True if all types are trivially move-assignable.
+    template <typename... TTypes>
     concept IsTriviallyMoveAssignable
-        = Details::IsTriviallyMoveAssignable<TType>;
+        = (Details::IsTriviallyMoveAssignable<TTypes> && ...);
 
-    /// \brief Concept for types whose instances can safely be destroyed at
-    ///        the end of their lifetime via trivial destructor.
-    template <typename TType>
+    /// \brief True if all types can be safely destroyed at the end of their
+    ///        lifetime via a trivial destructor.
+    template <typename... TTypes>
     concept IsTriviallyDestructible
-        = Details::IsTriviallyDestructible<TType>;
+        = (Details::IsTriviallyDestructible<TTypes> && ...);
 
-    /// \brief Concept for trivially-copyable types.
-    template <typename TType>
-    concept IsTriviallyCopyable = Details::IsTriviallyCopyable<TType>;
+    /// \brief True if all types are trivially-copyable.
+    template <typename... TTypes>
+    concept IsTriviallyCopyable
+        = (Details::IsTriviallyCopyable<TTypes> && ...);
 
-    /// \brief Concept for trivial types.
-    template <typename TType>
-    concept IsTrivial = Details::IsTrivial<TType>;
+    /// \brief True if all types are trivial.
+    template <typename... TTypes>
+    concept IsTrivial
+        = (Details::IsTrivial<TTypes> && ...);
 
     // Implicit.
     // =========
 
-    /// \brief Concept for types that can be implicitly default constructed
-    //         from an empty initializer list.
-    template <typename TType>
+    /// \brief True if all types can be implicitly default constructed from an
+    ///        empty initializer list.
+    template <typename... TTypes>
     concept IsImplicitlyDefaultConstructible
-        = Details::IsImplicitlyDefaultConstructible<TType>;
+        = (Details::IsImplicitlyDefaultConstructible<TTypes> && ...);
 
-    /// \brief Concept for types that can be implicitly direct-constructed
-    ///        from a initializer list.
+    /// \brief True if TType can be implicitly direct-constructed from a
+    ///        initializer list.
     template <typename TType, typename... TArguments>
     concept IsImplicitlyConstructibleFrom
         = Details::IsImplicitlyConstructibleFrom<TType, TArguments...>;
@@ -196,53 +220,58 @@ namespace Syntropy::Templates
     // Comparison concepts.
     // ====================
 
-    /// \brief Concept for types which define both the equality and inequality
+    /// \brief True if all types define both the equality and inequality
     ///        operators.
-    template <typename TType>
+    template <typename... TTypes>
     concept IsEqualityComparable
-        = Details::IsEqualityComparableWith<TType, TType>;
+        = (Details::IsEqualityComparableWith<TTypes, TTypes> && ...);
 
-    /// \brief Concept for types which define both the equality and inequality
-    ///        operators against a possibily different type.
-    template <typename TType, typename UType>
+    /// \brief True if TType define both the equality and inequality
+    ///        operators against all types in UTypes.
+    template <typename TType, typename... UTypes>
     concept IsEqualityComparableWith
-        = Details::IsEqualityComparableWith<TType, UType>;
+        = (Details::IsEqualityComparableWith<TType, UTypes> && ...);
 
-    /// \brief Concept for types which define boh the less-than, greater-than,
+    /// \brief True if all types define boh the less-than, greater-than,
     ///        less-than-or-equal-to and greater-than-or-equal-to operators.
-    template <typename TType>
+    template <typename... TTypes>
     concept IsPartiallyOrdered
-        = Details::IsPartiallyOrderedWith<TType, TType>;
+        = (Details::IsPartiallyOrderedWith<TTypes, TTypes> && ...);
 
-    /// \brief Concept for types which define boh the less-than, greater-than,
+    /// \brief True if TType define boh the less-than, greater-than,
     ///        less-than-or-equal-to and greater-than-or-equal-to operators
-    ///        against a possibly different type.
-    template <typename TType, typename UType>
+    ///        against all types in UTypes.
+    template <typename TType, typename... UTypes>
     concept IsPartiallyOrderedWith
-        = Details::IsPartiallyOrderedWith<TType, UType>;
+        = (Details::IsPartiallyOrderedWith<TType, UTypes> && ...);
 
-    /// \brief Concept for types which are both equality-comparable and
+    /// \brief True if all types are both equality-comparable and
     ///        partially-ordered.
-    template <typename TType>
+    template <typename... TTypes>
     concept IsOrdered
-        = IsEqualityComparable<TType>
-       && IsPartiallyOrdered<TType>;
+        = IsEqualityComparable<TTypes...>
+       && IsPartiallyOrdered<TTypes...>;
 
-    /// \brief Concept for types which are both equality-comparable and
-    ///        partially-ordered against the a possibly different type.
-    template <typename TType, typename UType>
+    /// \brief True if TType is both equality-comparable and partially-ordered
+    ///        against all types in UTypes..
+    template <typename TType, typename... UTypes>
     concept IsOrderedWith
-        = IsEqualityComparableWith<TType, UType>
-       && IsPartiallyOrderedWith<TType, UType>;
+        = IsEqualityComparableWith<TType, UTypes...>
+       && IsPartiallyOrderedWith<TType, UTypes...>;
 
     // Templates concepts.
     // ===================
 
-    /// \brief Templates for types that are template specialization
-    ///        of a type template.
-    template<typename TType, template <typename...> typename TTemplate>
+    /// \brief True if TType is a template specialization of all TTemplates.
+    template<typename TType, template <typename...> typename... TTemplates>
     concept IsTemplateSpecializationOf
-        = Details::IsTemplateSpecializationOf<TType, TTemplate>;
+        = (Details::IsTemplateSpecializationOf<TType, TTemplates> && ...);
+
+    /// \brief True if TType is a template for all template specialization in
+    ///        TTypes.
+    template<template <typename...> typename TTemplate, typename... TTypes>
+    concept IsTemplateOf
+        = (Details::IsTemplateSpecializationOf<TTypes, TTemplate> && ...);
 
 }
 

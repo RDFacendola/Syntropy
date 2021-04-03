@@ -45,14 +45,6 @@ namespace Syntropy::Templates::Details
     template <typename TType>
     concept IsImmovable = IsSame<ImmovableOf<TType>, TType>;
 
-    /// \brief Concept for lvalue references.
-    template <typename TType>
-    concept IsReference = IsSame<ReferenceOf<TType>, TType>;
-
-    /// \brief Concept for rvalue references.
-    template <typename TType>
-    concept IsForwarding = IsSame<ForwardingOf<TType>, TType>;
-
     // Fundamental types concepts.
     // ===========================
 
