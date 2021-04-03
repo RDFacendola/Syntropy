@@ -24,65 +24,97 @@ namespace Syntropy::Templates
     /* TYPE TRANSFORM                                                       */
     /************************************************************************/
 
-    /// \brief Obtain the very same type of Type, establishing a non-deduced
-    ///        context during template argument deduction.
-    template <typename TType>
-    using ExactOf = Details::ExactOf<TType>;
-
-    /// \brief Obtain the value-type of TType without qualifiers.
-    template <typename TType>
-    using UnqualifiedOf = Details::UnqualifiedOf<TType>;
-
-    /// \brief Obtain the value-type of TType preserving existing qualifiers.
-    template <typename TType>
-    using QualifiedOf = Details::QualifiedOf<TType>;
-
-    /// \brief Obtain a reference-type to a mutable instance of TType.
-    template <typename TType>
-    using MutableOf = Details::MutableOf<TType>;
-
-    /// \brief Obtain a reference-type to an immutable instance of TType.
-    template <typename TType>
-    using ImmutableOf = Details::ImmutableOf<TType>;
-
-    /// \brief Obtain a reference-type to a mutable instance of TType whose
-    ///        resources can be efficiently moved to another instance.
-    template <typename TType>
-    using MovableOf = Details::MovableOf<TType>;
-
-    /// \brief Obtain a reference-type to an immutable instance of TType whose
-    ///        resources can be efficiently moved to another instance.
-    template <typename TType>
-    using ImmovableOf = Details::ImmovableOf<TType>;
-
-    /// \brief Obtain the reference-type of TType preserving existing
-    ///        qualifiers.
+    /// \brief Type identical to TType.
+    ///        This transform establishesa non-deduced context during template
+    ///        argument deduction.
     ///
-    /// This type behaves as MutableOf<TType> if TType refers to a mutable
-    /// instance of TType or as Immutable<TType> otherwise.
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
     template <typename TType>
-    using ReferenceOf = Details::ReferenceOf<TType>;
+    using ExactOf
+        = typename Details::ExactOfHelper<TType>::Type;
 
-    /// \brief Obtain the forwarding-reference-type of TType preserving
-    ///        existing qualifiers.
+    /// \brief Qualifier-removing value type of TType.
     ///
-    /// This type behaves as MovableOf<TType> if TType refers to a mutable
-    /// instance of TType or as ImmovableOf<TType> otherwise.
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
     template <typename TType>
-    using ForwardingOf = Details::ForwardingOf<TType>;
+    using UnqualifiedOf
+        = typename Details::UnqualifiedOfHelper<TType>::Type;
 
-    /// \brief Convert a function type to a function pointer.
-    template <typename TFunction>
-    using FunctionOf = Details::FunctionOf<TFunction>;
+    /// \brief Qualifier-preserving value type of TType.
+    ///
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
+    template <typename TType>
+    using QualifiedOf
+        = typename Details::QualifiedOfHelper<TType>::Type;
+
+    /// \brief Mutable reference type of TType.
+    ///
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
+    template <typename TType>
+    using MutableOf
+        = typename Details::MutableOfHelper<TType>::Type;
+
+    /// \brief Immutable reference type of TType.
+    ///
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
+    template <typename TType>
+    using ImmutableOf
+        = typename Details::ImmutableOfHelper<TType>::Type;
+
+    /// \brief Movable reference type of TType.
+    ///
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
+    template <typename TType>
+    using MovableOf
+        = typename Details::MovableOfHelper<TType>::Type;
+
+    /// \brief Immovable reference type of TType.
+    ///
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
+    template <typename TType>
+    using ImmovableOf
+        = typename Details::ImmovableOfHelper<TType>::Type;
+
+    /// \brief Either mutable or immutable reference type of TType.
+    ///
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
+    template <typename TType>
+    using ReferenceOf
+        = typename Details::ReferenceOfHelper<TType>::Type;
+
+    /// \brief Forwarding reference type of TType.
+    ///
+    /// \remarks This transform honors reference collapsing rule.
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
+    template <typename TType>
+    using ForwardingOf
+        = typename Details::ForwardingOfHelper<TType>::Type;
+
+    /// \brief Function pointer type.
+    ///
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
+    template <typename TType>
+    using FunctionOf
+        = typename Details::FunctionOfHelper<TType>::Type;
 
     /************************************************************************/
     /* DECLVAL                                                              */
     /************************************************************************/
 
-    /// \brief Obtain a forwarding-reference to an instance of type TType in
+    /// \brief Obtain a forwarding-reference to an instance of TType in
     ///        unevaluated context.
     ///
-    /// \remarks this function shall never be evaluated as it has no definition.
+    /// \remarks The function shall never be evaluated as it has no definition.
     template <typename TType>
     ForwardingOf<TType> Declval() noexcept;
 

@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
+#include "syntropy/language/templates/templates.h"
 
 // ===========================================================================
 
@@ -17,57 +18,134 @@ namespace Syntropy::Templates::Details
     /* TYPE TRANSFORM                                                       */
     /************************************************************************/
 
-    /// \brief Obtain the very same type of Type, establishing a non-deduced
-    ///        context during template argument deduction.
-    template <typename TType>
-    using ExactOf = typename Alias<TType>::Type;
+    /// \brief Binds together multiple type helpers in a single list.
+    template <typename... TTypeHelpers>
+    struct AliasListHelper
+        : AliasListHelper<typename TTypeHelpers::Type...> {};
 
-    /// \brief Obtain the value-type of TType without qualifiers.
-    template <typename TType>
-    using UnqualifiedOf = std::remove_cvref_t<TType>;
+    //
 
-    /// \brief Obtain the value-type of TType preserving existing qualifiers.
+    /// \brief Type identical to TType.
     template <typename TType>
-    using QualifiedOf = std::remove_reference_t<TType>;
+    struct ExactOfHelper
+        : Alias<TType> {};
 
-    /// \brief Obtain a reference-type to a mutable instance of TType.
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct ExactOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<ExactOfHelper<TTypes>...> {};
+
+    //
+
+    /// \brief Qualifier-removing value type of TType.
     template <typename TType>
-    using MutableOf
-        = std::add_lvalue_reference_t<UnqualifiedOf<TType>>;
+    struct UnqualifiedOfHelper
+        :  Alias<std::remove_cvref_t<TType>> {};
 
-    /// \brief Obtain a reference-type to an immutable instance of TType.
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct UnqualifiedOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<UnqualifiedOfHelper<TTypes>...> {};
+
+    //
+
+    /// \brief Qualifier-preserving value type of TType.
     template <typename TType>
-    using ImmutableOf
-        = std::add_lvalue_reference_t<std::add_const_t<UnqualifiedOf<TType>>>;
+    struct QualifiedOfHelper
+        : Alias<std::remove_reference_t<TType>> {};
 
-    /// \brief Obtain a reference-type to a mutable instance of TType whose
-    ///        resources can be efficiently moved to another instance.
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct QualifiedOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<QualifiedOfHelper<TTypes>...> {};
+
+    //
+
+    /// \brief Mutable reference type of TType.
     template <typename TType>
-    using MovableOf
-        = std::add_rvalue_reference_t<UnqualifiedOf<TType>>;
+    struct MutableOfHelper
+        : Alias<std::add_lvalue_reference_t<std::remove_cvref_t<TType>>> {};
 
-    /// \brief Obtain a reference-type to an immutable instance of TType whose
-    ///        resources can be efficiently moved to another instance.
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct MutableOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<MutableOfHelper<TTypes>...> {};
+
+    //
+
+    /// \brief Immutable reference type of TType.
     template <typename TType>
-    using ImmovableOf
-        = std::add_rvalue_reference_t<std::add_const_t<UnqualifiedOf<TType>>>;
+    struct ImmutableOfHelper
+        : Alias<std::add_lvalue_reference_t<
+            std::add_const_t<std::remove_cvref_t<TType>>>> {};
 
-    /// \brief Obtain the reference-type of TType preserving existing
-    ///        qualifiers.
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct ImmutableOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<ImmutableOfHelper<TTypes>...> {};
+
+    //
+
+    /// \brief Movable reference type of TType.
     template <typename TType>
-    using ReferenceOf = std::add_lvalue_reference_t<TType>;
+    struct MovableOfHelper
+        : Alias<std::add_rvalue_reference_t<std::remove_cvref_t<TType>>> {};
 
-    /// \brief Obtain the forwarding-reference-type of TType preserving
-    ///        existing qualifiers.
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct MovableOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<MovableOfHelper<TTypes>...> {};
+
+    //
+
+    /// \brief Immovable reference type of TType.
+    template <typename TType>
+    struct ImmovableOfHelper
+        : Alias<std::add_rvalue_reference_t<
+            std::add_const_t<std::remove_cvref_t<TType>>>> {};
+
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct ImmovableOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<ImmovableOfHelper<TTypes>...> {};
+
+    //
+
+    /// \brief Either mutable or immutable reference type of TType.
+    template <typename TType>
+    struct ReferenceOfHelper
+        : Alias<std::add_lvalue_reference_t<TType>> {};
+
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct ReferenceOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<ReferenceOfHelper<TTypes>...> {};
+
+    //
+
+    /// \brief Forwarding reference type of TType.
     ///
-    /// This transform honors reference collapse rule.
+    /// \remarks This transform honors reference collapsing rule.
     template <typename TType>
-    using ForwardingOf = std::add_rvalue_reference_t<TType>;
+    struct ForwardingOfHelper
+        : Alias<std::add_rvalue_reference_t<TType>> {};
 
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct ForwardingOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<ForwardingOfHelper<TTypes>...> {};
 
-    /// \brief Convert a function type to a function pointer.
-    template <typename TFunction>
-    using FunctionOf = std::add_pointer_t<TFunction>;
+    //
+
+    /// \brief Function pointer type.
+    template <typename TType>
+    struct FunctionOfHelper
+        : Alias<std::add_pointer_t<TType>> {};
+
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct FunctionOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<FunctionOfHelper<TTypes>...> {};
 
 }
 
