@@ -112,20 +112,12 @@ namespace Syntropy::Records
         return PartialCopy(destination, source);
     }
 
-    template <Record TRecord, Record URecord>
+    template <Record TRecord, RecordReference URecord>
     requires IsSameRank<TRecord, URecord>
     constexpr void
-    Move(Mutable<TRecord> destination, Immutable<URecord> source) noexcept
+    Move(Mutable<TRecord> destination, Forwarding<URecord> source) noexcept
     {
-        return PartialMove(destination, source);
-    }
-
-    template <Record TRecord, Record URecord>
-    requires IsSameRank<TRecord, URecord>
-    constexpr void
-    Move(Mutable<TRecord> destination, Movable<URecord> source) noexcept
-    {
-        return PartialMove(destination, Move(source));
+        return PartialMove(destination, Forward<URecord>(source));
     }
 
     template <Record TRecord, Record URecord>
@@ -175,26 +167,22 @@ namespace Syntropy::Records
         return Math::Min(RankOf<TRecord>, RankOf<URecord>);
     }
 
-    template <Record TRecord, Record URecord>
+    template <Record TRecord, RecordReference URecord>
     constexpr Int
-    PartialMove(Mutable<TRecord> destination, Immutable<URecord> source)
-    noexcept
-    {
-        return PartialCopy(destination, source);
-    }
-
-    template <Record TRecord, Record URecord>
-    constexpr Int
-    PartialMove(Mutable<TRecord> destination, Movable<URecord> source)
+    PartialMove(Mutable<TRecord> destination, Forwarding<URecord> source)
     noexcept
     {
         auto elementwise_move = [](auto& destination_element,
                                    auto&& source_element)
         {
-            destination_element = Move(source_element);
+            using SourceType = decltype(source_element);
+
+            destination_element = Forward<SourceType>(source_element);
         };
 
-        Records::LockstepApply(elementwise_move, destination, Move(source));
+        Records::LockstepApply(elementwise_move,
+                               destination,
+                               Forward<URecord>(source));
 
         return Math::Min(RankOf<TRecord>, RankOf<URecord>);
     }

@@ -183,16 +183,10 @@ namespace Syntropy::Records
     Copy(Mutable<TRecord> destination, Immutable<URecord> source) noexcept;
 
     /// \brief Member-wise move a record to another one with the same rank.
-    template <Record TRecord, Record URecord>
+    template <Record TRecord, RecordReference URecord>
     requires IsSameRank<TRecord, URecord>
     constexpr void
-    Move(Mutable<TRecord> destination, Immutable<URecord> source) noexcept;
-
-    /// \brief Member-wise move a record to another one with the same rank.
-    template <Record TRecord, Record URecord>
-    requires IsSameRank<TRecord, URecord>
-    constexpr void
-    Move(Mutable<TRecord> destination, Movable<URecord> source) noexcept;
+    Move(Mutable<TRecord> destination, Forwarding<URecord> source) noexcept;
 
     /// \brief Member-wise swap two records.
     template <Record TRecord, Record URecord>
@@ -218,17 +212,9 @@ namespace Syntropy::Records
     /// \brief Member-wise move a record to another one, until either is
     ///        exhausted.
     /// \return Returns the number of copied elements.
-    template <Record TRecord, Record URecord>
+    template <Record TRecord, RecordReference URecord>
     constexpr Int
-    PartialMove(Mutable<TRecord> destination, Immutable<URecord> source)
-    noexcept;
-
-    /// \brief Member-wise move a record to another one, until either is
-    ///        exhausted.
-    /// \return Returns the number of copied elements.
-    template <Record TRecord, Record URecord>
-    constexpr Int
-    PartialMove(Mutable<TRecord> destination, Movable<URecord> source)
+    PartialMove(Mutable<TRecord> destination, Forwarding<URecord> source)
     noexcept;
 
     /// \brief Member-wise swap two records until either is exhausted.
