@@ -211,10 +211,11 @@ namespace Syntropy::Records
         auto equal = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
             return (Algorithms::AreEqual(Records::Get<TIndex>(lhs),
-                                         Records::Get<TIndex>(rhs)) && ...);
+                                         Records::Get<TIndex>(rhs))
+                    && ...);
         };
 
-        return equal(lhs, rhs);
+        return equal(SequenceOf<TRecord>{});
     }
 
     template <Record TRecord, Record URecord>
@@ -228,33 +229,49 @@ namespace Syntropy::Records
                     && ...);
         };
 
-        return equivalent(lhs, rhs);
+        if constexpr (IsSameRank<TRecord, URecord>)
+        {
+            return equivalent(SequenceOf<TRecord>{});
+        }
+
+        return false;
     }
 
     template <Record TRecord, Record URecord>
-    requires IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr Ordering
     Compare(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
+        constexpr auto LeftRank = RankOf<TRecord>;
+        constexpr auto RightRank = RankOf<URecord>;
+        constexpr auto MinRank = Math::Min<LeftRank, RightRank>;
+
         auto compare_at = [&]<Int TIndex>(Ordering result)
         {
-            return (result == Ordering::kEquivalent)
-                ? Algorithms::Compare(Records::Get<TIndex>(lhs),
-                                      Records::Get<TIndex>(rhs))
-                : result;
+            if (result == Ordering::kEquivalent)
+            {
+                return Algorithms::Compare(Records::Get<TIndex>(lhs),
+                                           Records::Get<TIndex>(rhs));
+            }
+
+            return result;
         };
 
         auto compare = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
             auto result = Ordering::kEquivalent;
 
-            ((result = compare_at<TIndex>(result))
-            , ...);
+            ((result = compare_at<TIndex>(result)), ...);
 
             return result;
         };
 
-        return compare(SequenceOf<TRecord>{});
+        if(auto result = compare(Templates::MakeSequence<MinRank>{});
+           result != Ordering::kEquivalent)
+        {
+            return result;
+        }
+
+        return (LeftRank < RightRank) ? Ordering::kLess : Ordering::kGreater;
     }
 
 }
