@@ -210,8 +210,8 @@ namespace Syntropy
 
         return concatenate(
             ForwardAsTuple(records...),
-            Details::EnumerateTupleIndexes<TRecords...>{},
-            Details::EnumerateTupleElementIndexes<TRecords...>{});
+            Details::TupleEnumerateRecords<TRecords...>{},
+            Details::TupleEnumerateRecordElements<TRecords...>{});
     }
 
     template <Records::RecordReference TRecord>

@@ -211,71 +211,57 @@ namespace Syntropy::Details
     /* TUPLE                                                                */
     /************************************************************************/
 
-    // Concatenate.
-    // ============
+    // Concatenate helpers.
+    // ====================
 
-    /// \brief Generate a sequence that can be used to access tuples.
+    // In order to concatenate records together, two sequences with the same
+    // total size are generated.
+    // The first sequence is used to associate each element in the resulting
+    // sequence with the index of the record the element is taken from.
+    // The second sequence is used to associate each element in the resulting
+    // sequence with the index of the element in the owning record.
+
+    // Example: A {a,b,c}, B {d,e}, C {f}
+    // First sequence:  000-11-2 AAA-BB-C
+    // Second sequence: 012-01-0 abc-de-f
+
+    /// \brief Sequence associating each element to the generating tuple.
     template <Int TIndex,
-              Records::RecordReference TTuple,
+              Records::RecordReference TRecord,
               Records::RecordReference... TRecords>
-    struct EnumerateTupleIndexesHelper
+    struct TupleEnumerateRecordsHelper
     {
-        using TupleSequence
-            = typename EnumerateTupleIndexesHelper<TIndex, TTuple>::Type;
+        /// \brief Repeating sequence of TIndex, for each element in TRecord.
+        using RecordSequence
+            = typename TupleEnumerateRecordsHelper<TIndex, TRecord>::Type;
 
+        /// \brief Rest of the sequence, starting from TIndex + 1.
         using RecordsSequence
-            = typename EnumerateTupleIndexesHelper<TIndex + 1,
+            = typename TupleEnumerateRecordsHelper<TIndex + 1,
                                                    TRecords...>::Type;
 
+        /// \brief Full sequence.
         using Type
-            = Templates::SequenceCat<TupleSequence, RecordsSequence>;
+            = Templates::SequenceCat<RecordSequence, RecordsSequence>;
     };
 
-    /// \brief Generate a sequence of VIndex repeated a number of times equal
-    ///        to the rank of TTuple.
-    template <Int TIndex, Records::RecordReference TTuple>
-    struct EnumerateTupleIndexesHelper<TIndex, TTuple>
-    {
-        using Type = Templates::SequenceRepeat<
-            TIndex,
-            Records::RankOf<TTuple>>;
-    };
+    /// \brief Repeating sequence of TIndex, for each element in TRecord.
+    template <Int TIndex, Records::RecordReference TRecord>
+    struct TupleEnumerateRecordsHelper<TIndex, TRecord>
+        : Templates::Alias<
+            Templates::SequenceRepeat<TIndex, Records::RankOf<TRecord>>> {};
 
-    /// \brief Generate a sequence that can be used to access tuples.
+    /// \brief Sequence associating each element to the source tuple.
     template <Records::RecordReference... TRecords>
-    using EnumerateTupleIndexes
-        = typename EnumerateTupleIndexesHelper<0, Templates::UnqualifiedOf<TRecords>...>::Type;
+    using TupleEnumerateRecords
+        = typename TupleEnumerateRecordsHelper<0, TRecords...>::Type;
 
 
 
-
-    /// \brief Generate a sequence that can be used to access tuple elements.
-    template <Records::RecordReference TTuple,
-              Records::RecordReference... TRecords>
-    struct EnumerateTupleElementIndexesHelper
-    {
-        using TupleSequence
-            = typename EnumerateTupleElementIndexesHelper<TTuple>::Type;
-
-        using RecordsSequence
-            = typename EnumerateTupleElementIndexesHelper<TRecords...>::Type;
-
-        using Type
-            = Templates::SequenceCat<TupleSequence, RecordsSequence>;
-    };
-
-    /// \brief Generate an increasing sequence from 0 to the rank of
-    ///        TTuple (excluded).
-    template <Records::RecordReference TTuple>
-    struct EnumerateTupleElementIndexesHelper<TTuple>
-    {
-        using Type = Records::SequenceOf<TTuple>;
-    };
-
-    /// \brief Generate a sequence that can be used to access tuple elements.
+    /// \brief Sequence associating each element to the source tuple element.
     template <Records::RecordReference... TRecords>
-    using EnumerateTupleElementIndexes
-        = typename EnumerateTupleElementIndexesHelper<Templates::UnqualifiedOf<TRecords>...>::Type;
+    using TupleEnumerateRecordElements
+        = Templates::SequenceCat<Records::SequenceOf<TRecords>...>;
 
 }
 

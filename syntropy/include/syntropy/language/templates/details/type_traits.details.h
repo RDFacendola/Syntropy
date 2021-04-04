@@ -359,15 +359,20 @@ namespace Syntropy::Templates::Details
     // ============
 
     /// \brief Concatenate one or more sequences together.
-    template <typename TSequence, typename... TSequences>
+    template <typename... TSequences>
     struct SequenceCatHelper {};
 
-    /// \brief Specialization for one-sequences.
+    /// \brief Specialization for zero sequences.
+    template <>
+    struct SequenceCatHelper<>
+        : AliasSequence<> {};
+
+    /// \brief Specialization for one sequence.
     template <Int... TSequence>
     struct SequenceCatHelper<Sequence<TSequence...>>
         : AliasSequence<TSequence...> {};
 
-    /// \brief Specialization for two sequences.
+    /// \brief Specialization for two or more sequences.
     template <Int... TSequence, Int... USequence, typename... TSequences>
     struct SequenceCatHelper<Sequence<TSequence...>,
                              Sequence<USequence...>,
@@ -376,9 +381,9 @@ namespace Syntropy::Templates::Details
                             TSequences...> {};
 
     /// \brief Concatenate zero or more sequences together.
-    template <typename TSequence, typename... TSequences>
+    template <typename... TSequences>
     using SequenceCat
-        = typename SequenceCatHelper<TSequence, TSequences...>::Type;
+        = typename SequenceCatHelper<TSequences...>::Type;
 
     // SequenceRepeat.
     // ===============

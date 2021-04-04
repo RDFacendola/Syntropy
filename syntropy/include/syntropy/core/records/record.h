@@ -81,43 +81,44 @@ namespace Syntropy::Records
 
     /// \brief Number of elements in a record.
     template <RecordReference TRecord>
-    inline constexpr Int
-    RankOf = Details::RankOf<TRecord, RankTrait>;
+    inline constexpr
+    Int RankOf
+        = Details::RankOf<TRecord, RankTrait>;
 
     /// \brief True if two records have the same rank, false otherwise.
     template <RecordReference TRecord, RecordReference URecord>
-    inline constexpr Bool
-    IsSameRank = Details::IsSameRank<TRecord, URecord, RankTrait>;
+    inline constexpr
+    Bool IsSameRank
+        = Details::IsSameRank<TRecord, URecord, RankTrait>;
 
     /// \brief Type of a record element.
     ///
     /// \remarks Ill-formed if exceeding record bounds.
     template <Int TIndex, RecordReference TRecord>
-    using
-    ElementTypeOf = Details::ElementTypeOf<TIndex, TRecord, ElementTypeTrait>;
+    using ElementTypeOf
+        = Details::ElementTypeOf<TIndex, TRecord, ElementTypeTrait>;
 
     /// \brief Generates a sequence that can be used to enumerate all
     ///        elements in a record.
     template <RecordReference TRecord>
-    using
-    SequenceOf = Details::SequenceOf<TRecord, RankTrait>;
+    using SequenceOf
+        = Details::SequenceOf<TRecord, RankTrait>;
 
     /// \brief List of types of a record's elements.
     template <RecordReference TRecord>
-    using
-    ElementTypeListOf = Details::ElementTypeListOf<TRecord,
-                                                   RankTrait,
-                                                   ElementTypeTrait>;
+    using ElementTypeListOf
+        = Details::ElementTypeListOf<TRecord, RankTrait, ElementTypeTrait>;
 
     /// \brief Index of the first element with type TElement in a record.
     ///
     /// \remarks Ill-formed if no such element exist.
     template <typename TElement, RecordReference TRecord>
-    inline constexpr Int
-    ElementIndexOf = Details::ElementIndexOf<TElement,
-                                             TRecord,
-                                             RankTrait,
-                                             ElementTypeTrait>;
+    inline constexpr
+    Int ElementIndexOf
+        = Details::ElementIndexOf<TElement,
+                                  TRecord,
+                                  RankTrait,
+                                  ElementTypeTrait>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */

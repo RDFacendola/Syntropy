@@ -177,10 +177,10 @@ namespace Syntropy::Templates
     using SequenceAdd
         = Details::SequenceAdd<TValue, TSequence>;
 
-    /// \brief Concatenate one or more sequences together.
-    template <typename TSequence, typename... TSequences>
+    /// \brief Concatenate zero or more sequences together.
+    template <typename... TSequences>
     using SequenceCat
-        = Details::SequenceCat<TSequence, TSequences...>;
+        = Details::SequenceCat<TSequences...>;
 
     /// \brief Create a sequence of a repeating value.
     template <Int TValue, Int TCount>
