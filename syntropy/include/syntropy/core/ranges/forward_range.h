@@ -69,13 +69,29 @@ namespace Syntropy::Ranges
     constexpr RangeCardinalityTypeOf<URange>
     Move(Immutable<TRange> destination, Immutable<URange> source) noexcept;
 
-     /// \brief Advance both ranges in lockstep, swapping elements
-     ///        between lhs and rhs until either is exhausted.
-     ///
-     /// \return Returns the number of moved elements.
+    // Swap.
+    // =====
+
+    /// \brief Advance both ranges in lockstep, swapping elements
+    ///        between lhs and rhs until either is exhausted.
+    ///
+    /// \return Returns the number of moved elements.
     template <ForwardRange TRange>
     constexpr RangeCardinalityTypeOf<TRange>
     Swap(Immutable<TRange> lhs, Immutable<TRange> rhs) noexcept;
+
+    // Comparison.
+    // ===========
+
+    /// \brief Check whether two ranges are element-wise equivalent.
+    template <ForwardRange TRange, ForwardRange URange>
+    [[nodiscard]] constexpr Bool
+    AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+
+    /// \brief Compare two range views lexicographically.
+    template <ForwardRange TRange, ForwardRange URange>
+    [[nodiscard]] constexpr Ordering
+    Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
 }
 

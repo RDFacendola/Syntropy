@@ -96,6 +96,69 @@ namespace Syntropy::Ranges
         return count;
     }
 
+    // Comparison.
+    // ===========
+
+    template <ForwardRange TRange, ForwardRange URange>
+    [[nodiscard]] constexpr Bool
+    AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    {
+        auto left = Ranges::ViewOf(lhs);
+        auto right = Ranges::ViewOf(rhs);
+
+        for(; !Ranges::IsEmpty(left) && !Ranges::IsEmpty(right);)
+        {
+            if(!Algorithms::AreEqual(left, right))
+            {
+                return false;
+            }
+
+            left = Ranges::PopFront(left);
+            right = Ranges::PopFront(right);
+        }
+
+        return Ranges::IsEmpty(left) && Ranges::IsEmpty(right);
+    }
+
+    template <ForwardRange TRange, ForwardRange URange>
+    [[nodiscard]] constexpr Ordering
+    Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    {
+        auto left = Ranges::ViewOf(lhs);
+        auto right = Ranges::ViewOf(rhs);
+
+        // Compare until either is exhausted.
+
+        for(; !Ranges::IsEmpty(left) && !Ranges::IsEmpty(right);)
+        {
+            auto compare = Algorithms::Compare(Ranges::Front(left),
+                                               Ranges::Front(right));
+
+            if(compare != Ordering::kEquivalent)
+            {
+                return compare;
+            }
+
+            left = Ranges::PopFront(left);
+            right = Ranges::PopFront(right);
+        }
+
+        auto left_empty = Ranges::IsEmpty(left);
+        auto right_empty = Ranges::IsEmpty(right);
+
+        if(left_empty && !right_empty)
+        {
+            return Ordering::kLess;
+        }
+
+        if(right_empty && !left_empty)
+        {
+            return Ordering::kGreater;
+        }
+
+        return Ordering::kEquivalent;
+    }
+
 }
 
 // ===========================================================================

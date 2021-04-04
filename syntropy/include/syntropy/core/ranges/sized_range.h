@@ -43,30 +43,14 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // SizedRange.
+    // Comparison.
     // ===========
 
-    /// \brief Check whether two ranges are element-wise equal.
-    ///
-    /// \remarks Equality implies equivalence, therefore if this method returns
-    ///          true AreEquivalent also returns true.
-    template <SizedRange TRange, SizedRange URange>
-    [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
-
     /// \brief Check whether two ranges are element-wise equivalent.
-    ///
-    /// \remarks Equality implies equivalence but not the other way around!
-    ///          If AreEqual returns false this method can either return true
-    ///          or false.
+    /// \remarks Equivalence doesn't imply equality.
     template <SizedRange TRange, SizedRange URange>
     [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
-
-    /// \brief Compare two range views lexicographically.
-    template <SizedRange TRange, SizedRange URange>
-    [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
 }
 

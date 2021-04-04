@@ -98,11 +98,11 @@ namespace Syntropy::Algorithms::Details
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeAreEquivalent(Immutable<TType> lhs,
-                        Immutable<UType> rhs,
-                        FallbackPriority) noexcept
-        -> decltype(Details::RouteAreEqual(lhs, rhs))
+                   Immutable<UType> rhs,
+                   FallbackPriority) noexcept
+        -> decltype(lhs == rhs)
     {
-        return Details::RouteAreEqual(lhs, rhs);
+        return (lhs == rhs);
     }
 
     template <typename TType, typename UType>
