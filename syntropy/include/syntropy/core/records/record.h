@@ -75,6 +75,9 @@ namespace Syntropy::Records
     template <typename TRecord>
     concept RecordReference = Record<Templates::UnqualifiedOf<TRecord>>;
 
+    /// \brief Tag type associated to records.
+    struct RecordTag{};
+
     /************************************************************************/
     /* TYPE TRAITS                                                          */
     /************************************************************************/
@@ -170,8 +173,8 @@ namespace Syntropy::Records
     [[nodiscard]] constexpr TType
     MakeFromRecord(Forwarding<TRecord> record) noexcept;
 
-    // Copy.
-    // =====
+    // Copy, Move, Swap.
+    // =================
 
     /// \brief Member-wise copy a record to another one with the same rank.
     template <Record TRecord, Record URecord>
@@ -190,6 +193,19 @@ namespace Syntropy::Records
     requires IsSameRank<TRecord, URecord>
     constexpr void
     Move(Mutable<TRecord> destination, Movable<URecord> source) noexcept;
+
+    /// \brief Member-wise swap two records.
+    template <Record TRecord, Record URecord>
+    requires Records::IsSameRank<TRecord, URecord>
+    constexpr void
+    Swap(Mutable<TRecord> lhs, Mutable<URecord> rhs) noexcept;
+
+    /// \brief Member-wise swap two records and returns the value of the
+    ///        former.
+    template <Record TRecord, RecordReference URecord>
+    requires Records::IsSameRank<TRecord, URecord>
+    [[nodiscard]] constexpr TRecord
+    Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept;
 
     /// \brief Member-wise copy a record to another one, until either is
     ///        exhausted.
@@ -215,20 +231,12 @@ namespace Syntropy::Records
     PartialMove(Mutable<TRecord> destination, Movable<URecord> source)
     noexcept;
 
-    // Swap.
-    // =====
-
-    /// \brief Member-wise swap two records.
-    template <Record TRecord>
-    constexpr void
-    Swap(Mutable<TRecord> lhs, Mutable<TRecord> rhs) noexcept;
-
-    /// \brief Member-wise swap two records and returns the value of the
-    ///        former.
-    template <Record TRecord, RecordReference URecord>
-    requires Records::IsSameRank<TRecord, URecord>
-    [[nodiscard]] constexpr TRecord
-    Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept;
+    /// \brief Member-wise swap two records until either is exhausted.
+    ///
+    /// \return Returns the number of swapped elements.
+    template <Record TRecord, Record URecord>
+    constexpr Int
+    PartialSwap(Mutable<TRecord> lhs, Mutable<URecord> rhs) noexcept;
 
     // Comparison.
     // ===========

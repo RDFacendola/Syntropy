@@ -56,32 +56,38 @@ namespace Syntropy::Ranges
     constexpr void
     ForEach(Immutable<TRange> range, TFunction function) noexcept;
 
-    /// \brief Advance both ranges in lockstep, copying elements from the
-    ///        source to the destination until either is exhausted.
+    // Copy, Move, Swap.
+    // =================
+
+    /// \brief Member-wise copy elements between two ranges, until either is
+    ///        exhausted.
     ///
     /// \return Returns the number of copied elements.
     template <ForwardRange TRange, ForwardRange URange>
     constexpr RangeCardinalityTypeOf<URange>
-    Copy(Immutable<TRange> destination, Immutable<URange> source) noexcept;
+    PartialCopy(Immutable<TRange> destination,
+                Immutable<URange> source,
+                ForwardRangeTag = {}) noexcept;
 
-    /// \brief Advance both ranges in lockstep, moving elements from the
-    ///        source to the destination until either is exhausted.
+    /// \brief Member-wise move elements between two ranges, until either is
+    ///        exhausted.
     ///
-    /// \return Returns the number of moved elements.
+    /// \return Returns the number of copied elements.
     template <ForwardRange TRange, ForwardRange URange>
     constexpr RangeCardinalityTypeOf<URange>
-    Move(Immutable<TRange> destination, Immutable<URange> source) noexcept;
+    PartialMove(Immutable<TRange> destination,
+                Immutable<URange> source,
+                ForwardRangeTag = {}) noexcept;
 
-    // Swap.
-    // =====
-
-    /// \brief Advance both ranges in lockstep, swapping elements
-    ///        between lhs and rhs until either is exhausted.
+    /// \brief Member-wise swap elements in both ranges until either is
+    ///        exhausted.
     ///
-    /// \return Returns the number of moved elements.
+    /// \return Returns the number of swap elements.
     template <ForwardRange TRange>
     constexpr RangeCardinalityTypeOf<TRange>
-    Swap(Immutable<TRange> lhs, Immutable<TRange> rhs) noexcept;
+    PartialSwap(Immutable<TRange> lhs,
+                Immutable<TRange> rhs,
+                ForwardRangeTag = {}) noexcept;
 
     // Comparison.
     // ===========

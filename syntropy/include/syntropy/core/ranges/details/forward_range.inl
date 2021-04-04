@@ -24,30 +24,35 @@ namespace Syntropy::Ranges
     constexpr void
     ForEach(Immutable<TRange> range, TFunction function) noexcept
     {
-        for (auto range_view = Ranges::ViewOf(range);
-             !Ranges::IsEmpty(range_view);
-             range_view = Ranges::PopFront(range_view))
+        auto right = Ranges::ViewOf(range);
+
+        for (;!Ranges::IsEmpty(right);)
         {
-            function(Ranges::Front(range_view));
+            function(Ranges::Front(right));
+
+            right = Ranges::PopFront(right);
         }
     }
 
+    // Copy \ Move.
+    // ============
+
     template <ForwardRange TRange, ForwardRange URange>
     constexpr RangeCardinalityTypeOf<URange>
-    Copy(Immutable<TRange> destination, Immutable<URange> source) noexcept
+    PartialCopy(Immutable<TRange> destination,
+                Immutable<URange> source,
+                ForwardRangeTag) noexcept
     {
-        auto source_view = Ranges::ViewOf(source);
-        auto destination_view = Ranges::ViewOf(destination);
+        auto left = Ranges::ViewOf(destination);
+        auto right = Ranges::ViewOf(source);
         auto count = RangeCardinalityTypeOf<URange>{ 0 };
 
-        for (; !Ranges::IsEmpty(source_view) &&
-               !Ranges::IsEmpty(destination_view);
-               ++count)
+        for (; !Ranges::IsEmpty(right) && !Ranges::IsEmpty(left); ++count)
         {
-            Ranges::Front(destination_view) = Ranges::Front(source_view);
+            Ranges::Front(left) = Ranges::Front(right);
 
-            source_view = Ranges::PopFront(source_view);
-            destination_view = Ranges::PopFront(destination_view);
+            left = Ranges::PopFront(left);
+            right = Ranges::PopFront(right);
         }
 
         return count;
@@ -55,43 +60,44 @@ namespace Syntropy::Ranges
 
     template <ForwardRange TRange, ForwardRange URange>
     constexpr RangeCardinalityTypeOf<URange>
-    Move(Immutable<TRange> destination, Immutable<URange> source) noexcept
+    PartialMove(Immutable<TRange> destination,
+                Immutable<URange> source,
+                ForwardRangeTag) noexcept
     {
-        auto source_view = Ranges::ViewOf(source);
-        auto destination_view = Ranges::ViewOf(destination);
+        auto left = Ranges::ViewOf(destination);
+        auto right = Ranges::ViewOf(source);
         auto count = RangeCardinalityTypeOf<URange>{ 0 };
 
-        for (; !Ranges::IsEmpty(source_view) &&
-               !Ranges::IsEmpty(destination_view);
-               ++count)
+        for (; !Ranges::IsEmpty(right) && !Ranges::IsEmpty(left); ++count)
         {
-            Ranges::Front(destination_view)
-                = Syntropy::Move(Ranges::Front(source_view));
+            Ranges::Front(left) = Move(Ranges::Front(right));
 
-            source_view = Ranges::PopFront(source_view);
-            destination_view = Ranges::PopFront(destination_view);
+            left = Ranges::PopFront(left);
+            right = Ranges::PopFront(right);
         }
 
         return count;
     }
+
+    // Swap.
+    // =====
 
     template <ForwardRange TRange>
     constexpr RangeCardinalityTypeOf<TRange>
-    Swap(Immutable<TRange> lhs, Immutable<TRange> rhs) noexcept
+    PartialSwap(Immutable<TRange> lhs,
+                Immutable<TRange> rhs,
+                ForwardRangeTag) noexcept
     {
-        auto lhs_view = Ranges::ViewOf(lhs);
-        auto rhs_view = Ranges::ViewOf(rhs);
+        auto left = Ranges::ViewOf(lhs);
+        auto right = Ranges::ViewOf(rhs);
         auto count = RangeCardinalityTypeOf<TRange>{ 0 };
 
-        for (; !Ranges::IsEmpty(lhs_view) &&
-               !Ranges::IsEmpty(rhs_view);
-               ++count)
+        for (; !Ranges::IsEmpty(left) && !Ranges::IsEmpty(right); ++count)
         {
-            Algorithms::Swap(Ranges::Front(lhs_view),
-                            Ranges::Front(rhs_view));
+            Algorithms::Swap(Ranges::Front(left), Ranges::Front(right));
 
-            lhs_view = Ranges::PopFront(lhs_view);
-            rhs_view = Ranges::PopFront(rhs_view);
+            left = Ranges::PopFront(left);
+            right = Ranges::PopFront(right);
         }
 
         return count;

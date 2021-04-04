@@ -101,8 +101,8 @@ namespace Syntropy::Records
         return make(SequenceOf<TRecord>{});
     }
 
-    // Move \ Copy.
-    // ============
+    // Copy, Move, Swap.
+    // =================
 
     template <Record TRecord, Record URecord>
     requires IsSameRank<TRecord, URecord>
@@ -126,6 +126,37 @@ namespace Syntropy::Records
     Move(Mutable<TRecord> destination, Movable<URecord> source) noexcept
     {
         return PartialMove(destination, Move(source));
+    }
+
+    template <Record TRecord, Record URecord>
+    requires Records::IsSameRank<TRecord, URecord>
+    constexpr void
+    Swap(Mutable<TRecord> lhs, Mutable<URecord> rhs) noexcept
+    {
+        auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
+        {
+            (Algorithms::Swap(Records::Get<TIndex>(lhs),
+                              Records::Get<TIndex>(rhs)), ...);
+        };
+
+        swap(SequenceOf<TRecord>{});
+    }
+
+    template <Record TRecord, RecordReference URecord>
+    requires Records::IsSameRank<TRecord, URecord>
+    [[nodiscard]] constexpr TRecord
+    Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept
+    {
+        auto exchange = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
+        {
+            return TRecord
+            {
+                Algorithms::Exchange(Records::Get<TIndex>(lhs),
+                                     Records::Get<TIndex>(Forward(rhs)))...
+            };
+        };
+
+        return exchange(SequenceOf<TRecord>{});
     }
 
     template <Record TRecord, Record URecord>
@@ -168,37 +199,21 @@ namespace Syntropy::Records
         return Math::Min(RankOf<TRecord>, RankOf<URecord>);
     }
 
-    // Swap.
-    // =====
-
-    template <Record TRecord, RecordReference URecord>
-    requires Records::IsSameRank<TRecord, URecord>
-    [[nodiscard]] constexpr TRecord
-    Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept
-    {
-        auto exchange = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
-        {
-            return TRecord
-            {
-                Algorithms::Exchange(Records::Get<TIndex>(lhs),
-                                     Records::Get<TIndex>(Forward(rhs)))...
-            };
-        };
-
-        return exchange(SequenceOf<TRecord>{});
-    }
-
-    template <Record TRecord>
+    template <Record TRecord, Record URecord>
     constexpr void
-    Swap(Mutable<TRecord> lhs, Mutable<TRecord> rhs) noexcept
+    PartialSwap(Mutable<TRecord> lhs, Mutable<URecord> rhs) noexcept
     {
+        constexpr auto kLeftRank = Records::RankOf<TRecord>;
+        constexpr auto kRightRank = Records::RankOf<URecord>;
+        constexpr auto KSwapRank = Math::Min(kLeftRank, kRightRank);
+
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
             (Algorithms::Swap(Records::Get<TIndex>(lhs),
                               Records::Get<TIndex>(rhs)), ...);
         };
 
-        swap(SequenceOf<TRecord>{});
+        swap(Templates::MakeSequence<KSwapRank>{});
     }
 
     // Compare.

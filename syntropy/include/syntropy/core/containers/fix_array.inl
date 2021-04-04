@@ -50,7 +50,7 @@ namespace Syntropy
     FixArray<TType, TCount>
     ::operator=(Immutable<FixArray<UType, TCount>> rhs) noexcept
     {
-        Ranges::Copy(rhs, *this);
+        Ranges::PartialCopy(rhs, *this);
 
         return *this;
     }
@@ -61,7 +61,7 @@ namespace Syntropy
     FixArray<TType, TCount>
     ::operator=(Movable<FixArray<UType, TCount>> rhs) noexcept
     {
-        Ranges::Move(rhs, *this);
+        Ranges::PartialMove(rhs, *this);
 
         return *this;
     }
@@ -132,7 +132,7 @@ namespace Syntropy
     constexpr void FixArray<TType, TCount>
     ::Swap(Movable<FixArray<TType, TCount>> rhs) noexcept
     {
-        Ranges::Swap(rhs, *this);
+        Ranges::PartialSwap(rhs, *this);
     }
 
     /************************************************************************/
