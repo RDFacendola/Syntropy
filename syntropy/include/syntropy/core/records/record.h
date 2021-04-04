@@ -12,7 +12,6 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 #include "syntropy/language/templates/type_traits.h"
-#include "syntropy/language/templates/sequence.h"
 #include "syntropy/language/templates/sfinae.h"
 
 #include "syntropy/core/algorithms/swap.h"
