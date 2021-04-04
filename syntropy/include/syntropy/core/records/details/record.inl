@@ -105,8 +105,33 @@ namespace Syntropy::Records
     // ============
 
     template <Record TRecord, Record URecord>
+    requires IsSameRank<TRecord, URecord>
     constexpr void
     Copy(Mutable<TRecord> destination, Immutable<URecord> source) noexcept
+    {
+        return PartialCopy(destination, source);
+    }
+
+    template <Record TRecord, Record URecord>
+    requires IsSameRank<TRecord, URecord>
+    constexpr void
+    Move(Mutable<TRecord> destination, Immutable<URecord> source) noexcept
+    {
+        return PartialMove(destination, source);
+    }
+
+    template <Record TRecord, Record URecord>
+    requires IsSameRank<TRecord, URecord>
+    constexpr void
+    Move(Mutable<TRecord> destination, Movable<URecord> source) noexcept
+    {
+        return PartialMove(destination, Move(source));
+    }
+
+    template <Record TRecord, Record URecord>
+    constexpr Int
+    PartialCopy(Mutable<TRecord> destination, Immutable<URecord> source)
+    noexcept
     {
         auto elementwise_copy = [](auto& destination_element,
                                    auto&& source_element)
@@ -115,18 +140,22 @@ namespace Syntropy::Records
         };
 
         Records::LockstepApply(elementwise_copy, destination, source);
+
+        return Math::Min(RankOf<TRecord>, RankOf<URecord>);
     }
 
     template <Record TRecord, Record URecord>
-    constexpr void
-    Move(Mutable<TRecord> destination, Immutable<URecord> source) noexcept
+    constexpr Int
+    PartialMove(Mutable<TRecord> destination, Immutable<URecord> source)
+    noexcept
     {
-        Copy(destination, source);
+        return PartialCopy(destination, source);
     }
 
     template <Record TRecord, Record URecord>
-    constexpr void
-    Move(Mutable<TRecord> destination, Movable<URecord> source) noexcept
+    constexpr Int
+    PartialMove(Mutable<TRecord> destination, Movable<URecord> source)
+    noexcept
     {
         auto elementwise_move = [](auto& destination_element,
                                    auto&& source_element)
@@ -135,6 +164,8 @@ namespace Syntropy::Records
         };
 
         Records::LockstepApply(elementwise_move, destination, Move(source));
+
+        return Math::Min(RankOf<TRecord>, RankOf<URecord>);
     }
 
     // Swap.
@@ -187,7 +218,6 @@ namespace Syntropy::Records
     }
 
     template <Record TRecord, Record URecord>
-    requires IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {

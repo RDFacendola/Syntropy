@@ -240,6 +240,7 @@ namespace Syntropy
     // =====
 
     template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     constexpr void
     Copy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
     {
@@ -247,17 +248,40 @@ namespace Syntropy
     }
 
     template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     constexpr void
     Move(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
     {
-        Records::Copy(destination, source);
+        Records::Move(destination, source);
     }
 
     template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     constexpr void
     Move(Mutable<TTuple> destination, Movable<UTuple> source) noexcept
     {
         Records::Move(destination, Move(source));
+    }
+
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr Int
+    PartialCopy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
+    {
+        return Records::PartialCopy(destination, source);
+    }
+
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr Int
+    PartialMove(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
+    {
+        return Records::PartialMove(destination, source);
+    }
+
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr Int
+    PartialMove(Mutable<TTuple> destination, Movable<UTuple> source) noexcept
+    {
+        return Records::PartialMove(destination, Move(source));
     }
 
     // Swap.

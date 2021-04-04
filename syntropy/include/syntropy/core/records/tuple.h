@@ -254,20 +254,47 @@ namespace Syntropy
     // Copy.
     // =====
 
-    /// \brief Member-wise copy of a source record to a destination record.
+    /// \brief Member-wise copy a tuple to another one with the same rank.
     template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     constexpr void
     Copy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept;
 
-    /// \brief Member-wise move of a source record to a destination record.
+    /// \brief Member-wise move a tuple to another one with the same rank.
     template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     constexpr void
     Move(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept;
 
-    /// \brief Member-wise move of a source record to a destination record.
+    /// \brief Member-wise move a tuple to another one with the same rank.
     template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     constexpr void
     Move(Mutable<TTuple> destination, Movable<UTuple> source) noexcept;
+
+    /// \brief Member-wise copy a tuple to another one, until either is
+    ///        exhausted.
+    /// \return Returns the number of copied elements.
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr Int
+    PartialCopy(Mutable<TTuple> destination, Immutable<UTuple> source)
+    noexcept;
+
+    /// \brief Member-wise move a tuple to another one, until either is
+    ///        exhausted.
+    /// \return Returns the number of copied elements.
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr Int
+    PartialMove(Mutable<TTuple> destination, Immutable<UTuple> source)
+    noexcept;
+
+    /// \brief Member-wise move a tuple to another one, until either is
+    ///        exhausted.
+    /// \return Returns the number of copied elements.
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr Int
+    PartialMove(Mutable<TTuple> destination, Movable<UTuple> source)
+    noexcept;
 
     // Swap.
     // =====

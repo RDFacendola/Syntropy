@@ -173,20 +173,47 @@ namespace Syntropy::Records
     // Copy.
     // =====
 
-    /// \brief Member-wise copy of a source record to a destination record.
+    /// \brief Member-wise copy a record to another one with the same rank.
     template <Record TRecord, Record URecord>
+    requires IsSameRank<TRecord, URecord>
     constexpr void
     Copy(Mutable<TRecord> destination, Immutable<URecord> source) noexcept;
 
-    /// \brief Member-wise move of a source record to a destination record.
+    /// \brief Member-wise move a record to another one with the same rank.
     template <Record TRecord, Record URecord>
+    requires IsSameRank<TRecord, URecord>
     constexpr void
     Move(Mutable<TRecord> destination, Immutable<URecord> source) noexcept;
 
-    /// \brief Member-wise move of a source record to a destination record.
+    /// \brief Member-wise move a record to another one with the same rank.
     template <Record TRecord, Record URecord>
+    requires IsSameRank<TRecord, URecord>
     constexpr void
     Move(Mutable<TRecord> destination, Movable<URecord> source) noexcept;
+
+    /// \brief Member-wise copy a record to another one, until either is
+    ///        exhausted.
+    /// \return Returns the number of copied elements.
+    template <Record TRecord, Record URecord>
+    constexpr Int
+    PartialCopy(Mutable<TRecord> destination, Immutable<URecord> source)
+    noexcept;
+
+    /// \brief Member-wise move a record to another one, until either is
+    ///        exhausted.
+    /// \return Returns the number of copied elements.
+    template <Record TRecord, Record URecord>
+    constexpr Int
+    PartialMove(Mutable<TRecord> destination, Immutable<URecord> source)
+    noexcept;
+
+    /// \brief Member-wise move a record to another one, until either is
+    ///        exhausted.
+    /// \return Returns the number of copied elements.
+    template <Record TRecord, Record URecord>
+    constexpr Int
+    PartialMove(Mutable<TRecord> destination, Movable<URecord> source)
+    noexcept;
 
     // Swap.
     // =====
@@ -215,13 +242,11 @@ namespace Syntropy::Records
     /// \brief Check whether two record are member-wise equivalent.
     /// \remarks Equivalence doesn't imply equality.
     template <Record TRecord, Record URecord>
-    requires IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
-    /// \brief Member-wise compare two records.
+    /// \brief Member-wise compare two records lexicographically.
     template <Record TRecord, Record URecord>
-    requires IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr Ordering
     Compare(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
