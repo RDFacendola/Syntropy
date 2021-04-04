@@ -329,20 +329,17 @@ namespace Syntropy
     /// \brief Check whether two tuples are member-wise equal.
     /// \remarks Equality implies equivalence.
     template <IsTuple TTuple, IsTuple UTuple>
-    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Check whether two tuples are member-wise equivalent.
     /// \remarks Equivalence doesn't imply equality.
     template <IsTuple TTuple, IsTuple UTuple>
-    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Member-wise compare two tuples.
     template <IsTuple TTuple, IsTuple UTuple>
-    requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Ordering
     Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
