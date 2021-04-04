@@ -239,14 +239,17 @@ namespace Syntropy
     /// \brief Concatenate a set of tuples.
     template <Records::RecordReference... TRecords>
     [[nodiscard]] constexpr auto
-    Concatenate(Forwarding<TRecords>... tuples) noexcept
-        -> decltype(Details::Concatenate(Forward<TRecords>(tuples)...));
+    Concatenate(Forwarding<TRecords>... records) noexcept;
 
     /// \brief Flatten a tuple recursively.
-    template <Records::RecordReference TTuple>
+    template <Records::RecordReference TRecord>
     [[nodiscard]] constexpr auto
-    Flatten(Forwarding<TTuple> tuple) noexcept
-        -> decltype(Details::Flatten(Forward<TTuple>(tuple)));
+    Flatten(Forwarding<TRecord> record) noexcept;
+
+    /// \brief Flatten a tuple recursively.
+    template <typename TElement>
+    [[nodiscard]] constexpr auto
+    Flatten(Forwarding<TElement> element) noexcept;
 
     // Swap.
     // =====

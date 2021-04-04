@@ -24,10 +24,6 @@ namespace Syntropy
     template <typename... TTypes>
     struct Tuple;
 
-    template <typename... TElements>
-    [[nodiscard]] constexpr Tuple<TElements...>
-    MakeTuple(Forwarding<TElements>... elements) noexcept;
-
 }
 
 // ===========================================================================
@@ -41,10 +37,6 @@ namespace Syntropy::Details
     /// \brief Alias for a type-list.
     template <typename... TElements>
     using TupleList = Templates::TypeList<TElements...>;
-
-    /// \brief An alias for a tuple type.
-    template <typename... TElements>
-    using TupleAlias = Templates::Alias<Tuple<TElements...>>;
 
     // Default constructor.
     // ====================
@@ -205,6 +197,10 @@ namespace Syntropy::Details
     /* TUPLE BASE                                                           */
     /************************************************************************/
 
+    /// \brief An alias for a tuple type.
+    template <typename... TElements>
+    using TupleAlias = Templates::Alias<Tuple<TElements...>>;
+
     /// \brief Access a tuple base type by index.
     template <Int TCount, typename TTuple>
     struct TupleBaseHelper {};
@@ -260,7 +256,7 @@ namespace Syntropy::Details
     /// \brief Generate a sequence that can be used to access tuples.
     template <Records::RecordReference... TRecords>
     using EnumerateTupleIndexes
-        = typename EnumerateTupleIndexesHelper<0, TRecords...>::Type;
+        = typename EnumerateTupleIndexesHelper<0, Templates::UnqualifiedOf<TRecords>...>::Type;
 
     /// \brief Generate a sequence that can be used to access tuple elements.
     template <Records::RecordReference TTuple,
@@ -288,25 +284,7 @@ namespace Syntropy::Details
     /// \brief Generate a sequence that can be used to access tuple elements.
     template <Records::RecordReference... TRecords>
     using EnumerateTupleElementIndexes
-        = typename EnumerateTupleElementIndexesHelper<TRecords...>::Type;
-
-    /// \brief Concatenate a set of tuples.
-    template <Records::RecordReference... TRecords>
-    [[nodiscard]] constexpr decltype(auto)
-    Concatenate(Forwarding<TRecords>... tuples) noexcept;
-
-    // Flatten.
-    // ========
-
-    /// \brief Flatten a tuple recursively.
-    template <Records::RecordReference TTuple>
-    [[nodiscard]] constexpr decltype(auto)
-    Flatten(Forwarding<TTuple> tuple) noexcept;
-
-    /// \brief Flatten a tuple recursively. End of recursion.
-    template <typename TElement>
-    [[nodiscard]] constexpr decltype(auto)
-    Flatten(Forwarding<TElement> element) noexcept;
+        = typename EnumerateTupleElementIndexesHelper<Templates::UnqualifiedOf<TRecords>...>::Type;
 
 }
 

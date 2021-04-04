@@ -193,18 +193,47 @@ namespace Syntropy
 
     template <Records::RecordReference... TRecords>
     [[nodiscard]] constexpr auto
-    Concatenate(Forwarding<TRecords>... tuples) noexcept
-        -> decltype(Details::Concatenate(Forward<TRecords>(tuples)...))
+    Concatenate(Forwarding<TRecords>... records) noexcept
     {
-        return Details::Concatenate(Forward<TRecords>(tuples)...);
+        auto concatenate = [&]<Records::RecordReference TRecord,
+                               Int... TTupleIndex,
+                               Int... TElementIndex>
+            (Forwarding<TRecord> record,
+             Templates::Sequence<TTupleIndex...>,
+             Templates::Sequence<TElementIndex...>)
+            {
+                return MakeTuple(
+                           Get<TElementIndex>(
+                               Get<TTupleIndex>(Forward<TRecord>(record)))
+                           ...);
+            };
+
+        return concatenate(
+            ForwardAsTuple(records...),
+            Details::EnumerateTupleIndexes<TRecords...>{},
+            Details::EnumerateTupleElementIndexes<TRecords...>{});
     }
 
-    template <Records::RecordReference TTuple>
+    template <Records::RecordReference TRecord>
     [[nodiscard]] constexpr auto
-    Flatten(Forwarding<TTuple> tuple) noexcept
-        -> decltype(Details::Flatten(Forward<TTuple>(tuple)))
+    Flatten(Forwarding<TRecord> record) noexcept
     {
-        return Details::Flatten(Forward<TTuple>(tuple));
+        auto flatten = [&]<Int... TIndex>(Forwarding<TRecord> record,
+                                          Templates::Sequence<TIndex...>)
+        {
+            return Concatenate(Flatten(Get<TIndex>(Forward<TRecord>(record)))
+                               ...);
+        };
+
+        return flatten(Forward<TRecord>(record),
+                       Records::SequenceOf<TRecord>{});
+    }
+
+    template <typename TElement>
+    [[nodiscard]] constexpr decltype(auto)
+    Flatten(Forwarding<TElement> element) noexcept
+    {
+        return MakeTuple(Forward<TElement>(element));
     }
 
     // Swap.
