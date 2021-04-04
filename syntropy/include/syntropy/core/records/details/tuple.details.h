@@ -15,19 +15,6 @@
 
 // ===========================================================================
 
-namespace Syntropy
-{
-    /************************************************************************/
-    /* FORWARD DECLARATIONS                                                 */
-    /************************************************************************/
-
-    template <typename... TTypes>
-    struct Tuple;
-
-}
-
-// ===========================================================================
-
 namespace Syntropy::Details
 {
     /************************************************************************/
@@ -197,27 +184,28 @@ namespace Syntropy::Details
     /* TUPLE BASE                                                           */
     /************************************************************************/
 
-    /// \brief An alias for a tuple type.
-    template <typename... TElements>
-    using TupleAlias = Templates::Alias<Tuple<TElements...>>;
-
-    /// \brief Access a tuple base type by index.
+    /// \brief Walk tuple class hierarchy upwards until TCount drops to 0 or
+    ///        the tuple is exhausted.
     template <Int TCount, typename TTuple>
     struct TupleBaseHelper {};
 
     /// \brief Specialization for tuples.
-    template <Int TCount, typename TElement, typename... TElements>
-    struct TupleBaseHelper<TCount, Tuple<TElement, TElements...>>
-        : TupleBaseHelper<TCount - 1, Tuple<TElements...>> {};
+    template <template <typename...> typename TTuple,
+              Int TCount,
+              typename TElement,
+              typename... TElements>
+    struct TupleBaseHelper<TCount, TTuple<TElement, TElements...>>
+        : TupleBaseHelper<TCount - 1, TTuple<TElements...>> {};
 
     /// \brief End of recursion.
-    template <typename... TElements>
-    struct TupleBaseHelper<0, Tuple<TElements...>>
-        : TupleAlias<TElements...> {};
+    template <template <typename...> typename TTuple, typename... TElements>
+    struct TupleBaseHelper<0, TTuple<TElements...>>
+        : Templates::Alias<TTuple<TElements...>> {};
 
     /// \brief Access a tuple base type by index.
     template <Int TCount, typename TTuple>
-    using TupleBase = typename TupleBaseHelper<TCount, TTuple>::Type;
+    using TupleBase
+        = typename TupleBaseHelper<TCount, TTuple>::Type;
 
     /************************************************************************/
     /* TUPLE                                                                */
@@ -257,6 +245,9 @@ namespace Syntropy::Details
     template <Records::RecordReference... TRecords>
     using EnumerateTupleIndexes
         = typename EnumerateTupleIndexesHelper<0, Templates::UnqualifiedOf<TRecords>...>::Type;
+
+
+
 
     /// \brief Generate a sequence that can be used to access tuple elements.
     template <Records::RecordReference TTuple,
