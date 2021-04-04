@@ -226,6 +226,7 @@ namespace Syntropy::Records
     /// \brief Member-wise swap two records and returns the value of the
     ///        former.
     template <Record TRecord, RecordReference URecord>
+    requires Records::IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr TRecord
     Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept;
 

@@ -172,6 +172,7 @@ namespace Syntropy::Records
     // =====
 
     template <Record TRecord, RecordReference URecord>
+    requires Records::IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr TRecord
     Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept
     {
