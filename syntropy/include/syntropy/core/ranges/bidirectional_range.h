@@ -42,6 +42,9 @@ namespace Syntropy::Ranges
             { Ranges::PopBack(range) };
         };
 
+    /// \brief Tag type associated to bidirectional ranges.
+    struct BidirectionalRangeTag{};
+
 }
 
 // ===========================================================================

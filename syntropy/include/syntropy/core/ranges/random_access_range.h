@@ -47,6 +47,9 @@ namespace Syntropy::Ranges
             { Ranges::Select(range, offset, count) };
         };
 
+    /// \brief Tag type associated to random-access ranges.
+    struct RandomAccessRangeTag{};
+
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/

@@ -7,6 +7,7 @@
 #pragma once
 
 #include "syntropy/core/algorithms/swap.h"
+#include "syntropy/core/algorithms/compare.h"
 
 // ===========================================================================
 
@@ -101,14 +102,40 @@ namespace Syntropy::Ranges
 
     template <ForwardRange TRange, ForwardRange URange>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs, ForwardRangeTag)
+    noexcept
     {
         auto left = Ranges::ViewOf(lhs);
         auto right = Ranges::ViewOf(rhs);
 
         for(; !Ranges::IsEmpty(left) && !Ranges::IsEmpty(right);)
         {
-            if(!Algorithms::AreEqual(left, right))
+            if(!Algorithms::AreEqual(Ranges::Front(left),
+                                     Ranges::Front(right)))
+            {
+                return false;
+            }
+
+            left = Ranges::PopFront(left);
+            right = Ranges::PopFront(right);
+        }
+
+        return Ranges::IsEmpty(left) && Ranges::IsEmpty(right);
+    }
+
+    template <ForwardRange TRange, ForwardRange URange>
+    [[nodiscard]] constexpr Bool
+    AreEquivalent(Immutable<TRange> lhs,
+                  Immutable<URange> rhs,
+                  ForwardRangeTag) noexcept
+    {
+        auto left = Ranges::ViewOf(lhs);
+        auto right = Ranges::ViewOf(rhs);
+
+        for(; !Ranges::IsEmpty(left) && !Ranges::IsEmpty(right);)
+        {
+            if(!Algorithms::AreEquivalent(Ranges::Front(left),
+                                          Ranges::Front(right)))
             {
                 return false;
             }
@@ -122,7 +149,8 @@ namespace Syntropy::Ranges
 
     template <ForwardRange TRange, ForwardRange URange>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    Compare(Immutable<TRange> lhs, Immutable<URange> rhs, ForwardRangeTag)
+    noexcept
     {
         auto left = Ranges::ViewOf(lhs);
         auto right = Ranges::ViewOf(rhs);

@@ -19,19 +19,58 @@ namespace Syntropy::Ranges
 
     template <ContiguousRange TRange, ContiguousRange URange>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs, ContiguousRangeTag)
+    noexcept
     {
         if(Ranges::Count(lhs) != Ranges::Count(rhs))
         {
             return false;
         }
 
-        if(Ranges::IsEmpty(lhs))
+        if(Ranges::IsEmpty(lhs) || (Ranges::Data(lhs) == Ranges::Data(rhs)))
         {
             return true;
         }
 
-        return (Ranges::Data(lhs) == Ranges::Data(rhs));
+        return Ranges::AreEqual(lhs, rhs, ForwardRangeTag{});
+    }
+
+    template <ContiguousRange TRange, ContiguousRange URange>
+    [[nodiscard]] constexpr Bool
+    AreEquivalent(Immutable<TRange> lhs,
+                  Immutable<URange> rhs,
+                  ContiguousRangeTag) noexcept
+    {
+        if(Ranges::Count(lhs) != Ranges::Count(rhs))
+        {
+            return false;
+        }
+
+        if(Ranges::IsEmpty(lhs) || (Ranges::Data(lhs) == Ranges::Data(rhs)))
+        {
+            return true;
+        }
+
+        return Ranges::AreEquivalent(lhs, rhs, ForwardRangeTag{});
+    }
+
+    template <ContiguousRange TRange, ContiguousRange URange>
+    [[nodiscard]] constexpr Ordering
+    Compare(Immutable<TRange> lhs, Immutable<URange> rhs, ContiguousRangeTag)
+    noexcept
+    {
+        if(Ranges::Count(lhs) == Ranges::Count(rhs))
+        {
+            auto is_empty = Ranges::IsEmpty(lhs);
+            auto same_data = (Ranges::Data(lhs) == Ranges::Data(rhs));
+
+            if(is_empty || same_data)
+            {
+                return Ordering::kEquivalent;
+            }
+        }
+
+        return Ranges::Compare(lhs, rhs, ForwardRangeTag{});
     }
 
     template <ContiguousRange TRange, ContiguousRange URange>

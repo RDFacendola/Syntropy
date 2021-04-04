@@ -41,6 +41,9 @@ namespace Syntropy::Ranges
         { Ranges::IsEmpty(range) };
     };
 
+    /// \brief Tag type associated to forward ranges.
+    struct ForwardRangeTag{};
+
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
@@ -83,15 +86,26 @@ namespace Syntropy::Ranges
     // Comparison.
     // ===========
 
+    /// \brief Check whether two ranges are element-wise equal.
+    template <ForwardRange TRange, ForwardRange URange>
+    [[nodiscard]] constexpr Bool
+    AreEqual(Immutable<TRange> lhs,
+             Immutable<URange> rhs,
+             ForwardRangeTag = {}) noexcept;
+
     /// \brief Check whether two ranges are element-wise equivalent.
     template <ForwardRange TRange, ForwardRange URange>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    AreEquivalent(Immutable<TRange> lhs,
+                  Immutable<URange> rhs,
+                  ForwardRangeTag = {}) noexcept;
 
     /// \brief Compare two range views lexicographically.
     template <ForwardRange TRange, ForwardRange URange>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    Compare(Immutable<TRange> lhs,
+            Immutable<URange> rhs,
+            ForwardRangeTag = {}) noexcept;
 
 }
 

@@ -39,6 +39,9 @@ namespace Syntropy::Ranges
             { Ranges::Count(range) };
         };
 
+    /// \brief Tag type associated to sized ranges.
+    struct SizedRangeTag{};
+
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
@@ -46,11 +49,19 @@ namespace Syntropy::Ranges
     // Comparison.
     // ===========
 
-    /// \brief Check whether two ranges are element-wise equivalent.
-    /// \remarks Equivalence doesn't imply equality.
+    /// \brief Check whether two ranges are element-wise equal.
     template <SizedRange TRange, SizedRange URange>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    AreEqual(Immutable<TRange> lhs,
+             Immutable<URange> rhs,
+             SizedRangeTag = {}) noexcept;
+
+    /// \brief Check whether two ranges are element-wise equivalent.
+    template <SizedRange TRange, SizedRange URange>
+    [[nodiscard]] constexpr Bool
+    AreEquivalent(Immutable<TRange> lhs,
+                  Immutable<URange> rhs,
+                  SizedRangeTag = {}) noexcept;
 
 }
 

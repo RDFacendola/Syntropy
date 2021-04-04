@@ -17,28 +17,28 @@ namespace Syntropy::Ranges
 
     template <SizedRange TRange, SizedRange URange>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs, SizedRangeTag)
+    noexcept
     {
-        auto left = Ranges::ViewOf(lhs);
-        auto right = Ranges::ViewOf(rhs);
-
-        if (Ranges::Count(left) == Ranges::Count(right))
+        if(Ranges::Count(lhs) != Ranges::Count(rhs))
         {
-            for(; !Ranges::IsEmpty(left);)
-            {
-                if(!Algorithms::AreEqual(left, right))
-                {
-                    return false;
-                }
-
-                left = Ranges::PopFront(left);
-                right = Ranges::PopFront(right);
-            }
-
-            return true;
+            return false;
         }
 
-        return false;
+        return Ranges::AreEqual(lhs, rhs, ForwardRangeTag{});
+    }
+
+    template <SizedRange TRange, SizedRange URange>
+    [[nodiscard]] constexpr Bool
+    AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs, SizedRangeTag)
+    noexcept
+    {
+        if(Ranges::Count(lhs) != Ranges::Count(rhs))
+        {
+            return false;
+        }
+
+        return Ranges::AreEquivalent(lhs, rhs, ForwardRangeTag{});
     }
 
 }

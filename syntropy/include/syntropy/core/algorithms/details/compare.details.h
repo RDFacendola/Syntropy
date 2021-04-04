@@ -96,7 +96,7 @@ namespace Syntropy::Algorithms::Details
     InvokeAreEquivalent(Immutable<TType> lhs,
                         Immutable<UType> rhs,
                         FallbackPriority) noexcept
-        -> decltype(Details::RouteAreEqual(lhs, rhs));
+        -> decltype(lhs == rhs);
 
     /// \brief Routes the invocation.
     template <typename TType, typename UType>

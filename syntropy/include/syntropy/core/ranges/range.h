@@ -125,6 +125,9 @@ namespace Syntropy::Ranges
         { Ranges::ViewOf(range) };
     };
 
+    /// \brief Tag type associated to ranges.
+    struct RangeTag{};
+
     /************************************************************************/
     /* TYPE TRAITS                                                          */
     /************************************************************************/
