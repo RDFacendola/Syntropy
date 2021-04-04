@@ -236,6 +236,30 @@ namespace Syntropy
         return MakeTuple(Forward<TElement>(element));
     }
 
+    // Copy.
+    // =====
+
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr void
+    Copy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
+    {
+        Records::Copy(destination, source);
+    }
+
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr void
+    Move(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
+    {
+        Records::Copy(destination, source);
+    }
+
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr void
+    Move(Mutable<TTuple> destination, Movable<UTuple> source) noexcept
+    {
+        Records::Move(destination, Move(source));
+    }
+
     // Swap.
     // =====
 

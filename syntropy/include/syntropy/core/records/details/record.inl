@@ -104,7 +104,7 @@ namespace Syntropy::Records
     // Move \ Copy.
     // ============
 
-    template <RecordReference TRecord, RecordReference URecord>
+    template <Record TRecord, Record URecord>
     constexpr void
     Copy(Mutable<TRecord> destination, Immutable<URecord> source) noexcept
     {
@@ -117,14 +117,14 @@ namespace Syntropy::Records
         Records::LockstepApply(elementwise_copy, destination, source);
     }
 
-    template <RecordReference TRecord, RecordReference URecord>
+    template <Record TRecord, Record URecord>
     constexpr void
     Move(Mutable<TRecord> destination, Immutable<URecord> source) noexcept
     {
         Copy(destination, source);
     }
 
-    template <RecordReference TRecord, RecordReference URecord>
+    template <Record TRecord, Record URecord>
     constexpr void
     Move(Mutable<TRecord> destination, Movable<URecord> source) noexcept
     {

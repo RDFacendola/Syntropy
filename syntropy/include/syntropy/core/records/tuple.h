@@ -251,6 +251,24 @@ namespace Syntropy
     [[nodiscard]] constexpr auto
     Flatten(Forwarding<TElement> element) noexcept;
 
+    // Copy.
+    // =====
+
+    /// \brief Member-wise copy of a source record to a destination record.
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr void
+    Copy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept;
+
+    /// \brief Member-wise move of a source record to a destination record.
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr void
+    Move(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept;
+
+    /// \brief Member-wise move of a source record to a destination record.
+    template <IsTuple TTuple, IsTuple UTuple>
+    constexpr void
+    Move(Mutable<TTuple> destination, Movable<UTuple> source) noexcept;
+
     // Swap.
     // =====
 
