@@ -10,10 +10,11 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/concepts.h"
-#include "syntropy/language/templates/sequence.h"
 #include "syntropy/core/algorithms/compare.h"
 
 #include "syntropy/core/records/record.h"
+
+#include <iostream>
 
 // ===========================================================================
 
@@ -27,30 +28,19 @@ namespace Syntropy
     /* TUPLE                                                                */
     /************************************************************************/
 
-    // !IMPORTANT! In VS2019 apparently "explicit" keyword is not
-    //             considered when constructors are not declared and defined at
-    //             the same time.
-
      /// \brief Represents a fixed-size collection of heterogeneous elements.
      /// \author Raffaele D. Facendola - September 2020.
     template <typename... TElements>
-    struct Tuple;
-
-    /************************************************************************/
-    /* CONCEPT                                                              */
-    /************************************************************************/
+    class Tuple;
 
     /// \brief Concept for template arguments that bind to tuples only.
     template <typename TTuple>
-    concept IsTuple = Templates::IsTemplateSpecializationOf<TTuple, Tuple>;
-
-    /************************************************************************/
-    /* TUPLE                                                                */
-    /************************************************************************/
+    concept IsTuple
+        = Templates::IsTemplateSpecializationOf<TTuple, Tuple>;
 
     /// \brief Recursive tuple definition.
     template <typename TElement, typename... TElements>
-    struct Tuple<TElement, TElements...> : private Tuple<TElements...>
+    class Tuple<TElement, TElements...> : private Tuple<TElements...>
     {
         template <Int TIndex, IsTuple TTuple>
         friend constexpr Immutable<Records::ElementTypeOf<TIndex, TTuple>>
@@ -74,148 +64,98 @@ namespace Syntropy
         static constexpr Int
         kRank = sizeof...(TElements) + 1;
 
-        /// \brief Type of the base class.
-        using BaseClass = Tuple<TElements...>;
-
         /// \brief Type of the tuple itself.
         using SelfType = Tuple<TElement, TElements...>;
 
         /// \brief Element types.
         using ElementTypes = Templates::TypeList<TElement, TElements...>;
 
-        /// \brief Tag type used to construct a tuple element-wise.
+    public:
+
+        /// \brief Default constructor.
+        template<typename UElement = TElement>
+        requires
+            Details::TupleDefaultConstructor<UElement, TElements...>
+        explicit
+            (Details::TupleExplicitDefaultConstructor<UElement, TElements...>)
+        constexpr
+        Tuple() noexcept;
+
+        /// \brief Direct constructor.
+        template<typename... UElements, typename VElements = ElementTypes>
+        requires
+            Details::TupleDirectConstructor<VElements, UElements...>
+        explicit
+            (Details::TupleExplicitDirectConstructor<VElements, UElements...>)
+        constexpr
+        Tuple(Forwarding<UElements>... elements) noexcept;
+
+        /// \brief Converting copy constructor.
+        template<typename... UElements, typename VElements = ElementTypes>
+        requires
+            Details::TupleCopyConstructor<VElements, UElements...>
+        explicit
+            (Details::TupleExplicitCopyConstructor<VElements, UElements...>)
+        constexpr
+        Tuple(Immutable<Tuple<UElements...>> rhs) noexcept;
+
+        /// \brief Converting move constructor.
+        template<typename... UElements, typename VElements = ElementTypes>
+        requires
+            Details::TupleMoveConstructor<VElements, UElements...>
+        explicit
+            (Details::TupleExplicitMoveConstructor<VElements, UElements...>)
+        constexpr
+        Tuple(Movable<Tuple<UElements...>> rhs) noexcept;
+
+        /// \brief Converting copy assignment operator.
+        template <typename... UElements, typename VElements = ElementTypes>
+        requires
+            Details::TupleCopyAssignment<VElements, UElements...>
+        constexpr Mutable<Tuple>
+        operator=(Immutable<Tuple<UElements...>> rhs) noexcept;
+
+        /// \brief Converting move assignment operator.
+        template <typename... UElements, typename VElements = ElementTypes>
+        requires
+            Details::TupleMoveAssignment<VElements, UElements...>
+        constexpr Mutable<Tuple>
+        operator=(Movable<Tuple<UElements...>> rhs) noexcept;
+
+    private:
+
+        /// \brief Tag type used to construct a tuple directly.
+        struct DirectTag {};
+
+        /// \brief Tag type used to element-wise-construct a tuple.
         struct ElementwiseTag {};
-
-        /// \brief Tag type used to construct a tuple by unwinding
-        ///        another tuple.
-        struct UnwindTag {};
-
-        /// \brief Tuple default constructor. Enabled if all elements
-        ///        are default-constructible.
-        template<typename UElement = TElement>
-        requires Details::TupleDefaultConstructor<UElement, TElements...>
-        explicit (Details::ExplicitIfTupleDefaultConstructor<UElement, TElements...>)
-        constexpr Tuple() noexcept
-            : BaseClass{}
-            , element_{}
-        {
-
-        }
-
-        /// \brief Tuple direct constructor. Enabled if all elements are
-        ///        copy-constructible.
-        template<typename UElement = TElement>
-        requires Details::TupleDirectConstructor<UElement, TElements...>
-        constexpr explicit (Details::ExplicitIfTupleDirectConstructor<UElement, TElements...>)
-        Tuple(Immutable<TElement> element,
-              Immutable<TElements>... elements) noexcept
-            : Tuple(ElementwiseTag{}, element, elements...)
-        {
-
-        }
-
-        /// \brief Tuple converting constructor. Enabled if all tuple elements
-        ///        are copy-constructible.
-        template<typename UElement,
-                 typename... UElements,
-                 Details::EnableIfTupleConvertingConstructor<ElementTypes, UElement, UElements...> = nullptr>
-        constexpr explicit (Details::ExplicitIfTupleConvertingConstructor<ElementTypes, UElement, UElements...>)
-        Tuple(Forwarding<UElement> element,
-              Forwarding<UElements>... elements) noexcept
-            : Tuple(ElementwiseTag{},
-                    Forward<UElement>(element),
-                    Forward<UElements>(elements)...)
-        {
-
-        }
-
-        /// \brief Tuple converting copy constructor. Enabled if all tuple
-        ///        elements are copy-constructible.
-        template<typename UElement,
-                 typename... UElements,
-                 Details::EnableIfTupleConvertingCopyConstructor<ElementTypes, UElement, UElements...> = nullptr>
-        explicit (Details::ExplicitIfTupleConvertingCopyConstructor<ElementTypes, UElement, UElements...>)
-        constexpr Tuple(Immutable<Tuple<UElement, UElements...>> rhs) noexcept
-            : Tuple(UnwindTag{},
-                    Templates::SequenceFor<UElement, UElements...>{},
-                    rhs)
-        {
-
-        }
-
-        /// \brief Tuple converting move constructor. Enabled if all tuple
-        ///        elements are move-constructible.
-        template<typename UElement,
-                 typename... UElements,
-                 Details::EnableIfTupleConvertingMoveConstructor<ElementTypes, UElement, UElements...> = nullptr>
-        constexpr explicit (Details::ExplicitIfTupleConvertingMoveConstructor<ElementTypes, UElement, UElements...>)
-         Tuple(Movable<Tuple<UElement, UElements...>> rhs) noexcept
-            : Tuple(UnwindTag{},
-                    Templates::SequenceFor<UElement, UElements...>{},
-                    Move(rhs))
-        {
-
-        }
 
         /// \brief Construct a tuple forwarding explicit arguments.
         template<typename UElement, typename... UElements>
         constexpr
-        Tuple(ElementwiseTag,
+        Tuple(DirectTag,
               Forwarding<UElement> element,
               Forwarding<UElements>... elements) noexcept;
 
         /// \brief Construct a tuple unwinding another tuple elements.
-        template<Records::RecordReference TTuple, Int... VIndexes>
+        template<typename TTuple, Int... TSequence>
         constexpr
-        Tuple(UnwindTag,
-              Templates::Sequence<VIndexes...>,
+        Tuple(ElementwiseTag,
+              Templates::Sequence<TSequence...>,
               Forwarding<TTuple> tuple) noexcept;
-
-        /// \brief Copy-assignment operator.
-        template <typename TSelf = Tuple,
-                  typename TSelfList = ElementTypes,
-                  Details::EnableIfTupleCopyAssignment<TSelfList> = nullptr>
-        constexpr Mutable<Tuple>
-        operator=(Templates::ExactOf<Immutable<TSelf>> rhs) noexcept;
-
-        /// \brief Move-assignment operator.
-        template <typename TSelf = Tuple,
-                  typename TSelfList = ElementTypes,
-                  Details::EnableIfTupleMoveAssignment<TSelfList> = nullptr>
-        constexpr Mutable<Tuple>
-        operator=(Templates::ExactOf<Movable<TSelf>> rhs) noexcept;
-
-        /// \brief Tuple converting copy-assignment operator.
-        template <typename... UElements,
-                  typename TSelfList = ElementTypes,
-                  Details::EnableIfTupleConvertingCopyAssignment<TSelfList, Templates::TypeList<UElements...>> = nullptr>
-        constexpr Mutable<Tuple>
-        operator=(Immutable<Tuple<UElements...>> rhs) noexcept;
-
-        /// \brief Tuple converting move-assignment operator.
-        template <typename... UElements,
-                  typename TSelfList = ElementTypes,
-                  Details::EnableIfTupleConvertingMoveAssignment<TSelfList, Templates::TypeList<UElements...>> = nullptr>
-        constexpr Mutable<Tuple>
-        operator=(Movable<Tuple<UElements...>> rhs) noexcept;
-
-        /// \brief Default copy-constructor.
-        constexpr
-        Tuple(Immutable<Tuple> rhs) noexcept = default;
-
-        /// \brief Default move-constructor.
-        constexpr
-        Tuple(Movable<Tuple> rhs) noexcept = default;
 
         /// \brief Head element.
         TElement element_;
+
     };
 
     /// \brief Empty tuple.
     /// \author Raffaele D. Facendola - September 2020.
     template <>
-    struct Tuple<>
+    class Tuple<>
     {
+    public:
+
         /// \brief Number of elements in the tuple.
         static constexpr Int
         kRank = 0;
@@ -365,18 +305,14 @@ namespace Syntropy
     /// \brief Partial template specialization for tuples.
     template <IsTuple TTuple>
     struct Records::RankTrait<TTuple>
-    {
-        static constexpr Int
-        kValue = TTuple::kCount;
-    };
+        : Templates::IntConstant<TTuple::kCount> {};
 
     /// \brief Partial template specialization for tuples.
     template <Int TIndex, IsTuple TTuple>
     struct Records::ElementTypeTrait<TIndex, TTuple>
-    {
-        using
-        Type = Templates::ElementOf<TIndex, typename TTuple::ElementTypes>;
-    };
+        : Templates::Alias<
+            Templates::ElementTypeOf<TIndex,
+                                     typename TTuple::ElementTypes>> {};
 
 }
 

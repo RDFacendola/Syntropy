@@ -101,6 +101,42 @@ namespace Syntropy::Records
         return make(SequenceOf<TRecord>{});
     }
 
+    // Move \ Copy.
+    // ============
+
+    template <RecordReference TRecord, RecordReference URecord>
+    constexpr void
+    Copy(Mutable<TRecord> destination, Immutable<URecord> source) noexcept
+    {
+        auto elementwise_copy = [](auto& destination_element,
+                                   auto&& source_element)
+        {
+            destination_element = Copy(source_element);
+        };
+
+        Records::LockstepApply(elementwise_copy, destination, source);
+    }
+
+    template <RecordReference TRecord, RecordReference URecord>
+    constexpr void
+    Move(Mutable<TRecord> destination, Immutable<URecord> source) noexcept
+    {
+        Copy(destination, source);
+    }
+
+    template <RecordReference TRecord, RecordReference URecord>
+    constexpr void
+    Move(Mutable<TRecord> destination, Movable<URecord> source) noexcept
+    {
+        auto elementwise_move = [](auto& destination_element,
+                                   auto&& source_element)
+        {
+            destination_element = Move(source_element);
+        };
+
+        Records::LockstepApply(elementwise_move, destination, Move(source));
+    }
+
     // Swap.
     // =====
 

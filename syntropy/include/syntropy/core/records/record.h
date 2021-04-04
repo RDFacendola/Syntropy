@@ -169,6 +169,24 @@ namespace Syntropy::Records
     [[nodiscard]] constexpr TType
     MakeFromRecord(Forwarding<TRecord> record) noexcept;
 
+    // Move \ Copy.
+    // ============
+
+    /// \brief Member-wise copy of a source record to a destination record.
+    template <RecordReference TRecord, RecordReference URecord>
+    constexpr void
+    Copy(Mutable<TRecord> destination, Immutable<URecord> source) noexcept;
+
+    /// \brief Member-wise move of a source record to a destination record.
+    template <RecordReference TRecord, RecordReference URecord>
+    constexpr void
+    Move(Mutable<TRecord> destination, Immutable<URecord> source) noexcept;
+
+    /// \brief Member-wise move of a source record to a destination record.
+    template <RecordReference TRecord, RecordReference URecord>
+    constexpr void
+    Move(Mutable<TRecord> destination, Movable<URecord> source) noexcept;
+
     // Swap.
     // =====
 

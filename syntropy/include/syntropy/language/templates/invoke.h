@@ -30,8 +30,8 @@ namespace Syntropy::Templates
     using ArgumentsOf = Details::ArgumentsOf<TCallable>;
 
     /// \brief Provides indexed access to function arguments' types.
-    template <Int VIndex, typename TCallable >
-    using ArgumentOf = ElementOf<VIndex, ArgumentsOf<TCallable>>;
+    template <Int TIndex, typename TCallable >
+    using ArgumentOf = ElementTypeOf<TIndex, ArgumentsOf<TCallable>>;
 
     /// \brief Type alias for the return type of a callable object invocation
     ///        with provided arguments.

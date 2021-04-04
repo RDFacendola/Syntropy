@@ -25,17 +25,6 @@ namespace Syntropy::Templates
     inline constexpr Bool
     AlwaysFalse = false;
 
-    /// \brief Strucure which consume any template argument and result in the
-    //         program to be ill-formed.
-    template <typename TType, typename... TTypes>
-    struct IllFormed
-    {
-        static_assert(AlwaysFalse<TTypes...>, "The program is ill-formed");
-
-        /// \brief Dummy value.
-        static TType kValue = TType{};
-    };
-
 }
 
 // ===========================================================================

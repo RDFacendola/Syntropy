@@ -14,92 +14,105 @@ namespace Syntropy
     /************************************************************************/
 
     template <typename TElement, typename... TElements>
+    template <typename UElement>
+    requires
+        Details::TupleDefaultConstructor<UElement, TElements...>
+    constexpr
+    Tuple<TElement, TElements...>
+    ::Tuple() noexcept
+        : Tuple<TElements...>{}
+        , element_{}
+    {
+
+    }
+
+    template <typename TElement, typename... TElements>
+    template <typename... UElements, typename VElements>
+    requires
+        Details::TupleDirectConstructor<VElements, UElements...>
+    constexpr
+    Tuple<TElement, TElements...>
+    ::Tuple(Forwarding<UElements>... elements) noexcept
+        : Tuple(DirectTag{}, Forward<UElements>(elements)...)
+    {
+
+    }
+
+    template <typename TElement, typename... TElements>
+    template <typename... UElements, typename VElements>
+    requires
+        Details::TupleCopyConstructor<VElements, UElements...>
+    constexpr
+    Tuple<TElement, TElements...>
+    ::Tuple(Immutable<Tuple<UElements...>> rhs) noexcept
+        : Tuple(ElementwiseTag{},
+                Templates::SequenceFor<UElements...>{},
+                rhs)
+    {
+
+    }
+
+    template <typename TElement, typename... TElements>
+    template <typename... UElements, typename VElements>
+    requires
+        Details::TupleMoveConstructor<VElements, UElements...>
+    constexpr
+    Tuple<TElement, TElements...>
+    ::Tuple(Movable<Tuple<UElements...>> rhs) noexcept
+        : Tuple(ElementwiseTag{},
+                Templates::SequenceFor<UElements...>{},
+                Move(rhs))
+    {
+
+    }
+
+    template <typename TElement, typename... TElements>
     template <typename UElement, typename... UElements>
-    constexpr Tuple<TElement, TElements...>
-    ::Tuple(ElementwiseTag,
+    constexpr
+    Tuple<TElement, TElements...>
+    ::Tuple(DirectTag,
             Forwarding<UElement> element,
             Forwarding<UElements>... elements) noexcept
-        : BaseClass(Forward<UElements>(elements)...)
+        : Tuple<TElements...>(Forward<UElements>(elements)...)
         , element_(Forward<UElement>(element))
     {
 
     }
 
     template <typename TElement, typename... TElements>
-    template<Records::RecordReference TTuple, Int... VIndexes>
-    constexpr Tuple<TElement, TElements...>
-    ::Tuple(UnwindTag,
-            Templates::Sequence<VIndexes...>,
+    template <typename TTuple, Int... TSequence>
+    constexpr
+    Tuple<TElement, TElements...>
+    ::Tuple(ElementwiseTag,
+            Templates::Sequence<TSequence...>,
             Forwarding<TTuple> tuple) noexcept
-        : Tuple(ElementwiseTag{}, Get<VIndexes>(Forward<TTuple>(tuple))...)
+        : Tuple(ElementwiseTag{}, Get<TSequence>(Forward<TTuple>(tuple))...)
     {
 
     }
 
     template <typename TElement, typename... TElements>
-    template <typename TSelf,
-              typename TSelfList,
-              Details::EnableIfTupleCopyAssignment<TSelfList>>
-    constexpr
-    Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>
-    ::operator=(Templates::ExactOf<Immutable<TSelf>> rhs) noexcept
-    {
-        Records::LockstepApply([](auto& lhs_element, const auto& rhs_element)
-        {
-            lhs_element = rhs_element;
-        }, *this, rhs);
-
-        return *this;
-    }
-
-    template <typename TElement, typename... TElements>
-    template <typename... UElements,
-              typename TSelfList,
-              Details::EnableIfTupleConvertingCopyAssignment<
-                TSelfList,
-                Templates::TypeList<UElements...>>>
-    constexpr
-    Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>
-    ::operator=(Immutable<Tuple<UElements...>> rhs) noexcept
-    {
-        Records::LockstepApply([](auto& lhs_element, const auto& rhs_element)
-        {
-            lhs_element = rhs_element;
-        }, *this, rhs);
-
-        return *this;
-    }
-
-    template <typename TElement, typename... TElements>
-    template <typename TSelf,
-              typename TSelfList,
-              Details::EnableIfTupleMoveAssignment<TSelfList>>
+    template <typename... UElements, typename VElements>
+    requires
+        Details::TupleCopyAssignment<VElements, UElements...>
     constexpr Mutable<Tuple<TElement, TElements...>>
     Tuple<TElement, TElements...>
-    ::operator=(Templates::ExactOf<Movable<TSelf>> rhs) noexcept
+    ::operator=(Immutable<Tuple<UElements...>> rhs) noexcept
     {
-        Records::LockstepApply([](auto& lhs_element, auto&& rhs_element)
-        {
-            lhs_element = Move(rhs_element);
-        }, *this, rhs);
+        Records::Copy(*this, rhs);
 
         return *this;
     }
 
     template <typename TElement, typename... TElements>
-    template <typename... UElements,
-              typename TSelfList,
-              Details::EnableIfTupleConvertingMoveAssignment<
-                  TSelfList,
-                  Templates::TypeList<UElements...>>>
+    template <typename... UElements, typename VElements>
+    requires
+        Details::TupleMoveAssignment<VElements, UElements...>
     constexpr Mutable<Tuple<TElement, TElements...>>
     Tuple<TElement, TElements...>
     ::operator=(Movable<Tuple<UElements...>> rhs) noexcept
     {
-        Records::LockstepApply([](auto& lhs_element, auto&& rhs_element)
-        {
-            lhs_element = Move(rhs_element);
-        }, *this, rhs);
+        Records::Move(*this, rhs);
 
         return *this;
     }

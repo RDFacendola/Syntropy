@@ -54,7 +54,6 @@
 #include "syntropy/language/templates/math.h"
 #include "syntropy/language/templates/priority.h"
 #include "syntropy/language/templates/ratio.h"
-#include "syntropy/language/templates/sequence.h"
 #include "syntropy/language/templates/sfinae.h"
 #include "syntropy/language/templates/templates.h"
 #include "syntropy/language/templates/type_traits.h"

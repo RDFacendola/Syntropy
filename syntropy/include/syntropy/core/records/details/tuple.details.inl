@@ -43,26 +43,21 @@ namespace Syntropy::Details
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept
     {
-        // The argument is a tuple: flatten each element recursively and
-        // eturn their concatenation.
+        // Flatten each tuple recursively and concatenate the result.
 
-        auto flat = [&]<Int... VTupleIndex>(
-            Forwarding<TTuple> tuple,
-            Templates::Sequence<VTupleIndex...>)
+        auto flat = [&]<Int... TIndex>(Forwarding<TTuple> tuple, Templates::Sequence<TIndex...>)
         {
-            return Details::Concatenate(
-                Details::Flatten(Get<VTupleIndex>(Forward<TTuple>(tuple)))...);
+            return Details::Concatenate(Details::Flatten(Get<TIndex>(Forward<TTuple>(tuple)))...);
         };
 
-        return flat(Forward<TTuple>(tuple),
-                    Records::SequenceOf<Templates::UnqualifiedOf<TTuple>>{});
+        return flat(Forward<TTuple>(tuple), Records::SequenceOf<Templates::UnqualifiedOf<TTuple>>{});
     }
 
     template <typename TElement>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TElement> element) noexcept
     {
-        // The argument is not a tuple: wrap it in a 1-tuple and end recursion.
+        // Wrap the element in a 1-tuple and end recursion.
 
         return MakeTuple(Forward<TElement>(element));
     }
