@@ -50,7 +50,8 @@ namespace Syntropy::Details
             return Details::Concatenate(Details::Flatten(Get<TIndex>(Forward<TTuple>(tuple)))...);
         };
 
-        return flat(Forward<TTuple>(tuple), Records::SequenceOf<Templates::UnqualifiedOf<TTuple>>{});
+        return flat(Forward<TTuple>(tuple),
+                    Records::SequenceOf<TTuple>{});
     }
 
     template <typename TElement>

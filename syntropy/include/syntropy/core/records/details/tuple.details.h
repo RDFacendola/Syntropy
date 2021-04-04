@@ -28,13 +28,6 @@ namespace Syntropy
     [[nodiscard]] constexpr Tuple<TElements...>
     MakeTuple(Forwarding<TElements>... elements) noexcept;
 
-    template <Records::RecordReference... TRecords>
-    [[nodiscard]] constexpr decltype(auto)
-    Concatenate(Forwarding<TRecords>... tuples) noexcept;
-
-    template <Records::RecordReference TTuple>
-    [[nodiscard]] constexpr decltype(auto)
-    Flatten(Forwarding<TTuple> tuple) noexcept;
 }
 
 // ===========================================================================
