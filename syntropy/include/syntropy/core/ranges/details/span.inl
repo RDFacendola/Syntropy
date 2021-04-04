@@ -113,20 +113,16 @@ namespace Syntropy
     // BaseSpan.
     // =========
 
-    template <typename TType, typename TTraits,
-              typename UType, typename UTraits>
+    template <IsSpan TSpan, IsSpan USpan>
     [[nodiscard]] constexpr Bool
-    operator==(Immutable<BaseSpan<TType, TTraits>> lhs,
-               Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
+    operator==(Immutable<TSpan> lhs, Immutable<USpan> rhs) noexcept
     {
         return Ranges::AreEquivalent(lhs, rhs);
     }
 
-    template <typename TType, typename TTraits,
-              typename UType, typename UTraits>
+    template <IsSpan TSpan, IsSpan USpan>
     [[nodiscard]] constexpr Ordering
-    operator<=>(Immutable<BaseSpan<TType, TTraits>> lhs,
-                Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
+    operator<=>(Immutable<TSpan> lhs, Immutable<USpan> rhs) noexcept
     {
         return Ranges::Compare(lhs, rhs);
     }

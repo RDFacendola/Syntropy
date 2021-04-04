@@ -251,60 +251,17 @@ namespace Syntropy
     [[nodiscard]] constexpr auto
     Flatten(Forwarding<TElement> element) noexcept;
 
-    // Copy.
-    // =====
-
-    /// \brief Member-wise copy a tuple to another one with the same rank.
-    template <IsTuple TTuple, IsTuple UTuple>
-    requires Records::IsSameRank<TTuple, UTuple>
-    constexpr void
-    Copy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept;
-
-    /// \brief Member-wise move a tuple to another one with the same rank.
-    template <IsTuple TTuple, IsTuple UTuple>
-    requires Records::IsSameRank<TTuple, UTuple>
-    constexpr void
-    Move(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept;
-
-    /// \brief Member-wise move a tuple to another one with the same rank.
-    template <IsTuple TTuple, IsTuple UTuple>
-    requires Records::IsSameRank<TTuple, UTuple>
-    constexpr void
-    Move(Mutable<TTuple> destination, Movable<UTuple> source) noexcept;
-
-    /// \brief Member-wise copy a tuple to another one, until either is
-    ///        exhausted.
-    /// \return Returns the number of copied elements.
-    template <IsTuple TTuple, IsTuple UTuple>
-    constexpr Int
-    PartialCopy(Mutable<TTuple> destination, Immutable<UTuple> source)
-    noexcept;
-
-    /// \brief Member-wise move a tuple to another one, until either is
-    ///        exhausted.
-    /// \return Returns the number of copied elements.
-    template <IsTuple TTuple, IsTuple UTuple>
-    constexpr Int
-    PartialMove(Mutable<TTuple> destination, Immutable<UTuple> source)
-    noexcept;
-
-    /// \brief Member-wise move a tuple to another one, until either is
-    ///        exhausted.
-    /// \return Returns the number of copied elements.
-    template <IsTuple TTuple, IsTuple UTuple>
-    constexpr Int
-    PartialMove(Mutable<TTuple> destination, Movable<UTuple> source)
-    noexcept;
-
     // Swap.
     // =====
 
     /// \brief Member-wise swap two tuples.
-    template <IsTuple TTuple>
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     constexpr void
-    Swap(Mutable<TTuple> lhs, Mutable<TTuple> rhs) noexcept;
+    Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept;
 
-    /// \brief Swap lhs with rhs and return the old value of lhs.
+    /// \brief Member-wise swap two tuples and returns the previous value of
+    ///        the former.
     template <IsTuple TTuple, IsTuple UTuple>
     requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr TTuple
@@ -325,23 +282,6 @@ namespace Syntropy
     requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Ordering
     operator<=>(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
-
-    /// \brief Check whether two tuples are member-wise equal.
-    /// \remarks Equality implies equivalence.
-    template <IsTuple TTuple, IsTuple UTuple>
-    [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
-
-    /// \brief Check whether two tuples are member-wise equivalent.
-    /// \remarks Equivalence doesn't imply equality.
-    template <IsTuple TTuple, IsTuple UTuple>
-    [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
-
-    /// \brief Member-wise compare two tuples.
-    template <IsTuple TTuple, IsTuple UTuple>
-    [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /************************************************************************/
     /* TYPE TRAITS                                                          */

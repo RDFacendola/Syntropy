@@ -236,62 +236,15 @@ namespace Syntropy
         return MakeTuple(Forward<TElement>(element));
     }
 
-    // Copy.
-    // =====
-
-    template <IsTuple TTuple, IsTuple UTuple>
-    requires Records::IsSameRank<TTuple, UTuple>
-    constexpr void
-    Copy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
-    {
-        Records::Copy(destination, source);
-    }
-
-    template <IsTuple TTuple, IsTuple UTuple>
-    requires Records::IsSameRank<TTuple, UTuple>
-    constexpr void
-    Move(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
-    {
-        Records::Move(destination, source);
-    }
-
-    template <IsTuple TTuple, IsTuple UTuple>
-    requires Records::IsSameRank<TTuple, UTuple>
-    constexpr void
-    Move(Mutable<TTuple> destination, Movable<UTuple> source) noexcept
-    {
-        Records::Move(destination, Move(source));
-    }
-
-    template <IsTuple TTuple, IsTuple UTuple>
-    constexpr Int
-    PartialCopy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
-    {
-        return Records::PartialCopy(destination, source);
-    }
-
-    template <IsTuple TTuple, IsTuple UTuple>
-    constexpr Int
-    PartialMove(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
-    {
-        return Records::PartialMove(destination, source);
-    }
-
-    template <IsTuple TTuple, IsTuple UTuple>
-    constexpr Int
-    PartialMove(Mutable<TTuple> destination, Movable<UTuple> source) noexcept
-    {
-        return Records::PartialMove(destination, Move(source));
-    }
-
     // Swap.
     // =====
 
-    template <IsTuple TTuple>
+    template <IsTuple TTuple, IsTuple UTuple>
+    requires Records::IsSameRank<TTuple, UTuple>
     constexpr void
-    Swap(Mutable<TTuple> lhs, Mutable<TTuple> rhs) noexcept
+    Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
     {
-        return Records::Swap(lhs, rhs);
+        Records::Swap(lhs, rhs);
     }
 
     template <IsTuple TTuple, IsTuple UTuple>
@@ -317,27 +270,6 @@ namespace Syntropy
     requires Records::IsSameRank<TTuple, UTuple>
     [[nodiscard]] constexpr Ordering
     operator<=>(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
-    {
-        return Records::Compare(lhs, rhs);
-    }
-
-    template <IsTuple TTuple, IsTuple UTuple>
-    [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
-    {
-        return Records::AreEqual(lhs, rhs);
-    }
-
-    template <IsTuple TTuple, IsTuple UTuple>
-    [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
-    {
-        return Records::AreEquivalent(lhs, rhs);
-    }
-
-    template <IsTuple TTuple, IsTuple UTuple>
-    [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         return Records::Compare(lhs, rhs);
     }

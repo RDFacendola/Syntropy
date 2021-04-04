@@ -109,6 +109,11 @@ namespace Syntropy
 
     };
 
+    /// \brief Concept for template arguments that bind to spans only.
+    template <typename TSpan>
+    concept IsSpan
+        = Templates::IsTemplateSpecializationOf<TSpan, BaseSpan>;
+
     /************************************************************************/
     /* BASE SPAN TRAITS                                                     */
     /************************************************************************/
@@ -165,18 +170,14 @@ namespace Syntropy
     // =========
 
     /// \brief Check whether lhs and rhs are equivalent.
-    template <typename TType, typename TTraits,
-              typename UType, typename UTraits>
+    template <IsSpan TSpan, IsSpan USpan>
     [[nodiscard]] constexpr Bool
-    operator==(Immutable<BaseSpan<TType, TTraits>> lhs,
-               Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
+    operator==(Immutable<TSpan> lhs, Immutable<USpan> rhs) noexcept;
 
     /// \brief Compare two spans lexicographically.
-    template <typename TType, typename TTraits,
-              typename UType, typename UTraits>
+    template <IsSpan TSpan, IsSpan USpan>
     [[nodiscard]] constexpr Ordering
-    operator<=>(Immutable<BaseSpan<TType, TTraits>> lhs,
-                Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
+    operator<=>(Immutable<TSpan> lhs, Immutable<USpan> rhs) noexcept;
 
     // Access.
     // =======
