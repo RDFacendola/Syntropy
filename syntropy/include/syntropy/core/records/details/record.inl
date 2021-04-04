@@ -204,7 +204,6 @@ namespace Syntropy::Records
     // ========
 
     template <Record TRecord, Record URecord>
-    requires IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
@@ -215,7 +214,12 @@ namespace Syntropy::Records
                     && ...);
         };
 
-        return equal(SequenceOf<TRecord>{});
+        if constexpr (IsSameRank<TRecord, URecord>)
+        {
+            return equal(SequenceOf<TRecord>{});
+        }
+
+        return false;
     }
 
     template <Record TRecord, Record URecord>

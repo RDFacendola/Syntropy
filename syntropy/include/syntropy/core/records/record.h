@@ -235,7 +235,6 @@ namespace Syntropy::Records
     /// \brief Check whether two records are member-wise equal.
     /// \remarks Equality implies equivalence.
     template <Record TRecord, Record URecord>
-    requires IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept;
 
