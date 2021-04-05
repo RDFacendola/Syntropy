@@ -122,6 +122,9 @@ namespace Syntropy
         constexpr Mutable<Tuple>
         operator=(Movable<Tuple<UElements...>> rhs) noexcept;
 
+        /// \brief Default destructor.
+        ~Tuple() noexcept = default;
+
     private:
 
         /// \brief Tag type used to construct a tuple directly.
@@ -137,7 +140,7 @@ namespace Syntropy
               Forwarding<UElement> element,
               Forwarding<UElements>... elements) noexcept;
 
-        /// \brief Construct a tuple unwinding another tuple elements.
+        /// \brief Construct a tuple from another tuple.
         template<typename TTuple, Int... TSequence>
         constexpr
         Tuple(ElementwiseTag,
@@ -177,6 +180,10 @@ namespace Syntropy
         /// \brief Default copy-assignment.
         constexpr Mutable<Tuple>
         operator=(Immutable<Tuple>) noexcept = default;
+
+        /// \brief Default destructor.
+        ~Tuple() noexcept = default;
+        
     };
 
     /// \brief Deduction rule.
