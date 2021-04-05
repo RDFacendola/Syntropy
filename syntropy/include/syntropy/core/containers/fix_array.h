@@ -29,16 +29,14 @@ namespace Syntropy
     public:
 
         /// \brief Default constructor.
-        constexpr FixArray() = default;
+        constexpr
+        FixArray() = default;
 
         /// \brief Direct constructor.
-        ///
-        /// \remarks This method participates in overload resolution only if
-        ///          the number of elements matches the array size.
-        template <
-            typename... TTypes,
-            typename = Templates::EnableIf<sizeof...(TTypes) == TCount>>
-        constexpr FixArray(Forwarding<TTypes>... elements) noexcept;
+        template <typename... TTypes>
+        requires (sizeof...(TTypes) == TCount)
+        constexpr
+        FixArray(Forwarding<TTypes>... elements) noexcept;
 
         /// \brief Converting copy-constructor.
         template <typename UType>
@@ -71,42 +69,25 @@ namespace Syntropy
         constexpr
         operator RWSpan<TType>() noexcept;
 
-        /// \brief Access the array by index.
+        /// \brief Access an element by index.
         [[nodiscard]] constexpr Mutable<TType>
         operator[](Int index) noexcept;
 
-        /// \brief Access the array by index.
+        /// \brief Access an element by index.
         [[nodiscard]] constexpr Immutable<TType>
         operator[](Int index) const noexcept;
 
-        /// \brief Access the underlying storage.
-        [[nodiscard]] constexpr Ptr<TType>
-        GetData() const noexcept;
-
-        /// \brief Access the underlying storage.
-        [[nodiscard]] constexpr RWPtr<TType>
-        GetData() noexcept;
-
-        /// \brief Get the number of elements in the array.
-        [[nodiscard]] constexpr Int
-        GetCount() const noexcept;
-
-        /// \brief Swap the content of two fix-array.
-        constexpr void
-        Swap(Movable<FixArray> rhs) noexcept;
-
     private:
 
-        /// \brief Tag type used to construct a fix array by unwinding
-        ///        another fix array.
-        struct UnwindTag {};
+        /// \brief Tag type used to element-wise-construct a fix-array.
+        struct ElementwiseTag {};
 
-        /// \brief Construct a fix-array by unwinding another fix array.
-        template<typename TFixArray, Int... VIndexes>
+        /// \brief Construct a fix-array by from another fix-array.
+        template<typename TFixArray, Int... TIndexes>
         constexpr
-        FixArray(UnwindTag,
-                 Forwarding<TFixArray> other,
-                 Syntropy::Templates::Sequence<VIndexes...>) noexcept;
+        FixArray(ElementwiseTag,
+                 Templates::Sequence<TIndexes...>,
+                 Forwarding<TFixArray> other) noexcept;
 
         /// \brief Array elements.
         TType elements_[TCount];
@@ -117,29 +98,33 @@ namespace Syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // N-Tuple.
-    // ========
+    // Element access.
+    // ===============
 
-    /// \brief Access the VIndex-th element in a fix-array.
-    /// \remarks The program is ill-formed if no such element exists.
+    /// \brief Access a tuple element by index.
+    ///
+    /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename TType, Int TCount>
     [[nodiscard]] constexpr Immutable<TType>
     Get(Immutable<FixArray<TType, TCount>> fix_array) noexcept;
 
-    /// \brief Access the VIndex-th element in a fix-array.
-    /// \remarks The program is ill-formed if no such element exists.
+    /// \brief Access a tuple element by index.
+    ///
+    /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename TType, Int TCount>
     [[nodiscard]] constexpr Mutable<TType>
     Get(Mutable<FixArray<TType, TCount>> fix_array) noexcept;
 
-    /// \brief Access the VIndex-th element in a fix-arrayfix-array.
-    /// \remarks The program is ill-formed if no such element exists.
+    /// \brief Access a tuple element by index.
+    ///
+    /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename TType, Int TCount>
     [[nodiscard]] constexpr Immovable<TType>
     Get(Immovable<FixArray<TType, TCount>> fix_array) noexcept;
 
-    /// \brief Access the VIndex-th element in a fix-array.
-    /// \remarks The program is ill-formed if no such element exists.
+    /// \brief Access a tuple element by index.
+    ///
+    /// \remarks Ill-formed if no such element exists.
     template <Int TIndex, typename TType, Int TCount>
     [[nodiscard]] constexpr Movable<TType>
     Get(Movable<FixArray<TType, TCount>> fix_array) noexcept;
@@ -176,20 +161,30 @@ namespace Syntropy
     template <typename TType, Int TCount>
     void
     ViewOf(Immovable<FixArray<TType, TCount>> fix_array) noexcept = delete;
-}
 
-// ===========================================================================
+    // Swap.
+    // =====
 
-namespace Syntropy::Records
-{
+    /// \brief Member-wise swap two fix-arrays.
+    template <typename TType, typename UType, Int TCount>
+    constexpr void
+    Swap(Mutable<FixArray<TType, TCount>> lhs,
+         Mutable<FixArray<UType, TCount>> rhs) noexcept;
+
     /************************************************************************/
-    /* TUPLE TRAITS                                                         */
+    /* TYPE TRAITS                                                          */
     /************************************************************************/
 
-    /// \brief Specialization for fix-arrays.
+    /// \brief Partial template specialization for fix-arrays.
     template <typename TType, Int TCount>
-    struct RankTrait<FixArray<TType, TCount>>
+    struct Records::RankTrait<FixArray<TType, TCount>>
         : Templates::IntConstant<TCount> {};
+
+    /// \brief Partial template specialization fix-arrays.
+    template <Int TIndex, typename TType, Int TCount>
+    struct Records::ElementTypeTrait<TIndex, FixArray<TType, TCount>>
+        : Templates::Alias<TType> {};
+
 }
 
 // ===========================================================================

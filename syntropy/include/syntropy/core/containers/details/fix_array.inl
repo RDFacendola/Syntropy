@@ -14,7 +14,8 @@ namespace Syntropy
     /************************************************************************/
 
     template <typename TType, Int TCount>
-    template <typename... TTypes, typename>
+    template <typename... TTypes>
+    requires (sizeof...(TTypes) == TCount)
     constexpr FixArray<TType, TCount>
     ::FixArray(Forwarding<TTypes>... elements) noexcept
         : elements_{ Forward<TTypes>(elements)... }
@@ -26,9 +27,9 @@ namespace Syntropy
     template <typename UType>
     constexpr FixArray<TType, TCount>
     ::FixArray(Immutable<FixArray<UType, TCount>> rhs) noexcept
-        : FixArray(UnwindTag{},
-                   rhs,
-                   Syntropy::Templates::MakeSequence<TCount>{})
+        : FixArray(ElementwiseTag{},
+                   Templates::MakeSequence<TCount>{},
+                   rhs)
     {
 
     }
@@ -37,9 +38,9 @@ namespace Syntropy
     template <typename UType>
     constexpr FixArray<TType, TCount>
     ::FixArray(Movable<FixArray<UType, TCount>> rhs) noexcept
-        : FixArray(UnwindTag{},
-                   Move(rhs),
-                   Syntropy::Templates::MakeSequence<TCount>{})
+        : FixArray(ElementwiseTag{},
+                   Templates::MakeSequence<TCount>{},
+                   Move(rhs))
     {
 
     }
@@ -50,7 +51,7 @@ namespace Syntropy
     FixArray<TType, TCount>
     ::operator=(Immutable<FixArray<UType, TCount>> rhs) noexcept
     {
-        Ranges::PartialCopy(rhs, *this);
+        Ranges::PartialCopy(*this, rhs);
 
         return *this;
     }
@@ -61,7 +62,7 @@ namespace Syntropy
     FixArray<TType, TCount>
     ::operator=(Movable<FixArray<UType, TCount>> rhs) noexcept
     {
-        Ranges::PartialMove(rhs, *this);
+        Ranges::PartialMove(*this, Move(rhs));
 
         return *this;
     }
@@ -97,58 +98,27 @@ namespace Syntropy
     }
 
     template <typename TType, Int TCount>
-    [[nodiscard]] constexpr Ptr<TType> FixArray<TType, TCount>
-    ::GetData() const noexcept
-    {
-        return (TCount > 0) ? PtrOf(elements_[0]) : nullptr;
-    }
-
-    template <typename TType, Int TCount>
-    [[nodiscard]] constexpr RWPtr<TType> FixArray<TType, TCount>
-    ::GetData() noexcept
-    {
-        return (TCount > 0) ? PtrOf(elements_[0]) : nullptr;
-    }
-
-    template <typename TType, Int TCount>
-    [[nodiscard]] constexpr Int FixArray<TType, TCount>
-    ::GetCount() const noexcept
-    {
-        return TCount;
-    }
-
-    template <typename TType, Int TCount>
     template<typename TFixArray, Int... TIndexes>
     constexpr FixArray<TType, TCount>
-    ::FixArray(UnwindTag,
-               Forwarding<TFixArray> other,
-               Syntropy::Templates::Sequence<TIndexes...>) noexcept
+    ::FixArray(ElementwiseTag,
+               Templates::Sequence<TIndexes...>,
+               Forwarding<TFixArray> other) noexcept
         : FixArray(Get<TIndexes>(Forward<TFixArray>(other))...)
     {
 
-    }
-
-    template <typename TType, Int TCount>
-    constexpr void FixArray<TType, TCount>
-    ::Swap(Movable<FixArray<TType, TCount>> rhs) noexcept
-    {
-        Ranges::PartialSwap(rhs, *this);
     }
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // N-Tuple.
-    // ========
+    // Element access.
+    // ===============
 
     template <Int TIndex, typename TType, Int TCount>
     [[nodiscard]] constexpr Immutable<TType>
     Get(Immutable<FixArray<TType, TCount>> fix_array) noexcept
     {
-        static_assert((TIndex >= 0) && (TIndex < TCount),
-                      "Index out-of-range.");
-
         return ToImmutable(fix_array[TIndex]);
     }
 
@@ -156,9 +126,6 @@ namespace Syntropy
     [[nodiscard]] constexpr Mutable<TType>
     Get(Mutable<FixArray<TType, TCount>> fix_array) noexcept
     {
-        static_assert((TIndex >= 0) && (TIndex < TCount),
-                      "Index out-of-range.");
-
         return ToMutable(fix_array[TIndex]);
     }
 
@@ -166,9 +133,6 @@ namespace Syntropy
     [[nodiscard]] constexpr Immovable<TType>
     Get(Immovable<FixArray<TType, TCount>> fix_array) noexcept
     {
-        static_assert((TIndex >= 0) && (TIndex < TCount),
-                      "Index out-of-range.");
-
         return ToImmovable(fix_array[TIndex]);
     }
 
@@ -176,9 +140,6 @@ namespace Syntropy
     [[nodiscard]] constexpr Movable<TType>
     Get(Movable<FixArray<TType, TCount>> fix_array) noexcept
     {
-        static_assert((TIndex >= 0) && (TIndex < TCount),
-                      "Index out-of-range.");
-
         return Move(fix_array[TIndex]);
     }
 
@@ -216,6 +177,17 @@ namespace Syntropy
     ViewOf(Mutable<FixArray<TType, TCount>> rhs) noexcept
     {
         return rhs;
+    }
+
+    // Swap.
+    // =====
+
+    template <typename TType, typename UType, Int TCount>
+    constexpr void
+    Swap(Mutable<FixArray<TType, TCount>> lhs,
+         Mutable<FixArray<UType, TCount>> rhs) noexcept
+    {
+        Ranges::PartialSwap(lhs, rhs);
     }
 
 }
