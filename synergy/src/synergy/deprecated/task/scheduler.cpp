@@ -3,7 +3,7 @@
 #include "synergy/patterns/sync_counter.h"
 
 #include "syntropy/platform/threading.h"
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 #include "syntropy/patterns/scope_guard.h"
 
 #include <thread>

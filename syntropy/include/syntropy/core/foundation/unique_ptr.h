@@ -12,7 +12,7 @@
 #include "syntropy/language/templates/concepts.h"
 #include "syntropy/core/algorithms/compare.h"
 
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 
 #include "syntropy/memory/allocators/allocator.h"
 

@@ -1,6 +1,6 @@
 #include "synergy/task/worker.h"
 
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 #include "syntropy/patterns/scope_guard.h"
 
 namespace Syntropy::synergy

@@ -9,7 +9,7 @@
 
 #include "syntropy/core/algorithms/swap.h"
 
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 
 // ===========================================================================
 

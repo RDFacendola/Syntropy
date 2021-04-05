@@ -9,7 +9,7 @@
 #include "syntropy/containers/vector.h"
 #include <memory>
 
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 
 #include "synergy/task/task.h"
 

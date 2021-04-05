@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 #include "syntropy/math/math.h"
 #include "syntropy/math/numeric.h"
 #include "syntropy/math/vector.h"

@@ -36,8 +36,8 @@
 #include "syntropy/core/records/record.h"
 #include "syntropy/core/records/tuple.h"
 
-#include "syntropy/diagnostics/assert.h"
-#include "syntropy/diagnostics/debugger.h"
+#include "syntropy/diagnostics/foundation/assert.h"
+#include "syntropy/diagnostics/foundation/debugger.h"
 
 #include "syntropy/hal/hal_macro.h"
 

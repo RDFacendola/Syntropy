@@ -11,7 +11,7 @@
 
 #include "syntropy/language/preprocessor/macro.h"
 
-#include "syntropy/diagnostics/debugger.h"
+#include "syntropy/diagnostics/foundation/debugger.h"
 
 // ===========================================================================
 

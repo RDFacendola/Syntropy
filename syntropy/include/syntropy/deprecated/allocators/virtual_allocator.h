@@ -14,7 +14,7 @@
 #include "syntropy/virtual_memory/virtual_memory.h"
 #include "syntropy/virtual_memory/virtual_buffer.h"
 #include "syntropy/math/math.h"
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 
 namespace Syntropy
 {

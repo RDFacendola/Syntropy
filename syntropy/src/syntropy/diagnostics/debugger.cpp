@@ -1,4 +1,4 @@
-#include "syntropy/diagnostics/debugger.h"
+#include "syntropy/diagnostics/foundation/debugger.h"
 
 #include "syntropy/hal/hal_debugger.h"
 

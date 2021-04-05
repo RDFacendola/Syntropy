@@ -49,8 +49,8 @@
 #include "syntropy/memory/allocators/allocator.h"
 #include "syntropy/memory/allocators/system_allocator.h"
 
-#include "syntropy/diagnostics/debugger.h"
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/debugger.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 
 #include "syntropy/core/support/event.h"
 

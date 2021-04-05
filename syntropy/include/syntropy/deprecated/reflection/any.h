@@ -10,7 +10,7 @@
 
 #include "syntropy/type_traits.h"
 
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 
 #include "syntropy/reflection/type.h"
 

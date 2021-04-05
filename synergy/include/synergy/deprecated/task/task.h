@@ -11,7 +11,7 @@
 #include <atomic>
 #include <cstddef>
 
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 
 namespace Syntropy::synergy
 {

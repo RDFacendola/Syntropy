@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/language/templates/traits.h"
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"

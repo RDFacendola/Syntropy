@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 #include "syntropy/memory/memory_address.h"
 
 namespace syntropy

@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <functional>
 
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 
 namespace syntropy
 {

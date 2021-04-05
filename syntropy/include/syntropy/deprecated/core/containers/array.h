@@ -12,7 +12,7 @@
 
 #include "syntropy/language/foundation.h"
 #include "syntropy/language/initializer_list.h"
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/buffer.h"
 #include "syntropy/allocators/allocator.h"

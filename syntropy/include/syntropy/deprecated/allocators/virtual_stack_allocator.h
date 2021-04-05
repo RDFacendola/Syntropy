@@ -18,7 +18,7 @@
 
 #include "syntropy/math/math.h"
 
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 
 namespace Syntropy
 {

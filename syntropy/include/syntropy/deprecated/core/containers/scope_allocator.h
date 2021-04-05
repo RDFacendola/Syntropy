@@ -14,7 +14,7 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
 
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/foundation/assert.h"
 
 namespace Syntropy
 {
