@@ -62,6 +62,6 @@ namespace Syntropy::Memory
 
 // ===========================================================================
 
-#include "system_allocator.inl"
+#include "details/system_allocator.inl"
 
 // ===========================================================================
