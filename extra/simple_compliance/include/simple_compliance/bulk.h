@@ -48,6 +48,9 @@
 #include "syntropy/diagnostics/foundation/debugger.h"
 #include "syntropy/diagnostics/foundation/source_location.h"
 
+#include "syntropy/diagnostics/unit_test/test_context.h"
+#include "syntropy/diagnostics/unit_test/test_case.h"
+
 // HAL.
 // ====
 

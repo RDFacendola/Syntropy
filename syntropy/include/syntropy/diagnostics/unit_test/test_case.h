@@ -1,29 +1,27 @@
 
 /// \file test_case.h
-/// \brief This header is part of the syntropy unit test system. It contains classes used to define test cases.
+///
+/// \brief This header is part of the Syntropy diagnostics module.
+///        It contains classes used to define test cases.
 ///
 /// \author Raffaele D. Facendola - 2018
 
 #pragma once
 
-#include <type_traits>
+#include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/core/patterns/event.h"
-#include "syntropy/language/preprocessor/preprocessor.h"
+#include "syntropy/diagnostics/unit_test/test_context.h"
+
 #include "syntropy/core/strings/string.h"
-#include "syntropy/core/strings/label.h"
-#include "syntropy/serialization/string_stream.h"
-#include "syntropy/experimental/memory/smart_pointers.h"
-#include "syntropy/diagnostics/stack_trace.h"
-#include "syntropy/unit_test/test_context.h"
+#include "syntropy/core/support/event.h"
 
-namespace Syntropy
+namespace Syntropy::UnitTest
 {
     /************************************************************************/
     /* ON TEST CASE SUCCESS EVENT ARGS                                      */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a success is reported.
+    /// \brief Arguments for the test-case success event.
     struct OnTestCaseSuccessEventArgs : OnTestContextSuccessEventArgs
     {
 
@@ -33,14 +31,14 @@ namespace Syntropy
     /* ON TEST CASE FAILURE EVENT ARGS                                      */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a failure is reported.
+    /// \brief Arguments for the test-case failure event.
     struct OnTestCaseFailureEventArgs : OnTestContextFailureEventArgs
     {
 
     };
 
     /************************************************************************/
-    /* TEST CASE <TEST FIXTURE>                                             */
+    /* TEST CASE                                                            */
     /************************************************************************/
 
     /// \brief Represents an environment for a single test case.
@@ -51,56 +49,64 @@ namespace Syntropy
     public:
 
         /// \brief Create a named test case.
-        TestCase(const Label& name);
+        TestCase(Immutable<String> name) noexcept;
 
         /// \brief Default copy-constructor.
-        TestCase(const TestCase&) = default;
+        TestCase(Immutable<TestCase> rhs) noexcept = default;
 
         /// \brief Default move-constructor.
-        TestCase(TestCase&&) = default;
+        TestCase(Mutable<TestCase> rhs) noexcept = default;
 
         /// \brief Default copy-assignment.
-        TestCase& operator=(const TestCase&) = default;
+        Mutable<TestCase>
+        operator=(Immutable<TestCase> rhs) noexcept = default;
 
         /// \brief Default move-assignment.
-        TestCase& operator=(TestCase&&) = default;
+        Mutable<TestCase>
+        operator=(Mutable<TestCase> rhs) noexcept = default;
 
         /// \brief Default virtual destructor.
-        virtual ~TestCase() = default;
+        virtual
+        ~TestCase() noexcept = default;
 
         /// \brief Run the test case within a fixture.
-        void Run(TTestFixture& test_fixture) const;
+        void
+        Run(Mutable<TTestFixture> test_fixture) const noexcept;
 
         /// \brief Get the test case name.
-        const Label& GetName() const;
+        Immutable<String>
+        GetName() const noexcept;
 
         /// \brief Bind to the event notified whenever a success is reported.
         template <typename TDelegate>
-        Listener OnSuccess(TDelegate&& delegate) const;
+        Listener
+        OnSuccess(Forwarding<TDelegate> delegate) const noexcept;
 
         /// \brief Bind to the event notified whenever a failure is reported.
         template <typename TDelegate>
-        Listener OnFailure(TDelegate&& delegate) const;
+        Listener
+        OnFailure(Forwarding<TDelegate> delegate) const noexcept;
 
     private:
 
+        /// \brief Type of an event in a test case.
+        template <typename TEventArgs>
+        using EventType = Event<Immutable<TestCase>, TEventArgs>;
+
         /// \brief Run the concrete test case.
-        virtual void RunTestCase(TTestFixture& test_fixture) const = 0;
+        virtual void
+        RunTestCase(Mutable<TTestFixture> test_fixture) const noexcept = 0;
 
         /// \brief Test case name.
-        Label name_;
+        String name_;
 
         /// \brief Event notified whenever a success is reported.
-        Event<const TestCase&, OnTestCaseSuccessEventArgs> success_event_;
+        EventType<OnTestCaseSuccessEventArgs> success_event_;
 
         /// \brief Event notified whenever a failure is reported.
-        Event<const TestCase&, OnTestCaseFailureEventArgs> failure_event_;
+        EventType<OnTestCaseFailureEventArgs> failure_event_;
 
     };
-
-    /************************************************************************/
-    /* TEST CASE T <TEST FIXTURE, TEST CASE>                                */
-    /************************************************************************/
 
     /// \brief Wraps a concrete test case method.
     /// \author Raffaele D. Facendola - December 2017
@@ -111,26 +117,32 @@ namespace Syntropy
 
         /// \brief Create a named test case.
         template <typename UTestCase>
-        TestCaseT(const Label& name, UTestCase&& test_case);
+        TestCaseT(Immutable<String> name, Forwarding<UTestCase> test_case)
+        noexcept;
 
         /// \brief Default copy-constructor.
-        TestCaseT(const TestCaseT&) = default;
+        TestCaseT(Immutable<TestCaseT> rhs) noexcept = default;
 
         /// \brief Default move-constructor.
-        TestCaseT(TestCaseT&&) = default;
+        TestCaseT(Movable<TestCaseT> rhs) noexcept = default;
 
         /// \brief Default copy-assignment.
-        TestCaseT& operator=(const TestCaseT&) = default;
+        Mutable<TestCaseT>
+        operator=(Immutable<TestCaseT> rhs) noexcept = default;
 
         /// \brief Default move-assignment.
-        TestCaseT& operator=(TestCaseT&&) = default;
+        Mutable<TestCaseT>
+        operator=(Movable<TestCaseT> rhs) noexcept = default;
 
         /// \brief Default virtual destructor.
-        virtual ~TestCaseT() = default;
+        virtual
+        ~TestCaseT() noexcept = default;
 
     private:
 
-        virtual void RunTestCase(TTestFixture& test_fixture) const override;
+        virtual void
+        RunTestCase(Mutable<TTestFixture> test_fixture)
+        const noexcept override;
 
         /// \brief Test case method.
         TTestCase test_case_;
@@ -143,84 +155,14 @@ namespace Syntropy
 
     /// \brief Create a new test case by deducing templates from arguments.
     template <typename TTestFixture, typename TTestCase>
-    TestCaseT<TTestFixture, TTestCase> MakeTestCase(const Label& name, TTestCase&& test_case);
-
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // TestCase<TTestFixture>.
-
-    template <typename TTestFixture>
-    inline TestCase<TTestFixture>::TestCase(const Label& name)
-        : name_(name)
-    {
-
-    }
-
-    template <typename TTestFixture>
-    void TestCase<TTestFixture>::Run(TTestFixture& test_fixture) const
-    {
-        auto test_context = TestContext{};
-
-        auto context_listener = Syntropy::Listener{};
-
-        context_listener += test_context.OnSuccess([this](const auto& sender, const auto& event_args)
-        {
-            success_event_.Notify(*this, { event_args.location_, event_args.expression_ });
-        });
-
-        context_listener += test_context.OnFailure([this](const auto& sender, const auto& event_args)
-        {
-            failure_event_.Notify(*this, { event_args.location_, event_args.expression_, event_args.result_, event_args.expected_ });
-        });
-
-        RunTestCase(test_fixture);
-    }
-
-    template <typename TTestFixture>
-    inline const Label& TestCase<TTestFixture>::GetName() const
-    {
-        return name_;
-    }
-
-    template <typename TTestFixture>
-    template <typename TDelegate>
-    inline Listener TestCase<TTestFixture>::OnSuccess(TDelegate&& delegate) const
-    {
-        return success_event_.Subscribe(Forward<TDelegate>(delegate));
-    }
-
-    template <typename TTestFixture>
-    template <typename TDelegate>
-    inline Listener TestCase<TTestFixture>::OnFailure(TDelegate&& delegate) const
-    {
-        return failure_event_.Subscribe(Forward<TDelegate>(delegate));
-    }
-
-    // TestCaseT<TTestFixture, TTestCase>.
-    
-    template <typename TTestFixture, typename TTestCase>
-    template <typename UTestCase>
-    inline TestCaseT<TTestFixture, TTestCase>::TestCaseT(const Label& name, UTestCase&& test_case)
-        : TestCase<TTestFixture>(name)
-        , test_case_(Forward<UTestCase>(test_case))
-    {
-
-    }
-
-    template <typename TTestFixture, typename TTestCase>
-    inline void TestCaseT<TTestFixture, TTestCase>::RunTestCase(TTestFixture& test_fixture) const
-    {
-        test_case_(test_fixture);
-    }
-
-    // Non-member functions.
-
-    template <typename TTestFixture, typename TTestCase>
-    inline TestCaseT<TTestFixture, TTestCase> MakeTestCase(const Label& name, TTestCase&& test_case)
-    {
-        return TestCaseT<TTestFixture, TTestCase>(name, Forward<TTestCase>(test_case));
-    }
+    TestCaseT<TTestFixture, TTestCase>
+    MakeTestCase(Immutable<String> name, Forwarding<TTestCase> test_case)
+    noexcept;
 
 }
+
+// ===========================================================================
+
+#include "details/test_case.inl"
+
+// ===========================================================================
