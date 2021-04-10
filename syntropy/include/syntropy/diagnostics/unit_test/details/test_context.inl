@@ -3,6 +3,10 @@
 ///
 /// \author Raffaele D. Facendola - 2018
 
+#pragma once
+
+#include "syntropy/core/strings/string.h"
+
 // ===========================================================================
 
 namespace Syntropy::UnitTest
@@ -33,14 +37,10 @@ namespace Syntropy::UnitTest
     template <typename TExpression>
     void
     ReportSuccess(Immutable<SourceLocation> location,
-                    Forwarding<TExpression> expression) noexcept
+                  Forwarding<TExpression> expression) noexcept
     {
-        auto expression_stream = OStringStream{};
-
-        expression_stream << expression;
-
-        TestContext::context_->ReportSuccess(test_location,
-                                             expression_stream.str());
+        TestContext::context_->ReportSuccess(location,
+                                             Strings::ToString(expression));
     }
 
     template <typename TExpression, typename TResult, typename TExpected>
@@ -50,18 +50,10 @@ namespace Syntropy::UnitTest
                   Forwarding<TResult> result,
                   Forwarding<TExpected> expected) noexcept
     {
-        auto expression_stream = OStringStream{};
-        auto result_stream = OStringStream{};
-        auto expected_stream = OStringStream{};
-
-        expression_stream << expression;
-        result_stream << result;
-        expected_stream << expected;
-
         TestContext::context_->ReportFailure(location,
-                                             expression_stream.str(),
-                                             result_stream.str(),
-                                             expected_stream.str());
+                                             Strings::ToString(expression),
+                                             Strings::ToString(result),
+                                             Strings::ToString(expected));
     }
 
     /************************************************************************/
