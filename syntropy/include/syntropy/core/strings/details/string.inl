@@ -104,3 +104,25 @@ namespace Syntropy
 }
 
 // ===========================================================================
+
+namespace Syntropy::Strings
+{
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    // ToString.
+    // =========
+
+    /// \brief Convert rhs to a string.
+    template <typename TType>
+    constexpr auto
+    ToString(Immutable<TType> rhs) noexcept
+        -> decltype(Details::RouteToString(rhs))
+    {
+        Details::RouteToString(rhs);    
+    }
+
+}
+
+// ===========================================================================
