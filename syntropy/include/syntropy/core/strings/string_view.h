@@ -51,12 +51,12 @@ namespace Syntropy
 
         /// \brief Access the string view code-points.
         [[nodiscard]] Immutable<Memory::ByteSpan>
-        GetCodePoints() const noexcept;
+        GetCodeUnits() const noexcept;
 
     private:
 
         /// \brief Code-points this view refers to.
-        Memory::ByteSpan code_points_;
+        Memory::ByteSpan code_units_;
 
     };
 

@@ -34,35 +34,35 @@ namespace Syntropy
     template <Int TSize>
     String
     ::String(StringLiteral<TSize> characters) noexcept
-        : code_points_(Memory::ToBytes(TSize))
+        : code_units_(Memory::ToBytes(TSize))
     {
-        Memory::Copy(code_points_,
+        Memory::Copy(code_units_,
                      Memory::MakeByteSpan(characters));
     }
 
     inline String
     ::operator StringView() const noexcept
     {
-        return StringView{ code_points_ };
+        return StringView{ code_units_ };
     }
 
     [[nodiscard]] Memory::ByteSpan String
-    ::GetCodePoints() const noexcept
+    ::GetCodeUnits() const noexcept
     {
-        return ViewOf(code_points_);
+        return ViewOf(code_units_);
     }
 
     [[nodiscard]] inline
     Mutable<Memory::BaseAllocator> String
     ::GetAllocator() const noexcept
     {
-        return code_points_.GetAllocator();
+        return code_units_.GetAllocator();
     }
 
     inline void String
     ::Swap(Movable<String> rhs) noexcept
     {
-        Algorithms::Swap(code_points_, rhs.code_points_);
+        Algorithms::Swap(code_units_, rhs.code_units_);
     }
 
     /************************************************************************/

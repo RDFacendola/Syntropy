@@ -22,16 +22,16 @@ namespace Syntropy
 
     constexpr StringView
     ::StringView(Immutable<Memory::ByteSpan> code_points) noexcept
-        : code_points_(code_points)
+        : code_units_(code_points)
     {
 
     }
 
     [[nodiscard]] Immutable<Memory::ByteSpan>
     StringView
-    ::GetCodePoints() const noexcept
+    ::GetCodeUnits() const noexcept
     {
-        return code_points_;
+        return code_units_;
     }
 
     /************************************************************************/
@@ -45,21 +45,21 @@ namespace Syntropy
     operator==(Immutable<StringView> lhs, Immutable<StringView> rhs)
     noexcept
     {
-        return (lhs.GetCodePoints() == rhs.GetCodePoints());
+        return (lhs.GetCodeUnits() == rhs.GetCodeUnits());
     }
 
     template <Int TSize> Bool
     operator==(Immutable<StringView> lhs, StringLiteral<TSize> rhs)
     noexcept
     {
-        return (lhs.GetCodePoints() == Memory::MakeByteSpan(rhs));
+        return (lhs.GetCodeUnits() == Memory::MakeByteSpan(rhs));
     }
 
     template <Int TSize> Bool
     operator==(StringLiteral<TSize> lhs, Immutable<StringView> rhs)
     noexcept
     {
-        return (Memory::MakeByteSpan(lhs) == rhs.GetCodePoints());
+        return (Memory::MakeByteSpan(lhs) == rhs.GetCodeUnits());
     }
 
 }
