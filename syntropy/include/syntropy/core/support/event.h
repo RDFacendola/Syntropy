@@ -51,9 +51,6 @@ namespace Syntropy
         operator=(Immutable<Listener> rhs) noexcept = default;
 
         /// \brief Default move-assignment operator.
-        ///
-        /// #BUG Arm-clang fails to recognize this as move-assignmen operator
-        ///      due to Movable<.>.
         Mutable<Listener>
         operator=(Movable<Listener> rhs) noexcept /*= default*/;
 
@@ -104,7 +101,7 @@ namespace Syntropy
 
         /// \brief Default move-assignment operator.
         Mutable<Event>
-        operator=(Movable<Event> rhs) noexcept = default;
+        operator=(Movable<Event> rhs) noexcept /*= default*/;
 
         /// \brief Notify subscribed listeners.
         void

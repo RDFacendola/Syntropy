@@ -24,7 +24,7 @@ namespace Syntropy
     {
         events_ = Move(rhs.events_);
         rhs.events_ = {};
-        
+
         return *this;
     }
 
@@ -41,15 +41,27 @@ namespace Syntropy
     /************************************************************************/
 
     template <typename... TArguments>
-    inline void Event<TArguments...>
+    inline void
+    Event<TArguments...>
     ::Notify(Immutable<TArguments>... arguments) const noexcept
     {
         listeners_(arguments...);
     }
 
     template <typename... TArguments>
+    inline Mutable<Event<TArguments...>>
+    Event<TArguments...>
+    ::operator=(Movable<Event> rhs) noexcept
+    {
+        listeners_ = Move(rhs.listeners_);
+
+        return *this;
+    }
+
+    template <typename... TArguments>
     template <typename TDelegate>
-    [[nodiscard]] inline Listener Event<TArguments...>
+    [[nodiscard]] inline Listener
+    Event<TArguments...>
     ::Subscribe(Forwarding<TDelegate> delegate) const noexcept
     {
         return listeners_.Emplace(Forward<TDelegate>(delegate));

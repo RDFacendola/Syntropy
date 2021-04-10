@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "syntropy/core/algorithms/swap.h"
+
 // ===========================================================================
 
 namespace Syntropy::Details
@@ -318,7 +320,7 @@ namespace Syntropy::Details
 
         // Unlink listeners past lhs.
 
-        auto unlinked = Exchange(lhs.next_listener_, nullptr);
+        auto unlinked = Algorithms::Exchange(lhs.next_listener_, nullptr);
 
         if (unlinked)
         {
