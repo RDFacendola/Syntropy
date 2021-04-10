@@ -22,26 +22,24 @@ namespace Syntropy::Algorithms::Details
     /* CUSTOMIZATION-POINT-OBJECTS                                          */
     /************************************************************************/
 
-    // Core idea based on this amazing post:
-    // https://wandbox.org/permlink/AB9uQxO2MymNDDtt
-
     /// \brief Priority of a custom extension implementation.
-    using ExtensionPriority = Templates::Priority<4>;
+    using ExtensionPriority = Templates::ExtensionPriority;
 
     /// \brief Priority of a member-function implementation.
-    using MemberFunctionPriority = Templates::Priority<3>;
+    using MemberFunctionPriority = Templates::MemberFunctionPriority;
 
     /// \brief Priority of a member-operator implementation.
-    using MemberOperatorPriority = Templates::Priority<2>;
+    using MemberOperatorPriority = Templates::MemberOperatorPriority;
 
     /// \brief Priority of a non-member-function implementation.
-    using NonMemberFunctionPriority = Templates::Priority<1>;
+    using NonMemberFunctionPriority = Templates::NonMemberFunctionPriority;
 
     /// \brief Priority of a fallback implementation.
-    using FallbackPriority = Templates::Priority<0>;
+    using FallbackPriority = Templates::FallbackPriority;
 
     /// \brief Highest priority among method implementations.
-    inline constexpr Templates::Priority kMaxPriority = ExtensionPriority{};
+    inline constexpr
+    Templates::Priority kMaxPriority = Templates::kMaxPriority;
 
 }
 

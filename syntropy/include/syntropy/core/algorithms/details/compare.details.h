@@ -14,7 +14,7 @@
 
 #include "syntropy/core/algorithms/compare_extensions.h"
 
-#include "syntropy/core/support/details/support.details.h"
+#include "syntropy/core/algorithms/details/algorithms.details.h"
 
 // ===========================================================================
 
