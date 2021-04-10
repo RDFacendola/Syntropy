@@ -22,26 +22,26 @@ namespace Syntropy::Strings::Details
     /// \brief Custom extension.
     template <typename TType>
     constexpr auto
-    InvokeToString(Immutable<TType> rhs, ExtensionPriority)
+    InvokeToString(Immutable<TType> rhs, Templates::ExtensionPriority)
         noexcept -> decltype(Extensions::ToString<TType>{}(rhs));
 
     /// \brief Member-function.
     template <typename TType>
     constexpr auto
-    InvokeToString(Immutable<TType> rhs, MemberFunctionPriority)
+    InvokeToString(Immutable<TType> rhs, Templates::MemberFunctionPriority)
         noexcept -> decltype(rhs.ToString());
 
     /// \brief Non-member function, possibly using ADL.
     template <typename TType>
     constexpr auto
-    InvokeToString(Immutable<TType> rhs, NonMemberFunctionPriority)
+    InvokeToString(Immutable<TType> rhs, Templates::NonMemberFunctionPriority)
         noexcept -> decltype(ToString(rhs));
 
     /// \brief Routes the invocation.
     template <typename TType>
     constexpr auto
     RouteToString(Immutable<TType> rhs)
-        noexcept -> decltype(InvokeToString(rhs, kMaxPriority));
+        noexcept -> decltype(InvokeToString(rhs, Templates::kMaxPriority));
 
 }
 

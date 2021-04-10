@@ -15,7 +15,7 @@ namespace Syntropy::Strings::Details
 
     template <typename TType>
     constexpr auto
-    InvokeToString(Immutable<TType> rhs, ExtensionPriority)
+    InvokeToString(Immutable<TType> rhs, Templates::ExtensionPriority)
         noexcept -> decltype(Extensions::ToString<TType>{}(rhs))
     {
         return Extensions::ToString<TType>{}(rhs);
@@ -23,15 +23,15 @@ namespace Syntropy::Strings::Details
 
     template <typename TType>
     constexpr auto
-    InvokeToString(Immutable<TType> rhs, MemberFunctionPriority)
-        noexcept -> decltype(rhs.ToString()))
+    InvokeToString(Immutable<TType> rhs, Templates::MemberFunctionPriority)
+        noexcept -> decltype(rhs.ToString())
     {
         return rhs.ToString();
     }
 
     template <typename TType>
     constexpr auto
-    InvokeToString(Immutable<TType> rhs, NonMemberFunctionPriority)
+    InvokeToString(Immutable<TType> rhs, Templates::NonMemberFunctionPriority)
         noexcept -> decltype(ToString(rhs))
     {
         return ToString(rhs);
@@ -40,9 +40,9 @@ namespace Syntropy::Strings::Details
     template <typename TType>
     constexpr auto
     RouteToString(Mutable<TType> lhs, Mutable<TType> rhs)
-        noexcept -> decltype(InvokeToString(rhs, kMaxPriority))
+        noexcept -> decltype(InvokeToString(rhs, Templates::kMaxPriority))
     {
-        return InvokeToString(rhs, kMaxPriority);
+        return InvokeToString(rhs, Templates::kMaxPriority);
     }
 
 }

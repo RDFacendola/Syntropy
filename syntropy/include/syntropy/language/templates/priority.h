@@ -36,6 +36,31 @@ namespace Syntropy::Templates
     template <Int TPriority>
     inline constexpr Priority kPriority = Priority<TPriority>{};
 
+    /************************************************************************/
+    /* CUSTOMIZATION-POINT-OBJECTS                                          */
+    /************************************************************************/
+
+    // Core idea based on this amazing post:
+    // https://wandbox.org/permlink/AB9uQxO2MymNDDtt
+
+    /// \brief Priority of a custom extension implementation.
+    using ExtensionPriority = Priority<4>;
+
+    /// \brief Priority of a member-function implementation.
+    using MemberFunctionPriority = Priority<3>;
+
+    /// \brief Priority of a member-operator implementation.
+    using MemberOperatorPriority = Priority<2>;
+
+    /// \brief Priority of a non-member-function implementation.
+    using NonMemberFunctionPriority = Priority<1>;
+
+    /// \brief Priority of a fallback implementation.
+    using FallbackPriority = Priority<0>;
+
+    /// \brief Highest priority among method implementations.
+    inline constexpr Priority kMaxPriority = ExtensionPriority{};
+
 }
 
 // ===========================================================================
