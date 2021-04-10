@@ -7,6 +7,9 @@
 
 #include "syntropy/language/preprocessor/macro.h"
 #include "syntropy/core/algorithms/swap.h"
+#include "syntropy/memory/foundation/size.h"
+#include "syntropy/memory/foundation/byte_span.h"
+#include "syntropy/memory/foundation/memory.h"
 
 // ===========================================================================
 
@@ -33,6 +36,37 @@ namespace Syntropy::Diagnostics
         , line_(line)
     {
 
+    }
+
+    template <typename TCharacter, Int TSize, Int USize>
+    inline SourceLocation
+    ::SourceLocation(StringLiteralType<TCharacter, TSize> file_name,
+                     StringLiteralType<TCharacter, USize> function_name,
+                     Int line)
+    noexcept
+    {
+        // #TODO @rfacendola This is terrible! There's no guarantee that
+        //       a narrow multibyte string is UTF8-encoded, as it depends on
+        //       the locale.
+        //       C++20 has the multibyte-to-utf8 mbrtoc8() function but it is
+        //       not yet fully supported by clang.
+        //       This overload is needed while waiting for full support of
+        //       standard's std::source_location.
+
+        static_assert(Memory::IsSameSize<TCharacter, char8_t>);
+
+        char8_t file_name_utf8[TSize];
+        char8_t function_name_utf8[USize];
+
+        Memory::Copy(Memory::MakeByteSpan(file_name_utf8),
+                     Memory::MakeByteSpan(file_name));
+
+        Memory::Copy(Memory::MakeByteSpan(function_name_utf8),
+                     Memory::MakeByteSpan(function_name));
+
+        file_name_ = file_name_utf8;
+        function_name_ = function_name_utf8;
+        line_ = line;
     }
 
     inline Immutable<String>

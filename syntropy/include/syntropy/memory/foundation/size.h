@@ -262,6 +262,12 @@ namespace Syntropy::Memory
     [[nodiscard]] constexpr Bytes
     SizeOf() noexcept;
 
+    /// \brief True if all types have the same size.
+    template <typename TType, typename... TTypes>
+    inline constexpr
+    Bool IsSameSize
+        = ((Memory::SizeOf<TType>() == Memory::SizeOf<TTypes>()) && ...);
+
     /************************************************************************/
     /* POINTERS                                                             */
     /************************************************************************/

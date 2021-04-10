@@ -37,8 +37,19 @@ namespace Syntropy::Diagnostics
     {
     public:
 
+        /// \brief C-array of characters.
+        template <typename TCharacter, Int TSize>
+        using StringLiteralType = TCharacter(&)[TSize];
+
         /// \brief Default constructor.
         SourceLocation() noexcept = default;
+
+        /// \brief Direct constructor.
+        template <typename TCharacter, Int TSize, Int USize>
+        SourceLocation(StringLiteralType<TCharacter, TSize> file_name,
+                       StringLiteralType<TCharacter, USize> function_name,
+                       Int line)
+        noexcept;
 
         /// \brief Direct constructor.
         SourceLocation(String file_name, String function_name, Int line)
