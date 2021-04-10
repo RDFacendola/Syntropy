@@ -1,59 +1,65 @@
 
 /// \file test_context.h
-/// \brief This header is part of the Syntropy unit test module. It contains classes used to define test contexts.
+///
+/// \brief This header is part of the Syntropy diagnostics module.
+///        It contains classes used to define test contexts.
 ///
 /// \author Raffaele D. Facendola - 2018
 
 #pragma once
 
-#include <type_traits>
+#include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/diagnostics/stack_trace.h"
 #include "syntropy/core/strings/string.h"
-#include "syntropy/serialization/string_stream.h"
-#include "syntropy/experimental/memory/smart_pointers.h"
-#include "syntropy/core/patterns/event.h"
-#include "syntropy/language/templates/traits.h"
+#include "syntropy/core/support/event.h"
+#include "syntropy/diagnostics/foundation/source_location.h"
 
-namespace Syntropy
+// ===========================================================================
+
+namespace Syntropy::UnitTest
 {
+    using Diagnostics::SourceLocation;
+
     /************************************************************************/
     /* UNIT TEST MACROS                                                     */
     /************************************************************************/
 
-    /// \brief Unit test macro: report a success if "expression" is equal to expected, otherwise report a failure and continue.
+    /// \brief Unit test macro: report a success if expression is equal to
+    ///        expected, otherwise report a failure and continue.
+    ///
     /// \usage SYNTROPY_UNIT_EQUAL(1 + 2, 3);
     #define SYNTROPY_UNIT_EQUAL(expression, expected) \
         SYNTROPY_MACRO_DECLARATION(expression, expected)
 
     /************************************************************************/
-    /* UNIT TEST                                                            */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Exposes test context-related functionalities used to notify results and messages from within a test context.
-    /// \author Raffaele D. Facendola - May 2020
-    namespace UnitTest
-    {
-        /// \brief Report a test case success in the current active test context.
-        /// If no context is active, the behavior of this method is undefined.
-        template <typename TExpression>
-        void ReportSuccess(const StackTrace& test_location, TExpression&& expression);
+    /// \brief Report a test case success in the active test context.
+    ///
+    /// \remarks Undefined behavior if no active context.
+    template <typename TExpression>
+    void ReportSuccess(Immutable<SourceLocation> location,
+                       Forwarding<TExpression> expression) noexcept;
 
-        /// \brief Report a test case failure in the current active test context.
-        /// If no context is active, the behavior of this method is undefined.
-        template <typename TExpression, typename TResult, typename TExpected>
-        void ReportFailure(const StackTrace& test_location, TExpression&& expression, TResult&& result, TExpected&& expected);
-    }
+    /// \brief Report a test case failure in the active test context.
+    ///
+    /// \remarks Undefined behavior if no active context.
+    template <typename TExpression, typename TResult, typename TExpected>
+    void ReportFailure(Immutable<SourceLocation> location,
+                       Forwarding<TExpression> expression,
+                       Forwarding<TResult> result,
+                       Forwarding<TExpected> expected) noexcept;
 
     /************************************************************************/
     /* ON TEST CONTEXT SUCCESS EVENT ARGS                                   */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test success is reported in a test context.
+    /// \brief Arguments for the test success event.
     struct OnTestContextSuccessEventArgs
     {
         /// \brief Code location that issued the result.
-        StackTrace location_;
+        SourceLocation location_;
 
         /// \brief Tested expression.
         String expression_;
@@ -63,11 +69,11 @@ namespace Syntropy
     /* ON TEST CONTEXT FAILURE EVENT ARGS                                   */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test failure is reported in a test context.
+    /// \brief Arguments for the test failure event.
     struct OnTestContextFailureEventArgs
     {
         /// \brief Code location that issued the result.
-        StackTrace location_;
+        SourceLocation location_;
 
         /// \brief Tested expression.
         String expression_;
@@ -80,146 +86,95 @@ namespace Syntropy
     };
 
     /************************************************************************/
-    /* TEST ENVIRONMENT                                                     */
+    /* TEST CONTEXT                                                         */
     /************************************************************************/
 
-    /// \brief Represents a stateless context for multiple test cases.
-    /// When a context is created it becomes active in the current scope. Contexts can be nested but overlapping results in undefined behavior.
+    /// \brief A stateless context for multiple test cases.
+    ///        When a context is created it becomes active in the current
+    ///        scope. Contexts can be nested but overlapping results in
+    ///        undefined behavior.
     /// \author Raffaele D. Facendola - January 2018
     class TestContext
     {
         template <typename TExpression>
-        friend void UnitTest::ReportSuccess(const StackTrace& test_location, TExpression&& expression);
+        friend void
+        ReportSuccess(Immutable<SourceLocation> location,
+                      Forwarding<TExpression> expression) noexcept;
 
         template <typename TExpression, typename TResult, typename TExpected>
-        friend void UnitTest::ReportFailure(const StackTrace& test_location, TExpression&& expression, TResult&& result, TExpected&& expected);
+        friend void
+        ReportFailure(Immutable<SourceLocation> location,
+                      Forwarding<TExpression> expression,
+                      Forwarding<TResult> result,
+                      Forwarding<TExpected> expected) noexcept;
 
     public:
 
         /// \brief Create a new test context.
-        TestContext();
+        TestContext() noexcept;
 
         /// \brief Default copy-constructor.
-        TestContext(const TestContext&) = default;
+        TestContext(Immutable<TestContext> rhs) noexcept = default;
 
         /// \brief Default move-constructor.
-        TestContext(TestContext&&) = default;
+        TestContext(Movable<TestContext> rhs) noexcept = default;
 
         /// \brief Default copy-assignment.
-        TestContext& operator=(const TestContext&) = default;
+        Mutable<TestContext>
+        operator=(Immutable<TestContext> rhs) noexcept = default;
 
         /// \brief Default move-assignment.
-        TestContext& operator=(TestContext&&) = default;
+        Mutable<TestContext>
+        operator=(Movable<TestContext> rhs) noexcept /*= default*/;
 
-        /// \brief Default virtual destructor.
-        ~TestContext();
+        /// \brief Destructor.
+        ~TestContext() noexcept;
 
-        /// \brief Bind to the event notified whenever a success is reported.
+        /// \brief Bind to the success event.
         template <typename TDelegate>
-        Listener OnSuccess(TDelegate&& delegate) const;
+        Listener
+        OnSuccess(Forwarding<TDelegate> delegate) const noexcept;
 
-        /// \brief Bind to the event notified whenever a failure is reported.
+        /// \brief Bind to the failure event.
         template <typename TDelegate>
-        Listener OnFailure(TDelegate&& delegate) const;
+        Listener
+        OnFailure(Forwarding<TDelegate> delegate) const noexcept;
 
     private:
 
+        /// \brief Type of an event in a context.
+        template <typename TEventArgs>
+        using EventType = Event<Immutable<TestContext>, TEventArgs>;
+
         /// \brief Report a test case success.
-        void ReportSuccess(const StackTrace& location, const String& expression) const;
+        void ReportSuccess(Immutable<SourceLocation> location,
+                           Immutable<String> expression) const noexcept;
 
         /// \brief Report a test case failure.
-        void ReportFailure(const StackTrace& location, const String& expression, const String& result, const String& expected) const;
+        void ReportFailure(Immutable<SourceLocation> location,
+                           Immutable<String> expression,
+                           Immutable<String> result,
+                           Immutable<String> expected) const noexcept;
 
         /// \brief Active test context.
-        static thread_local inline Pointer<TestContext> context_{ nullptr };
+        static thread_local inline
+        RWPtr<TestContext> context_{ nullptr };
 
         /// \brief Previous test context to restore upon destruction.
-        Pointer<TestContext> previous_context_{ nullptr };
+        RWPtr<TestContext> previous_context_{ nullptr };
 
         /// \brief Event notified whenever a test success is reported.
-        Event<const TestContext&, OnTestContextSuccessEventArgs> success_event_;
+        EventType<OnTestContextSuccessEventArgs> success_event_;
 
         /// \brief Event notified whenever a test failure is reported.
-        Event<const TestContext&, OnTestContextFailureEventArgs> failure_event_;
+        EventType<OnTestContextFailureEventArgs> failure_event_;
 
     };
 
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // Unit-test macros.
-
-    #undef SYNTROPY_UNIT_EQUAL
-    #define SYNTROPY_UNIT_EQUAL(expression, expected) \
-        if (auto&& result = (expression); result != expected) \
-        { \
-            Syntropy::UnitTest::ReportFailure( SYNTROPY_HERE, #expression, result, expected ); \
-        } \
-        else \
-        { \
-            Syntropy::UnitTest::ReportSuccess( SYNTROPY_HERE, #expression ); \
-        }
-
-    // UnitTest.
-
-    template <typename TExpression>
-    void UnitTest::ReportSuccess(const StackTrace& test_location, TExpression&& expression)
-    {
-        auto expression_stream = OStringStream{};
-
-        expression_stream << expression;
-
-        TestContext::context_->ReportSuccess(test_location, expression_stream.str());
-    }
-
-    template <typename TExpression, typename TResult, typename TExpected>
-    void UnitTest::ReportFailure(const StackTrace& test_location, TExpression&& expression, TResult&& result, TExpected&& expected)
-    {
-        auto expression_stream = OStringStream{};
-        auto result_stream = OStringStream{};
-        auto expected_stream = OStringStream{};
-
-        expression_stream << expression;
-        result_stream << result;
-        expected_stream << expected;
-
-        TestContext::context_->ReportFailure(test_location, expression_stream.str(), result_stream.str(), expected_stream.str());
-    }
-
-    // TestContext.
-
-    inline TestContext::TestContext()
-        : previous_context_(context_)
-    {
-        context_ = this;
-    }
-
-    inline TestContext::~TestContext()
-    {
-        context_ = previous_context_;
-    }
-
-    template <typename TDelegate>
-    inline Listener TestContext::OnSuccess(TDelegate&& delegate) const
-    {
-        return success_event_.Subscribe(Forward<TDelegate>(delegate));
-    }
-
-    template <typename TDelegate>
-    inline Listener TestContext::OnFailure(TDelegate&& delegate) const
-    {
-        return failure_event_.Subscribe(Forward<TDelegate>(delegate));
-    }
-
-    inline void TestContext::ReportSuccess(const StackTrace& location, const String& expression) const
-    {
-        success_event_.Notify(*this, { location, expression });
-    }
-
-    inline void TestContext::ReportFailure(const StackTrace& location, const String& expression, const String& result, const String& expected) const
-    {
-        failure_event_.Notify(*this, { location, expression, result, expected });
-    }
-
 }
+
+// ===========================================================================
+
+#include "details/test_context.inl"
+
+// ===========================================================================
