@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "syntropy/unit_test/auto_unit_test.h"
-#include "syntropy/unit_test/test_context.h"
+#include "syntropy/diagnostics/unit_test/auto_unit_test.h"
+#include "syntropy/diagnostics/unit_test/test_context.h"
 
 // ===========================================================================

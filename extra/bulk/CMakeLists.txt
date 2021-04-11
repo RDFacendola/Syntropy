@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(simple_compliance)
+project(bulk)
 
 # sub-directories
 
@@ -13,10 +13,10 @@ set(CMAKE_CXX_FLAGS "-std=c++20")
 
 include_directories(${PROJECT_SOURCE_DIR}/include/)
 
-add_executable(simple_compliance
-   src/simple_compliance/simple_compliance.cpp
+add_executable(bulk
+   src/bulk/bulk.cpp
 )
 
 # Dependencies
 
-target_link_libraries(simple_compliance PUBLIC syntropy)
+target_link_libraries(bulk PUBLIC syntropy)
