@@ -89,6 +89,7 @@ namespace Syntropy::UnitTest
     template <typename TTestFixture, typename TTestCase>
     inline AutoTestCaseT<TTestFixture, TTestCase>
     MakeAutoTestCase(Immutable<String> name, Forwarding<TTestCase> test_case)
+    noexcept
     {
         return { name, Forward<TTestCase>(test_case) };
     }

@@ -31,7 +31,8 @@ namespace Syntropy::UnitTest
 
         /// \ brief Apply a function to each self-registering test case.
         template <typename TFunction>
-        static void ForEach(Forwarding<TFunction> function) noexcept;
+        static void
+        ForEach(Forwarding<TFunction> function) noexcept;
 
         /// \brief Create a new self-registering test case.
         AutoTestCase() noexcept;
@@ -127,7 +128,8 @@ namespace Syntropy::UnitTest
     ///                                                   [](){ ... });
     template <typename TTestFixture, typename TTestCase>
     AutoTestCaseT<TTestFixture, TTestCase>
-    MakeAutoTestCase(Immutable<String> name, Forwarding<TTestCase> test_case);
+    MakeAutoTestCase(Immutable<String> name, Forwarding<TTestCase> test_case)
+    noexcept;
 
 }
 
