@@ -6,14 +6,16 @@
 ///
 /// \author Raffaele D. Facendola - 2018
 
+// ===========================================================================
+
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
-
 #include "syntropy/diagnostics/unit_test/test_context.h"
-
 #include "syntropy/core/strings/string.h"
 #include "syntropy/core/support/event.h"
+
+// ===========================================================================
 
 namespace Syntropy::UnitTest
 {
