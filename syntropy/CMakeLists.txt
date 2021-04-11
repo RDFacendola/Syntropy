@@ -11,11 +11,14 @@ include_directories(${PROJECT_SOURCE_DIR}/include/)
 include_directories(${PROJECT_SOURCE_DIR}/src/)
 
 add_library(syntropy STATIC
-   src/syntropy/memory/foundation/memory.cpp
+    src/syntropy/core/strings/string.cpp
+    src/syntropy/diagnostics/foundation/debugger.cpp
+    src/syntropy/diagnostics/unit_test/test_runner.cpp
+    src/syntropy/memory/foundation/memory.cpp
 )
 
 # Export
 
 target_include_directories(syntropy PUBLIC
-   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )

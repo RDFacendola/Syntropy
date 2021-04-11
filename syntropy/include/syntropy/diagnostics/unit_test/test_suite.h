@@ -14,6 +14,8 @@
 #include "syntropy/core/strings/string.h"
 #include "syntropy/core/support/event.h"
 
+#include "syntropy/diagnostics/unit_test/test_case.h"
+
 // ===========================================================================
 
 namespace Syntropy::UnitTest

@@ -40,26 +40,29 @@ namespace Syntropy
                      Memory::MakeByteSpan(characters));
     }
 
-    inline String
+    inline
+    String
     ::operator StringView() const noexcept
     {
         return StringView{ code_units_ };
     }
 
-    [[nodiscard]] Memory::ByteSpan String
+    [[nodiscard]] inline Memory::ByteSpan
+    String
     ::GetCodeUnits() const noexcept
     {
         return ViewOf(code_units_);
     }
 
-    [[nodiscard]] inline
-    Mutable<Memory::BaseAllocator> String
+    [[nodiscard]] inline Mutable<Memory::BaseAllocator>
+    String
     ::GetAllocator() const noexcept
     {
         return code_units_.GetAllocator();
     }
 
-    inline void String
+    inline void
+    String
     ::Swap(Movable<String> rhs) noexcept
     {
         Algorithms::Swap(code_units_, rhs.code_units_);
@@ -120,7 +123,7 @@ namespace Syntropy::Strings
     ToString(Immutable<TType> rhs) noexcept
         -> decltype(Details::RouteToString(rhs))
     {
-        Details::RouteToString(rhs);    
+        Details::RouteToString(rhs);
     }
 
 }

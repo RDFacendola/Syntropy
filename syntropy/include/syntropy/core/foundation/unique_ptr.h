@@ -6,6 +6,8 @@
 ///
 /// \author Raffaele D. Facendola - August 2020
 
+// ===========================================================================
+
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
@@ -274,6 +276,6 @@ namespace Syntropy
 
 // ===========================================================================
 
-#include "unique_ptr.inl"
+#include "details/unique_ptr.inl"
 
 // ===========================================================================

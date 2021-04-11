@@ -299,8 +299,8 @@ namespace Syntropy
         auto block = allocator.Allocate(Memory::SizeOf<TType>(),
                                         Memory::AlignmentOf<TType>());
 
-        auto pointee
-            = new (Data(block)) TType(Forward<TArguments>(arguments)...);
+        auto pointee = new (Ranges::Data(block))
+            TType(Forward<TArguments>(arguments)...);
 
         return { pointee, Memory::SizeOf<TType>(), allocator };
     }

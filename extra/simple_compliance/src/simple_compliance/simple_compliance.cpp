@@ -13,6 +13,10 @@ int main()
 {
     std::cout << "Hello, Syntropy\n";
 
+    auto r = Syntropy::UnitTest::TestRunner();
+
+    r.Run();
+
     std::cout << "\ngg\n";
 
     return 0;

@@ -13,6 +13,8 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/core/strings/string.h"
 
+#include "syntropy/diagnostics/unit_test/test_suite.h"
+
 // ===========================================================================
 
 namespace Syntropy::UnitTest

@@ -27,7 +27,7 @@ namespace Syntropy
 
     }
 
-    [[nodiscard]] Immutable<Memory::ByteSpan>
+    [[nodiscard]] inline Immutable<Memory::ByteSpan>
     StringView
     ::GetCodeUnits() const noexcept
     {
@@ -41,21 +41,23 @@ namespace Syntropy
     // Comparison.
     // ===========
 
-    Bool
+    inline Bool
     operator==(Immutable<StringView> lhs, Immutable<StringView> rhs)
     noexcept
     {
         return (lhs.GetCodeUnits() == rhs.GetCodeUnits());
     }
 
-    template <Int TSize> Bool
+    template <Int TSize>
+    inline Bool
     operator==(Immutable<StringView> lhs, StringLiteral<TSize> rhs)
     noexcept
     {
         return (lhs.GetCodeUnits() == Memory::MakeByteSpan(rhs));
     }
 
-    template <Int TSize> Bool
+    template <Int TSize>
+    inline Bool
     operator==(StringLiteral<TSize> lhs, Immutable<StringView> rhs)
     noexcept
     {

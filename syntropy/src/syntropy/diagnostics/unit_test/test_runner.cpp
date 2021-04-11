@@ -56,9 +56,9 @@ namespace Syntropy::UnitTest
         };
 
         test_suite_listener += test_suite.OnCaseStarted(on_case_started);
-                            += test_suite.OnCaseFinished(on_case_finished);
-                            += test_suite.OnCaseSuccess(on_case_success);
-                            += test_suite.OnCaseFailure(on_case_failure);
+        test_suite_listener += test_suite.OnCaseFinished(on_case_finished);
+        test_suite_listener += test_suite.OnCaseSuccess(on_case_success);
+        test_suite_listener += test_suite.OnCaseFailure(on_case_failure);
 
         // Run the suite.
 
