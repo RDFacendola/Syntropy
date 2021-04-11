@@ -12,6 +12,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/core/strings/string.h"
+#include "syntropy/core/support/event.h"
 
 // ===========================================================================
 

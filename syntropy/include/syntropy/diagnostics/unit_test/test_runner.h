@@ -1,19 +1,24 @@
 
 /// \file test_runner.h
-/// \brief This header is part of the Syntropy unit test module. It contains classes used to run test suites.
+///
+/// \brief This header is part of the Syntropy diagnostics module.
+/// \brief It contains classes used to run test suites.
 ///
 /// \author Raffaele D. Facendola - 2020
 
+// ===========================================================================
+
 #pragma once
 
-#include "syntropy/core/strings/context.h"
+#include "syntropy/language/foundation/foundation.h"
+#include "syntropy/core/strings/string.h"
+#include "syntropy/core/support/event.h"
 
-#include "syntropy/core/patterns/event.h"
+#include "syntropy/diagnostics/unit_test/auto_test_suite.h"
 
-#include "syntropy/unit_test/test_suite.h"
-#include "syntropy/unit_test/auto_test_suite.h"
+// ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::UnitTest
 {
     /************************************************************************/
     /* ON TEST RUNNER SUITE STARTED EVENT ARGS                              */
@@ -23,62 +28,62 @@ namespace Syntropy
     struct OnTestRunnerSuiteStartedEventArgs
     {
         /// \brief Test suite name.
-        Context test_suite_;
+        String test_suite_;
     };
 
     /************************************************************************/
     /* ON TEST RUNNER SUITE FINISHED EVENT ARGS                             */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test suite ends.
+    /// \brief Arguments for the test suite end event.
     struct OnTestRunnerSuiteFinishedEventArgs
     {
         /// \brief Test suite name.
-        Context test_suite_;
+        String test_suite_;
     };
 
     /************************************************************************/
     /* ON TEST RUNNER CASE STARTED EVENT ARGS                               */
     /************************************************************************/
 
-    /// \brief Arguments of the event notified whenever a test case starts.
+    /// \brief Arguments of the test suite start event.
     struct OnTestRunnerCaseStartedEventArgs : OnTestSuiteCaseStartedEventArgs
     {
         /// \brief Test suite name.
-        Context test_suite_;
+        String test_suite_;
     };
 
     /************************************************************************/
     /* ON TEST RUNNER CASE FINISHED EVENT ARGS                              */
     /************************************************************************/
 
-    /// \brief Arguments of the event notified whenever a test case ends.
+    /// \brief Arguments of the test case end event.
     struct OnTestRunnerCaseFinishedEventArgs : OnTestSuiteCaseFinishedEventArgs
     {
         /// \brief Test suite name.
-        Context test_suite_;
+        String test_suite_;
     };
 
     /************************************************************************/
     /* ON TEST RUNNER SUITE SUCCESS EVENT ARGS                              */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test case success is reported.
+    /// \brief Arguments for the test case success event.
     struct OnTestRunnerCaseSuccessEventArgs : OnTestSuiteCaseSuccessEventArgs
     {
         /// \brief Test suite name.
-        Context test_suite_;
+        String test_suite_;
     };
 
     /************************************************************************/
     /* ON TEST RUNNER SUITE FAILURE EVENT ARGS                              */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test case failure is reported.
+    /// \brief Arguments for the test case failure event.
     struct OnTestRunnerCaseFailureEventArgs : OnTestSuiteCaseFailureEventArgs
     {
         /// \brief Test suite name.
-        Context test_suite_;
+        String test_suite_;
     };
 
     /************************************************************************/
@@ -90,128 +95,93 @@ namespace Syntropy
     public:
 
         /// \brief Default constructor.
-        TestRunner() = default;
+        TestRunner() noexcept = default;
 
         /// \brief Default copy-constructor.
-        TestRunner(const TestRunner&) = default;
+        TestRunner(Immutable<TestRunner> rhs) noexcept = default;
 
         /// \brief Default move-constructor.
-        TestRunner(TestRunner&&) = default;
+        TestRunner(Movable<TestRunner> rhs) noexcept = default;
 
         /// \brief Default copy-assignment.
-        TestRunner& operator=(const TestRunner&) = default;
+        Mutable<TestRunner>
+        operator=(Immutable<TestRunner> rhs) noexcept = default;
 
         /// \brief Default move-assignment.
-        TestRunner& operator=(TestRunner&&) = default;
+        Mutable<TestRunner>
+        operator=(Movable<TestRunner> rhs) noexcept;
 
         /// \brief Default destructor.
-        ~TestRunner() = default;
+        ~TestRunner() noexcept = default;
 
-        /// \brief Run all test suites with a matching context.
-        void Run(const Context& context) const;
+        /// \brief Run all test suites.
+        void
+        Run() const noexcept;
 
-        /// \brief Bind to the event notified whenever a test suite starts. 
+        /// \brief Bind to the test suite start event.
         template <typename TDelegate>
-        Listener OnSuiteStarted(TDelegate&& delegate) const;
+        Listener
+        OnSuiteStarted(Forwarding<TDelegate> delegate) const noexcept;
 
-        /// \brief Bind to the event notified whenever a test suite starts. 
+        /// \brief Bind to the test suite finish event.
         template <typename TDelegate>
-        Listener OnSuiteFinished(TDelegate&& delegate) const;
+        Listener
+        OnSuiteFinished(Forwarding<TDelegate> delegate) const noexcept;
 
-        /// \brief Bind to the event notified whenever a test case starts. 
+        /// \brief Bind to the test case start event.
         template <typename TDelegate>
-        Listener OnCaseStarted(TDelegate&& delegate) const;
+        Listener
+        OnCaseStarted(Forwarding<TDelegate> delegate) const noexcept;
 
-        /// \brief Bind to the event notified whenever a test case starts. 
+        /// \brief Bind to the test case finish event.
         template <typename TDelegate>
-        Listener OnCaseFinished(TDelegate&& delegate) const;
+        Listener
+        OnCaseFinished(Forwarding<TDelegate> delegate) const noexcept;
 
-        /// \brief Bind to the event notified whenever a test case success is reported.
+        /// \brief Bind to the test case success event.
         template <typename TDelegate>
-        Listener OnCaseSuccess(TDelegate&& delegate) const;
+        Listener
+        OnCaseSuccess(Forwarding<TDelegate> delegate) const noexcept;
 
-        /// \brief Bind to the event notified whenever a test case failure is reported.
+        /// \brief Bind to the test case failure event.
         template <typename TDelegate>
-        Listener OnCaseFailure(TDelegate&& delegate) const;
+        Listener
+        OnCaseFailure(Forwarding<TDelegate> delegate) const noexcept;
 
     private:
 
+        /// \brief Type of an event in a test runner.
+        template <typename TEventArgs>
+        using EventType = Event<Immutable<TestRunner>, TEventArgs>;
+
         /// \brief Run a test suite.
-        void Run(const TestSuite& test_suite) const;
+        void
+        Run(Immutable<TestSuite> test_suite) const noexcept;
 
         /// \brief Event notified whenever a test suite starts.
-        Event<const TestRunner&, OnTestRunnerSuiteStartedEventArgs> suite_started_event_;
+        EventType<OnTestRunnerSuiteStartedEventArgs> suite_started_event_;
 
         /// \brief Event notified whenever a test suite finishes.
-        Event<const TestRunner&, OnTestRunnerSuiteFinishedEventArgs> suite_finished_event_;
+        EventType<OnTestRunnerSuiteFinishedEventArgs> suite_finished_event_;
 
         /// \brief Event notified whenever a test case starts.
-        Event<const TestRunner&, OnTestRunnerCaseStartedEventArgs> case_started_event_;
+        EventType<OnTestRunnerCaseStartedEventArgs> case_started_event_;
 
         /// \brief Event notified whenever a test case finishes.
-        Event<const TestRunner&, OnTestRunnerCaseFinishedEventArgs> case_finished_event_;
+        EventType<OnTestRunnerCaseFinishedEventArgs> case_finished_event_;
 
         /// \brief Event notified whenever a success is reported.
-        Event<const TestRunner&, OnTestRunnerCaseSuccessEventArgs> case_success_event_;
+        EventType<OnTestRunnerCaseSuccessEventArgs> case_success_event_;
 
         /// \brief Event notified whenever a failure is reported.
-        Event<const TestRunner&, OnTestRunnerCaseFailureEventArgs> case_failure_event_;
+        EventType<OnTestRunnerCaseFailureEventArgs> case_failure_event_;
 
     };
 
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // TestRunner.
-
-    inline void TestRunner::Run(const Context& context) const
-    {
-        AutoTestSuite::ForEach([this, context](const AutoTestSuite& auto_test_suite)
-        {
-            auto& test_suite = auto_test_suite.GetTestSuite();
-
-            if (context.Contains(test_suite.GetName()))
-            {
-                 Run(test_suite);
-            }
-        });
-    }
-
-    template <typename TDelegate>
-    inline Listener TestRunner::OnSuiteStarted(TDelegate&& delegate) const
-    {
-        return suite_started_event_.Subscribe(Forward<TDelegate>(delegate));
-    }
-
-    template <typename TDelegate>
-    inline Listener TestRunner::OnSuiteFinished(TDelegate&& delegate) const
-    {
-        return suite_finished_event_.Subscribe(Forward<TDelegate>(delegate));
-    }
-
-    template <typename TDelegate>
-    inline Listener TestRunner::OnCaseStarted(TDelegate&& delegate) const
-    {
-        return case_started_event_.Subscribe(Forward<TDelegate>(delegate));
-    }
-
-    template <typename TDelegate>
-    inline  Listener TestRunner::OnCaseFinished(TDelegate&& delegate) const
-    {
-        return case_finished_event_.Subscribe(Forward<TDelegate>(delegate));
-    }
-
-    template <typename TDelegate>
-    inline Listener TestRunner::OnCaseSuccess(TDelegate&& delegate) const
-    {
-        return case_success_event_.Subscribe(Forward<TDelegate>(delegate));
-    }
-
-    template <typename TDelegate>
-    inline Listener TestRunner::OnCaseFailure(TDelegate&& delegate) const
-    {
-        return case_failure_event_.Subscribe(Forward<TDelegate>(delegate));
-    }
-
 }
+
+// ===========================================================================
+
+#include "details/test_runner.inl"
+
+// ===========================================================================
