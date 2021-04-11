@@ -23,7 +23,7 @@ namespace Syntropy::UnitTest
              auto_test_case;
              auto_test_case = auto_test_case->next_test_case_)
         {
-            function(ReadOnly(*auto_test_case));
+            function(ToImmutable(*auto_test_case));
         }
     }
 

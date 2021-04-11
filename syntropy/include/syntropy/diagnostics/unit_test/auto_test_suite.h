@@ -1,26 +1,28 @@
 
-/// \file auto_test_suiye.h
-/// \brief This header is part of the Syntropy unit test module. It contains classes used to define self-registering test suites.
+/// \file auto_test_suite.h
+///
+/// \brief This header is part of the Syntropy diagnostics module.
+/// \brief It contains classes used to define self-registering test suites.
 ///
 /// \author Raffaele D. Facendola - 2020
 
+// ===========================================================================
+
 #pragma once
 
-#include <tuple>
-
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/core/strings/label.h"
-#include "syntropy/experimental/memory/smart_pointers.h"
+#include "syntropy/core/strings/string.h"
 
-#include "syntropy/unit_test/test_suite.h"
+// ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::UnitTest
 {
     /************************************************************************/
     /* AUTO TEST SUITE                                                      */
     /************************************************************************/
 
-    /// \brief Represents the interface for self-registering test suites for a test fixture.
+    /// \brief Interface for self-registering test suites for a test fixture.
+    ///
     /// \author Raffaele D. Facendola - May 2020.
     class AutoTestSuite
     {
@@ -28,48 +30,54 @@ namespace Syntropy
 
         /// \ brief Apply a function to each self-registering test suite.
         template <typename TFunction>
-        static void ForEach(TFunction&& function);
+        static void
+        ForEach(Forwarding<TFunction> function) noexcept;
 
         /// \brief Create a new self-registering test suite.
-        AutoTestSuite();
+        AutoTestSuite() noexcept;
 
         /// \brief No copy-constructor.
-        AutoTestSuite(const AutoTestSuite&) = delete;
+        AutoTestSuite(Immutable<AutoTestSuite> rhs) = delete;
 
         /// \brief No move-constructor.
-        AutoTestSuite(AutoTestSuite&&) = delete;
+        AutoTestSuite(Movable<AutoTestSuite> rhs) = delete;
 
         /// \brief No copy-assignment.
-        AutoTestSuite& operator=(const AutoTestSuite&) = delete;
+        Mutable<AutoTestSuite>
+        operator=(Immutable<AutoTestSuite> rhs) = delete;
 
         /// \brief No move-assignment.
-        AutoTestSuite& operator=(AutoTestSuite&&) = delete;
+        Mutable<AutoTestSuite>
+        operator=(Movable<AutoTestSuite>) = delete;
 
         /// \brief Default destructor.
-        virtual ~AutoTestSuite() = default;
+        virtual
+        ~AutoTestSuite() noexcept = default;
 
         /// \brief Run the test suite.
-        virtual const TestSuite& GetTestSuite() const = 0;
+        virtual Immutable<TestSuite>
+        GetTestSuite() const noexcept = 0;
 
     private:
 
-        /// \brief Get the first element in a linked list to which every other self-registering test-suite is linked to.
-        static Pointer<const AutoTestSuite>& GetLinkedList();
+        /// \brief Get the first element in a linked list to which every other
+        ///        self-registering test-suite is linked to.
+        static Mutable<Ptr<AutoTestSuite>>
+        GetLinkedList() noexcept;
 
-        /// \brief Link this test-suite to the others and return the next test-suite after this one.
-        Pointer<const AutoTestSuite> LinkBefore();
+        /// \brief Link this test-suite to the others and return the next
+        ///        test-suite after this one.
+        Ptr<AutoTestSuite>
+        LinkBefore() noexcept;
 
         /// \brief Next auto test suite.
-        Pointer<const AutoTestSuite> next_test_suite_{ nullptr };
+        Ptr<AutoTestSuite> next_test_suite_{ nullptr };
 
     };
 
-    /************************************************************************/
-    /* AUTO TEST SUITE <TTEST FIXTURE, TFIXTURE ARGUMENTS>                  */
-    /************************************************************************/
-
     /// \brief Represents a self-registering test suite for a test fixture.
     /// \tparam TFixtureArguments Type of the arguments used to construct the test fixture.
+    ///
     /// \author Raffaele D. Facendola - May 2020.
     template <typename TTestFixture>
     class AutoTestSuiteT : public AutoTestSuite
@@ -78,26 +86,32 @@ namespace Syntropy
 
         /// \brief Create a new self-registering test suite.
         template <typename... TFixtureArguments>
-        AutoTestSuiteT(const Context& name, TFixtureArguments&&... fixture_arguments);
+        AutoTestSuiteT(Immutable<String> name,
+                       Forwarding<TFixtureArguments>... fixture_arguments)
+        noexcept;
 
         /// \brief No copy-constructor.
-        AutoTestSuiteT(const AutoTestSuiteT&) = delete;
+        AutoTestSuiteT(Immutable<AutoTestSuiteT> rhs) = delete;
 
         /// \brief No move-constructor.
-        AutoTestSuiteT(AutoTestSuiteT&&) = delete;
+        AutoTestSuiteT(Movable<AutoTestSuiteT> rhs) = delete;
 
         /// \brief No copy-assignment.
-        AutoTestSuiteT& operator=(const AutoTestSuiteT&) = delete;
+        Mutable<AutoTestSuiteT>
+        operator=(Immutable<AutoTestSuiteT> rhs) = delete;
 
         /// \brief No move-assignment.
-        AutoTestSuiteT& operator=(AutoTestSuiteT&&) = delete;
+        Mutable<AutoTestSuiteT>
+        operator=(Movable<AutoTestSuiteT> rhs) = delete;
 
         /// \brief Default virtual destructor.
-        virtual ~AutoTestSuiteT() = default;
+        virtual
+        ~AutoTestSuiteT() noexcept = default;
 
     private:
 
-        virtual const TestSuite& GetTestSuite() const override;
+        virtual Immutable<TestSuite>
+        GetTestSuite() const noexcept override;
 
         /// \brief Underlying test_suite.
         TestSuiteT<TTestFixture> test_suite_;
@@ -108,74 +122,20 @@ namespace Syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create a self-registering test suite by deducing the fixture type from arguments.
-    /// \usage const auto auto_test_suite = MakeAutoTestSuite(name, arg0, arg1, ...).
+    /// \brief Create a self-registering test suite by deducing the fixture
+    ///        type from arguments.
+    ///
+    /// \usage const auto auto_test_suite = MakeAutoTestSuite(name,
+    ///                                                       arg0, arg1, ...).
     template <typename TTestFixture, typename... TFixtureArguments>
-    AutoTestSuiteT<TTestFixture> MakeAutoTestSuite(const Context& name, TFixtureArguments&&... arguments);
-
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // AutoTestSuite.
-
-    template <typename TFunction>
-    inline void AutoTestSuite::ForEach(TFunction&& function)
-    {
-        // Skip the very first test suite as it is the sentinel to which every other test suite is linked to.
-
-        for (auto auto_test_suite = GetLinkedList(); auto_test_suite; auto_test_suite = auto_test_suite->next_test_suite_)
-        {
-            function(ReadOnly(*auto_test_suite));
-        }
-    }
-
-    inline AutoTestSuite::AutoTestSuite()
-        : next_test_suite_(LinkBefore())
-    {
-
-    }
-
-    inline Pointer<const AutoTestSuite>& AutoTestSuite::GetLinkedList()
-    {
-        static auto linked_list = Pointer<const AutoTestSuite>{ nullptr };
-
-        return linked_list;
-    }
-
-    inline Pointer<const AutoTestSuite> AutoTestSuite::LinkBefore()
-    {
-        auto& linked_list = GetLinkedList();
-
-        auto next_test_suite = linked_list;
-
-        linked_list = this;
-
-        return next_test_suite;
-    }
-
-    // AutoTestSuiteT<TTestFixture>.
-
-    template <typename TTestFixture>
-    template <typename... TFixtureArguments>
-    inline AutoTestSuiteT<TTestFixture>::AutoTestSuiteT(const Context& name, TFixtureArguments&&... fixture_arguments)
-        : test_suite_(name, Forward<TFixtureArguments>(fixture_arguments)...)
-    {
-
-    }
-
-    template <typename TTestFixture>
-    inline const TestSuite& AutoTestSuiteT<TTestFixture>::GetTestSuite() const
-    {
-        return test_suite_;
-    }
-
-    // Non-member functions.
-
-    template <typename TTestFixture, typename... TFixtureArguments>
-    inline AutoTestSuiteT<TTestFixture> MakeAutoTestSuite(const Context& name, TFixtureArguments&&... arguments)
-    {
-        return { name, Forward<TFixtureArguments>(arguments)... };
-    }
+    AutoTestSuiteT<TTestFixture>
+    MakeAutoTestSuite(Immutable<String> name,
+                      Forwarding<TFixtureArguments>... arguments) noexcept;
 
 }
+
+// ===========================================================================
+
+#include "details/auto_test_suite.inl"
+
+// ===========================================================================
