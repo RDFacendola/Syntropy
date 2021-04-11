@@ -128,22 +128,26 @@ namespace Syntropy::UnitTest
         /// \brief Notify the start of a test case.
         void
         NotifyCaseStarted(
-            Immutable<OnTestSuiteCaseStartedEventArgs> event_args) const;
+            Immutable<OnTestSuiteCaseStartedEventArgs> event_args)
+        const noexcept;
 
         /// \brief Notify the end of a test case.
         void
         NotifyCaseFinished(
-            Immutable<OnTestSuiteCaseFinishedEventArgs> event_args) const;
+            Immutable<OnTestSuiteCaseFinishedEventArgs> event_args)
+        const noexcept;
 
         /// \brief Notify a success within a test case.
         void
         NotifyCaseSuccess(
-            Immutable<OnTestSuiteCaseSuccessEventArgs> event_args) const;
+            Immutable<OnTestSuiteCaseSuccessEventArgs> event_args)
+        const noexcept;
 
         /// \brief Notify a failure within a test case.
         void
         NotifyCaseFailure(
-            Immutable<OnTestSuiteCaseFailureEventArgs> event_args) const;
+            Immutable<OnTestSuiteCaseFailureEventArgs> event_args)
+        const noexcept;
 
     private:
 
@@ -178,7 +182,7 @@ namespace Syntropy::UnitTest
         /// \brief Create a new test suite.
         template <typename... TArguments>
         TestSuiteT(Immutable<String> name,
-                   Forwarding<TArguments>... arguments);
+                   Forwarding<TArguments>... arguments) noexcept;
 
         /// \brief Default copy-constructor.
         TestSuiteT(Immutable<TestSuiteT> rhs) noexcept = default;
@@ -204,7 +208,7 @@ namespace Syntropy::UnitTest
     private:
 
         /// \brief Run a test case.
-        void Run(Immutable<TestCase<TTestFixture>> test_case) const;
+        void Run(Immutable<TestCase<TTestFixture>> test_case) const noexcept;
 
         /// \brief Underlying test fixture.
         /// The fixture is not considered part of the external interface:
@@ -216,3 +220,9 @@ namespace Syntropy::UnitTest
     };
 
 }
+
+// ===========================================================================
+
+#include "details/test_suite.inl"
+
+// ===========================================================================

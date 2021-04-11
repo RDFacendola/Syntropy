@@ -7,6 +7,10 @@
 
 // ===========================================================================
 
+#include "syntropy/diagnostics/unit_test/auto_test_case.h"
+
+// ===========================================================================
+
 namespace Syntropy::UnitTest
 {
     /************************************************************************/
@@ -77,8 +81,7 @@ namespace Syntropy::UnitTest
     inline void
     TestSuite
     ::NotifyCaseStarted(
-        Immutable<OnTestSuiteCaseStartedEventArgs> event_args) noexcept
-    const noexcept
+        Immutable<OnTestSuiteCaseStartedEventArgs> event_args) const noexcept
     {
         case_started_event_.Notify(*this, event_args);
     }
@@ -86,8 +89,7 @@ namespace Syntropy::UnitTest
     inline void
     TestSuite
     ::NotifyCaseFinished(
-        Immutable<OnTestSuiteCaseFinishedEventArgs> event_args) noexcept
-    const noexcept
+        Immutable<OnTestSuiteCaseFinishedEventArgs> event_args) const noexcept
     {
         case_finished_event_.Notify(*this, event_args);
     }
@@ -95,8 +97,7 @@ namespace Syntropy::UnitTest
     inline void
     TestSuite
     ::NotifyCaseSuccess(
-        Immutable<OnTestSuiteCaseSuccessEventArgs> event_args) noexcept
-    const noexcept
+        Immutable<OnTestSuiteCaseSuccessEventArgs> event_args) const noexcept
     {
         case_success_event_.Notify(*this, event_args);
     }
@@ -104,8 +105,7 @@ namespace Syntropy::UnitTest
     inline void
     TestSuite
     ::NotifyCaseFailure(
-        Immutable<OnTestSuiteCaseFailureEventArgs> event_args) noexcept
-    const noexcept
+        Immutable<OnTestSuiteCaseFailureEventArgs> event_args) const noexcept
     {
         case_failure_event_.Notify(*this, event_args);
     }
@@ -158,7 +158,7 @@ namespace Syntropy::UnitTest
                                 event_args.result_,
                                 event_args.expected_,
                                 sender.GetName() });
-        }
+        };
 
         test_case_listener += test_case.OnSuccess(on_success);
         test_case_listener += test_case.OnFailure(on_failure);
