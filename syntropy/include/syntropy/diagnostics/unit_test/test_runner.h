@@ -152,7 +152,7 @@ namespace Syntropy::UnitTest
 
         /// \brief Type of an event in a test runner.
         template <typename TEventArgs>
-        using EventType = Event<Immutable<TestRunner>, TEventArgs>;
+        using EventType = Event<Immutable<TestRunner>, Immutable<TEventArgs>>;
 
         /// \brief Run a test suite.
         void

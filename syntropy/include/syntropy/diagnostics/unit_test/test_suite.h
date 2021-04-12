@@ -156,7 +156,7 @@ namespace Syntropy::UnitTest
 
         /// \brief Type of an event in a test suite.
         template <typename TEventArgs>
-        using EventType = Event<Immutable<TestSuite>, TEventArgs>;
+        using EventType = Event<Immutable<TestSuite>, Immutable<TEventArgs>>;
 
         /// \brief Test suite name.
         String name_;

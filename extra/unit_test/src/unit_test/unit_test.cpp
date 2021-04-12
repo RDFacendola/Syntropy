@@ -6,13 +6,13 @@
 
 // ========================================================================= //
 
+#include "unit_test/unit_test_application.h"
+
 #include <iostream>
 
 int main()
 {
-    std::cout << "Hello, Syntropy Unit Test\n";
-
-    return 0;
+    return UnitTest::UnitTestApplication{}.Run();
 }
 
 // ========================================================================= //

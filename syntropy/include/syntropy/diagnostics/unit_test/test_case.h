@@ -94,7 +94,7 @@ namespace Syntropy::UnitTest
 
         /// \brief Type of an event in a test case.
         template <typename TEventArgs>
-        using EventType = Event<Immutable<TestCase>, TEventArgs>;
+        using EventType = Event<Immutable<TestCase>, Immutable<TEventArgs>>;
 
         /// \brief Run the concrete test case.
         virtual void

@@ -11,6 +11,8 @@
 /// \author Raffaele D. Facendola - November 2020
 /// \author Raffaele D. Facendola - January 2021
 
+// ===========================================================================
+
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
