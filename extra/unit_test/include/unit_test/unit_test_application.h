@@ -58,27 +58,27 @@ namespace UnitTest
 
         /// \brief Called whenever a test suite starts.
         void
-        OnSuiteStarted(Syntropy::Mutable<Syntropy::UnitTest::TestRunner> sender,
+        OnSuiteStarted(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
                        Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerSuiteStartedEventArgs> event_args)
         noexcept;
 
         /// \brief Called whenever a test case starts.
-        void OnCaseStarted(Syntropy::Mutable<Syntropy::UnitTest::TestRunner> sender,
+        void OnCaseStarted(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
                            Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseStartedEventArgs> event_args)
         noexcept;
 
         /// \brief Called whenever a test case failure is reported.
-        void OnCaseFailure(Syntropy::Mutable<Syntropy::UnitTest::TestRunner> sender,
+        void OnCaseFailure(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
                            Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseFailureEventArgs> event_args)
         noexcept;
 
         /// \brief Called whenever a test case finishes.
-        void OnCaseFinished(Syntropy::Mutable<Syntropy::UnitTest::TestRunner> sender,
+        void OnCaseFinished(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
                             Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseFinishedEventArgs> event_args)
         noexcept;
 
         /// \brief Called whenever a test suite finishes.
-        void OnSuiteFinished(Syntropy::Mutable<Syntropy::UnitTest::TestRunner> sender,
+        void OnSuiteFinished(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
                              Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerSuiteFinishedEventArgs> event_args)
         noexcept;
 

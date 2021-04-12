@@ -24,25 +24,24 @@ namespace UnitTest
     UnitTestApplication
     ::UnitTestApplication() noexcept
     {
+        // Header.
+
         std::cout << "\n";
         std::cout << "Syntropy Unit Test Application\n";
         std::cout << "(version 0.0.0)\n";
+
+        // Test runner events.
 
         auto BindMemberFunction = [this](auto function)
         {
             return std::bind(function, this, std::placeholders::_1, std::placeholders::_2);
         };
 
-        test_listener_ = test_runner_.OnSuiteStarted([](const auto& Sender, const auto& EventArgs)
-        {
-            std::cout << "HEEEY\n";
-        });
-
-        //test_listener_ += test_runner_.OnSuiteStarted(BindMemberFunction(&UnitTestApplication::OnSuiteStarted));
-        //test_listener_ += test_runner_.OnCaseStarted(BindMemberFunction(&UnitTestApplication::OnCaseStarted));
-        //test_listener_ += test_runner_.OnCaseFailure(BindMemberFunction(&UnitTestApplication::OnCaseFailure));
-        //test_listener_ += test_runner_.OnCaseFinished(BindMemberFunction(&UnitTestApplication::OnCaseFinished));
-        //test_listener_ += test_runner_.OnSuiteFinished(BindMemberFunction(&UnitTestApplication::OnSuiteFinished));
+        test_listener_ += test_runner_.OnSuiteStarted(BindMemberFunction(&UnitTestApplication::OnSuiteStarted));
+        test_listener_ += test_runner_.OnCaseStarted(BindMemberFunction(&UnitTestApplication::OnCaseStarted));
+        test_listener_ += test_runner_.OnCaseFailure(BindMemberFunction(&UnitTestApplication::OnCaseFailure));
+        test_listener_ += test_runner_.OnCaseFinished(BindMemberFunction(&UnitTestApplication::OnCaseFinished));
+        test_listener_ += test_runner_.OnSuiteFinished(BindMemberFunction(&UnitTestApplication::OnSuiteFinished));
     }
 
     inline Syntropy::Int
@@ -73,7 +72,7 @@ namespace UnitTest
 
     inline void
     UnitTestApplication
-    ::OnSuiteStarted(Syntropy::Mutable<Syntropy::UnitTest::TestRunner> sender,
+    ::OnSuiteStarted(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
                      Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerSuiteStartedEventArgs> event_args)
     noexcept
     {
@@ -84,7 +83,7 @@ namespace UnitTest
 
     inline void
     UnitTestApplication
-    ::OnCaseStarted(Syntropy::Mutable<Syntropy::UnitTest::TestRunner> sender,
+    ::OnCaseStarted(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
                     Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseStartedEventArgs> event_args)
     noexcept
     {
@@ -95,7 +94,7 @@ namespace UnitTest
 
     inline void
     UnitTestApplication
-    ::OnCaseFailure(Syntropy::Mutable<Syntropy::UnitTest::TestRunner> sender,
+    ::OnCaseFailure(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
                     Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseFailureEventArgs> event_args)
     noexcept
     {
@@ -134,7 +133,7 @@ namespace UnitTest
 
     inline void
     UnitTestApplication
-    ::OnCaseFinished(Syntropy::Mutable<Syntropy::UnitTest::TestRunner> sender,
+    ::OnCaseFinished(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
                      Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseFinishedEventArgs> event_args)
     noexcept
     {
@@ -150,7 +149,7 @@ namespace UnitTest
 
     inline void
     UnitTestApplication
-    ::OnSuiteFinished(Syntropy::Mutable<Syntropy::UnitTest::TestRunner> sender,
+    ::OnSuiteFinished(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
                       Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerSuiteFinishedEventArgs> event_args)
     noexcept
     {
