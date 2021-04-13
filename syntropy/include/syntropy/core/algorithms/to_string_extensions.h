@@ -11,7 +11,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Strings::Extensions
+namespace Syntropy::Algorithms::Extensions
 {
     /************************************************************************/
     /* STRING EXTENSIONS                                                    */

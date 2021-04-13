@@ -1,5 +1,5 @@
 
-/// \file string.details.h
+/// \file to_string.details.h
 ///
 /// \author Raffaele D. Facendola - April 2021
 
@@ -7,7 +7,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Strings::Details
+namespace Syntropy::Algorithms::Details
 {
     /************************************************************************/
     /* TO STRING                                                            */

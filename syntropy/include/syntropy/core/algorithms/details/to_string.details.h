@@ -1,5 +1,5 @@
 
-/// \file string.details.h
+/// \file to_string.details.h
 ///
 /// \author Raffaele D. Facendola - April 2021
 
@@ -7,37 +7,14 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/language/templates/priority.h"
+#include "syntropy/core/algorithms/details/algorithms.details.h"
 
-#include "syntropy/core/strings/string_extensions.h"
+#include "syntropy/core/algorithms/to_string_extensions.h"
 
 // ===========================================================================
 
-namespace Syntropy::Strings::Details
+namespace Syntropy::Algorithms::Details
 {
-    /************************************************************************/
-    /* CUSTOMIZATION-POINT-OBJECTS                                          */
-    /************************************************************************/
-
-    /// \brief Priority of a custom extension implementation.
-    using ExtensionPriority = Templates::ExtensionPriority;
-
-    /// \brief Priority of a member-function implementation.
-    using MemberFunctionPriority = Templates::MemberFunctionPriority;
-
-    /// \brief Priority of a member-operator implementation.
-    using MemberOperatorPriority = Templates::MemberOperatorPriority;
-
-    /// \brief Priority of a non-member-function implementation.
-    using NonMemberFunctionPriority = Templates::NonMemberFunctionPriority;
-
-    /// \brief Priority of a fallback implementation.
-    using FallbackPriority = Templates::FallbackPriority;
-
-    /// \brief Highest priority among method implementations.
-    inline constexpr
-    Templates::Priority kMaxPriority = Templates::kMaxPriority;
-
     /************************************************************************/
     /* TO STRING                                                            */
     /************************************************************************/
@@ -70,6 +47,6 @@ namespace Syntropy::Strings::Details
 
 // ===========================================================================
 
-#include "string.details.inl"
+#include "to_string.details.inl"
 
 // ===========================================================================

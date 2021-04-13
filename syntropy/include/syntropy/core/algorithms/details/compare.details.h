@@ -10,8 +10,6 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/language/templates/priority.h"
-
 #include "syntropy/core/algorithms/compare_extensions.h"
 
 #include "syntropy/core/algorithms/details/algorithms.details.h"

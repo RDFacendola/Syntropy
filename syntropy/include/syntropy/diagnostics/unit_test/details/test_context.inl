@@ -7,6 +7,8 @@
 
 #include "syntropy/core/strings/string.h"
 
+#include "syntropy/core/algorithms/to_string.h"
+
 // ===========================================================================
 
 namespace Syntropy::UnitTest
@@ -40,7 +42,7 @@ namespace Syntropy::UnitTest
                   Forwarding<TExpression> expression) noexcept
     {
         TestContext::context_->ReportSuccess(location,
-                                             Strings::ToString(expression));
+                                             Algorithms::ToString(expression));
     }
 
     template <typename TExpression, typename TResult, typename TExpected>
@@ -51,9 +53,9 @@ namespace Syntropy::UnitTest
                   Forwarding<TExpected> expected) noexcept
     {
         TestContext::context_->ReportFailure(location,
-                                             Strings::ToString(expression),
-                                             Strings::ToString(result),
-                                             Strings::ToString(expected));
+                                             Algorithms::ToString(expression),
+                                             Algorithms::ToString(result),
+                                             Algorithms::ToString(expected));
     }
 
     /************************************************************************/

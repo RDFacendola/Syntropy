@@ -20,10 +20,6 @@
 
 // ===========================================================================
 
-#include "details/string.details.h"
-
-// ===========================================================================
-
 namespace Syntropy
 {
     /************************************************************************/
@@ -120,25 +116,6 @@ namespace Syntropy
     /// \brief Prevent from getting a view to a temporary string.
     void
     ViewOf(Immovable<String> string) noexcept = delete;
-
-}
-
-// ===========================================================================
-
-namespace Syntropy::Strings
-{
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    // ToString.
-    // =========
-
-    /// \brief Convert rhs to a string.
-    template <typename TType>
-    constexpr auto
-    ToString(Immutable<TType> rhs) noexcept
-        -> decltype(Details::RouteToString(rhs));
 
 }
 
