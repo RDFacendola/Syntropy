@@ -66,7 +66,7 @@ namespace Syntropy::UnitTest
 
         /// \brief Default move-assignment.
         Mutable<TestCase>
-        operator=(Mutable<TestCase> rhs) noexcept = default;
+        operator=(Mutable<TestCase> rhs) noexcept;
 
         /// \brief Default virtual destructor.
         virtual
@@ -135,7 +135,7 @@ namespace Syntropy::UnitTest
 
         /// \brief Default move-assignment.
         Mutable<TestCaseT>
-        operator=(Movable<TestCaseT> rhs) noexcept = default;
+        operator=(Movable<TestCaseT> rhs) noexcept;
 
         /// \brief Default virtual destructor.
         virtual

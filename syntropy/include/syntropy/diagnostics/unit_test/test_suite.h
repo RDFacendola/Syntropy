@@ -199,7 +199,7 @@ namespace Syntropy::UnitTest
 
         /// \brief Default move-assignment.
         Mutable<TestSuiteT>
-        operator=(Movable<TestSuiteT> rhs) noexcept = default;
+        operator=(Movable<TestSuiteT> rhs) noexcept;
 
         /// \brief Default virtual destructor.
         virtual

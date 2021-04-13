@@ -125,6 +125,16 @@ namespace Syntropy::UnitTest
     }
 
     template <typename TTestFixture>
+    inline Mutable<TestSuiteT<TTestFixture>>
+    TestSuiteT<TTestFixture>
+    ::operator=(Movable<TestSuiteT> rhs) noexcept
+    {
+        test_fixture_ = Move(rhs.test_fixture_);
+
+        return *this;
+    }
+
+    template <typename TTestFixture>
     void
     TestSuiteT<TTestFixture>
     ::Run() const noexcept

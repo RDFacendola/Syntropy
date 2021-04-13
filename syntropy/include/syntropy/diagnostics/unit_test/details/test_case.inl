@@ -23,6 +23,18 @@ namespace Syntropy::UnitTest
     }
 
     template <typename TTestFixture>
+    inline Mutable<TestCase<TTestFixture>>
+    TestCase<TTestFixture>
+    ::operator=(Mutable<TestCase> rhs) noexcept
+    {
+        name_ = Move(rhs.name_);
+        success_event_ = Move(rhs.success_event_);
+        failure_event_ = Move(rhs.failure_event_);
+
+        return *this;
+    }
+
+    template <typename TTestFixture>
     void
     TestCase<TTestFixture>
     ::Run(Mutable<TTestFixture> test_fixture) const noexcept
@@ -77,6 +89,8 @@ namespace Syntropy::UnitTest
         return failure_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
+    //
+
     template <typename TTestFixture, typename TTestCase>
     template <typename UTestCase>
     inline
@@ -87,6 +101,18 @@ namespace Syntropy::UnitTest
         , test_case_(Forward<UTestCase>(test_case))
     {
 
+    }
+
+    template <typename TTestFixture, typename TTestCase>
+    inline Mutable<TestCaseT<TTestFixture, TTestCase>>
+    TestCaseT<TTestFixture, TTestCase>
+    ::operator=(Movable<TestCaseT> rhs) noexcept
+    {
+        TestCase<TTestFixture>::operator=(*this, rhs);
+
+        test_case_ = Move(rhs.test_case_);
+
+        return *this;
     }
 
     template <typename TTestFixture, typename TTestCase>
