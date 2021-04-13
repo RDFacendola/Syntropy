@@ -3,8 +3,6 @@
 ///
 /// \author Raffaele D. Facendola - March 2021
 
-#pragma once
-
 // ===========================================================================
 
 namespace Syntropy::Algorithms
