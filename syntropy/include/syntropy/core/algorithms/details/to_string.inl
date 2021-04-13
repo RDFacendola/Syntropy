@@ -3,10 +3,6 @@
 ///
 /// \author Raffaele D. Facendola - February 2021
 
-#pragma once
-
-#include "syntropy/language/foundation/foundation.h"
-
 // ===========================================================================
 
 namespace Syntropy::Algorithms
@@ -20,11 +16,11 @@ namespace Syntropy::Algorithms
 
     /// \brief Convert rhs to a string.
     template <typename TType>
-    constexpr auto
+    inline auto
     ToString(Immutable<TType> rhs) noexcept
         -> decltype(Details::RouteToString(rhs))
     {
-        Details::RouteToString(rhs);
+        return Details::RouteToString(rhs);
     }
 
 }
