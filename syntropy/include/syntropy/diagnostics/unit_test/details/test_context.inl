@@ -9,6 +9,8 @@
 
 #include "syntropy/core/algorithms/to_string.h"
 
+#include "syntropy/language/preprocessor/macro.h"
+
 // ===========================================================================
 
 namespace Syntropy::UnitTest
@@ -22,14 +24,15 @@ namespace Syntropy::UnitTest
         if (auto&& result = (expression); result != expected) \
         { \
             Syntropy::UnitTest::ReportFailure( SYNTROPY_HERE, \
-                                               #expression, \
+                                               SYNTROPY_CAT(u8, #expression), \
                                                result, \
                                                expected ); \
         } \
         else \
         { \
             Syntropy::UnitTest::ReportSuccess( SYNTROPY_HERE, \
-                                               #expression ); \
+                                               SYNTROPY_CAT(u8, \
+                                                            #expression) ); \
         }
 
     /************************************************************************/

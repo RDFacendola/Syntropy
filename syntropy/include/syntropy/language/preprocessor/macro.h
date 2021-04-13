@@ -46,6 +46,10 @@ namespace Syntropy
             "Undefined macro!"); \
         }
 
+    /// \brief Concatenate two tokens.
+    #define SYNTROPY_CAT(left, right) \
+        left##right
+
     /// \brief Expands to the current file name.
     #define SYNTROPY_FILE \
         __FILE__
