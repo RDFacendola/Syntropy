@@ -7,6 +7,11 @@
 
 #include <iostream>
 
+#include "syntropy/memory/foundation/byte_span.h"
+#include "syntropy/memory/foundation/memory.h"
+
+// ===========================================================================
+
 namespace UnitTest
 {
     /************************************************************************/
@@ -15,7 +20,16 @@ namespace UnitTest
 
     std::ostream& operator<<(std::ostream& stream, Syntropy::Immutable<Syntropy::String> string) noexcept
     {
-        stream << "{}";
+        // #TODO @rfacendola This is horrible and assumes stream encoding to
+        //                   be UTF8.
+
+        char buffer[256];
+
+        auto buffer_span = Syntropy::Memory::MakeByteSpan(buffer);
+
+        Syntropy::Memory::Copy(buffer_span, string.GetCodeUnits());
+
+        stream << buffer;
 
         return stream;
     }
@@ -103,26 +117,25 @@ namespace UnitTest
             test_suite_failed_ = true;
 
             std::cout << "\n";
-            std::cout << event_args.test_suite_ << "\n";
-            std::cout << "===\n";
+            std::cout << "Test suite: " << event_args.test_suite_ << "\n";
+            std::cout << "===========\n";
         }
 
         if (!test_case_failed_)
         {
             test_case_failed_ = true;
 
-            std::cout << event_args.test_case_ << "\n";
+            std::cout << "\n";
+            std::cout << " Test case: " << event_args.test_case_ << "\n";
 
             auto& location = event_args.location_.GetFunctionName();
 
-            std::cout << "    ("
+            std::cout << "  >"
                       << event_args.location_.GetFileName()
-                      << "@"
-                      << event_args.location_.GetLine()
-                      << ")\n";
+                      << "\n\n";
         }
 
-        std::cout << " > "
+        std::cout << "  @" << event_args.location_.GetLine() << " "
                   << event_args.expression_
                   << " returned '"
                   << event_args.result_

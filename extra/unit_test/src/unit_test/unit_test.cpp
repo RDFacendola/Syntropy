@@ -8,11 +8,14 @@
 
 #include "unit_test/unit_test_application.h"
 
-#include <iostream>
+#include "test_suites/empty_test_suite.h"
+
+// ===========================================================================
 
 int main()
 {
     return UnitTest::UnitTestApplication{}.Run();
+
 }
 
 // ========================================================================= //
