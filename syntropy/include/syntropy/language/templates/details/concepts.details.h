@@ -96,65 +96,75 @@ namespace Syntropy::Templates::Details
     /// \brief Concept for types deriving from TBase ignoring
     ///        constant-qualifiers.
     template <typename TDerived, typename TBase>
-    concept IsDerivedFrom = std::is_base_of_v<TBase, TDerived>;
+    concept IsDerivedFrom = std::is_base_of_v<UnqualifiedOf<TBase>,
+                                              UnqualifiedOf<TDerived>>;
 
     /// \brief Concept for polymorphic types.
     template <typename TType>
-    concept IsPolymorphic = std::is_polymorphic_v<TType>;
+    concept IsPolymorphic = std::is_polymorphic_v<UnqualifiedOf<TType>>;
 
     /// \brief Concept for final types.
     template <typename TType>
-    concept IsFinal = std::is_final_v<TType>;
+    concept IsFinal = std::is_final_v<UnqualifiedOf<TType>>;
 
     // Properties concepts.
     // ====================
 
     /// \brief Templates for standard-layout types.
     template <typename TType>
-    concept IsStandardLayoutType = std::is_standard_layout_v<TType>;
+    concept IsStandardLayoutType
+        = std::is_standard_layout_v<UnqualifiedOf<TType>>;
 
     /// \brief Concept for types that can be constructed by TArguments... .
     template <typename TType, typename... TArguments>
     concept IsConstructibleFrom
-        = std::is_constructible_v<TType, TArguments...>;
+        = std::is_constructible_v<UnqualifiedOf<TType>, TArguments...>;
 
     /// \brief Concept for default-constructible types.
     template <typename TType>
-    concept IsDefaultConstructible = std::is_default_constructible_v<TType>;
+    concept IsDefaultConstructible
+        = std::is_default_constructible_v<UnqualifiedOf<TType>>;
 
     /// \brief Concept for types that can be value-initialized (T()),
     ///        direct-list-initialized from and empty initializer list (T{})
     ///        or default-initialized (T t).
     template <typename TType>
     concept IsDefaultInitializable
-         = IsConstructibleFrom<TType>
-        && requires { TType{}; }
-        && requires { ::new (static_cast<RWTypelessPtr>(nullptr)) TType; };
+         = IsConstructibleFrom<UnqualifiedOf<TType>>
+        && requires { UnqualifiedOf<TType>{}; }
+        && requires
+        {
+            ::new (static_cast<RWTypelessPtr>(nullptr)) UnqualifiedOf<TType>;
+        };
 
     /// \brief Concept for copy-constructible types.
     template <typename TType>
-    concept IsCopyConstructible = std::is_copy_constructible_v<TType>;
+    concept IsCopyConstructible
+        = std::is_copy_constructible_v<UnqualifiedOf<TType>>;
 
     /// \brief Concept for move-constructible types.
     template <typename TType>
-    concept IsMoveConstructible = std::is_move_constructible_v<TType>;
+    concept IsMoveConstructible
+        = std::is_move_constructible_v<UnqualifiedOf<TType>>;
 
     /// \brief Concept for copy-assignable types.
     template <typename TType>
-    concept IsCopyAssignable = std::is_copy_assignable_v<TType>;
+    concept IsCopyAssignable
+        = std::is_copy_assignable_v<UnqualifiedOf<TType>>;
 
     /// \brief Concept for move-assignable types.
     template <typename TType>
-    concept IsMoveAssignable = std::is_move_assignable_v<TType>;
+    concept IsMoveAssignable
+        = std::is_move_assignable_v<UnqualifiedOf<TType>>;
 
-/// \brief Concept for types that can be assigned from UType.
+        /// \brief Concept for types that can be assigned from UType.
     template <typename TType, typename UType>
     concept IsAssignableFrom = std::is_assignable_v<TType, UType>;
 
     /// \brief Concept for types whose instances can safely be destroyed at
     ///        the end of their lifetime (including reference types).
     template <typename TType>
-    concept IsDestructible = std::is_destructible_v<TType>;
+    concept IsDestructible = std::is_destructible_v<UnqualifiedOf<TType>>;
 
     // Trivial.
     // ========

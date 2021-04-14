@@ -8,14 +8,14 @@
 
 #include "unit_test/unit_test_application.h"
 
-#include "test_suites/empty_test_suite.h"
+#include "test_suites/syntropy/language/templates/ut_concepts.h"
+
 
 // ===========================================================================
 
 int main()
 {
     return UnitTest::UnitTestApplication{}.Run();
-
 }
 
 // ========================================================================= //
