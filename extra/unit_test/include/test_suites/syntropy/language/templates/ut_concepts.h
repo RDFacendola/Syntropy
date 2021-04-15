@@ -1072,7 +1072,365 @@ namespace UnitTest
         SYNTROPY_UNIT_EQUAL((IsDestructible<Immutable<NonDestructible>>), false);
     })
 
-    // #TODO Add trivial concepts and subsequent test cases.
+    .TestCase(u8"Trivial default constructible types are trivially default constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct TriviallyDefaultConstructible{};
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyDefaultConstructible<TriviallyDefaultConstructible>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyDefaultConstructible<Immutable<TriviallyDefaultConstructible>>), true);
+    })
+
+    .TestCase(u8"Non-trivial-default constructible types are not trivially default constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonTriviallyDefaultConstructible{ NonTriviallyDefaultConstructible(){} };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyDefaultConstructible<NonTriviallyDefaultConstructible>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyDefaultConstructible<Immutable<NonTriviallyDefaultConstructible>>), false);
+    })
+
+    .TestCase(u8"Fundamental types are trivially default constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyDefaultConstructible<Bool>), true);
+        SYNTROPY_UNIT_EQUAL((IsTriviallyDefaultConstructible<Int>), true);
+        SYNTROPY_UNIT_EQUAL((IsTriviallyDefaultConstructible<Float>), true);
+    })
+
+    .TestCase(u8"Trivial copy constructible types are trivially-copy-constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct TriviallyCopyConstructible{ TriviallyCopyConstructible(Immutable<TriviallyCopyConstructible>) = default; };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyConstructible<TriviallyCopyConstructible>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyConstructible<Immutable<TriviallyCopyConstructible>>), true);
+    })
+
+    .TestCase(u8"Non-trivial copy constructible types are not trivially-copy-constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonTriviallyCopyConstructible{ NonTriviallyCopyConstructible(Immutable<NonTriviallyCopyConstructible>){}; };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyConstructible<NonTriviallyCopyConstructible>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyConstructible<Immutable<NonTriviallyCopyConstructible>>), false);
+    })
+
+    .TestCase(u8"Trivial move constructible types are trivially-move-constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct TriviallyMoveConstructible{ TriviallyMoveConstructible(TriviallyMoveConstructible&&) = default; };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyMoveConstructible<TriviallyMoveConstructible>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyMoveConstructible<Immutable<TriviallyMoveConstructible>>), true);
+    })
+
+    .TestCase(u8"Non-trivial move constructible types are not trivially-move-constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonTriviallyMoveConstructible{ NonTriviallyMoveConstructible(Immutable<NonTriviallyMoveConstructible>){}; };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyMoveConstructible<NonTriviallyMoveConstructible>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyMoveConstructible<Immutable<NonTriviallyMoveConstructible>>), false);
+    })
+
+    .TestCase(u8"Trivial-copy-assignable types are trivially-copy-assignable.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct TriviallyCopyAssignable
+        {
+            Mutable<TriviallyCopyAssignable>
+            operator=(Immutable<TriviallyCopyAssignable>) = default;
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyAssignable<TriviallyCopyAssignable>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyAssignable<Immutable<TriviallyCopyAssignable>>), true);
+    })
+
+    .TestCase(u8"Non-copy-assignable types are not copy-constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonTriviallyCopyAssignable
+        {
+            Mutable<NonTriviallyCopyAssignable>
+            operator=(Immutable<NonTriviallyCopyAssignable>){ return *this; };
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyAssignable<NonTriviallyCopyAssignable>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyAssignable<Immutable<NonTriviallyCopyAssignable>>), false);
+    })
+
+    .TestCase(u8"Trivial-move-assignable types are trivially-move-assignable.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct TriviallyMoveAssignable
+        {
+            Mutable<TriviallyMoveAssignable>
+            operator=(TriviallyMoveAssignable&&) = default;
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyMoveAssignable<TriviallyMoveAssignable>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyMoveAssignable<Immutable<TriviallyMoveAssignable>>), true);
+    })
+
+    .TestCase(u8"Non-move-assignable types are not move-constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonTriviallyMoveAssignable
+        {
+            Mutable<NonTriviallyMoveAssignable>
+            operator=(NonTriviallyMoveAssignable&&){ return *this; };
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyMoveAssignable<NonTriviallyMoveAssignable>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyMoveAssignable<Immutable<NonTriviallyMoveAssignable>>), false);
+    })
+
+    .TestCase(u8"Trivial destructible types are trivially-destructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct TriviallyDestructible
+        {
+            ~TriviallyDestructible() = default;
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyDestructible<TriviallyDestructible>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyDestructible<Immutable<TriviallyDestructible>>), true);
+    })
+
+    .TestCase(u8"Non trivial destructible types are non-trivially-destructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonTriviallyDestructible
+        {
+            ~NonTriviallyDestructible() {};
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyDestructible<NonTriviallyDestructible>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyDestructible<Immutable<NonTriviallyDestructible>>), false);
+    })
+
+    .TestCase(u8"Trivial copyable types are trivially copyable.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct TriviallyCopyable
+        {
+            TriviallyCopyable(Immutable<TriviallyCopyable>) = default;
+
+            Mutable<TriviallyCopyable>
+            operator=(Immutable<TriviallyCopyable>) = default;
+
+            ~TriviallyCopyable() {};
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyable<TriviallyCopyable>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyable<Immutable<TriviallyCopyable>>), false);
+    })
+
+    .TestCase(u8"Non-trivial copyable types are not trivially copyable.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonTriviallyCopyable
+        {
+            NonTriviallyCopyable(Immutable<NonTriviallyCopyable>){};
+
+            Mutable<NonTriviallyCopyable>
+            operator=(Immutable<NonTriviallyCopyable>) = default;
+
+            ~NonTriviallyCopyable() {};
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyable<NonTriviallyCopyable>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyable<Immutable<NonTriviallyCopyable>>), false);
+    })
+
+    .TestCase(u8"Trivial movable types are trivially copyable.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct TriviallyMovable
+        {
+            TriviallyMovable(TriviallyMovable&&) = default;
+
+            Mutable<TriviallyMovable>
+            operator=(Mutable<TriviallyMovable>) = default;
+
+            ~TriviallyMovable() {};
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyable<TriviallyMovable>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyable<Immutable<TriviallyMovable>>), false);
+    })
+
+    .TestCase(u8"Non-trivial movable types are not trivially copyable.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonTriviallyMovable
+        {
+            NonTriviallyMovable(NonTriviallyMovable&&){};
+
+            Mutable<NonTriviallyMovable>
+            operator=(Mutable<NonTriviallyMovable>) = default;
+
+            ~NonTriviallyMovable() {};
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyable<NonTriviallyMovable>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTriviallyCopyable<Immutable<NonTriviallyMovable>>), false);
+    })
+
+    .TestCase(u8"Trivial types are trivial.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct Trivial
+        {
+            Trivial() = default;
+
+            Trivial(Immutable<Trivial>) = default;
+
+            Trivial(Trivial&&) = default;
+
+            Mutable<Trivial>
+            operator=(Immutable<Trivial>) = default;
+
+            Mutable<Trivial>
+            operator=(Trivial&&) = default;
+
+            ~Trivial() = default;
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTrivial<Trivial>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTrivial<Immutable<Trivial>>), true);
+    })
+
+    .TestCase(u8"Non-trivial types are not trivial.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonTrivial
+        {
+            NonTrivial(){};
+
+            NonTrivial(NonTrivial&&) = default;
+
+            Mutable<NonTrivial>
+            operator=(Immutable<NonTrivial>) = default;
+
+            ~NonTrivial() = default;
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsTrivial<NonTrivial>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTrivial<Immutable<NonTrivial>>), false);
+    })
 
     .TestCase(u8"",
     [](auto& fixture)
