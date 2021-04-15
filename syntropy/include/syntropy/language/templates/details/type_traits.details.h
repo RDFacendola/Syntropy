@@ -21,7 +21,7 @@ namespace Syntropy::Templates::Details
     /// \brief Binds together multiple type helpers in a single list.
     template <typename... TTypeHelpers>
     struct AliasListHelper
-        : AliasListHelper<typename TTypeHelpers::Type...> {};
+        : AliasList<typename TTypeHelpers::Type...> {};
 
     //
 

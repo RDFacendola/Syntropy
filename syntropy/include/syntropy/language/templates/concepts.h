@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy language module.
 ///        It contains definitions for fundamental concepts.
 ///
-/// \author Raffaele D. Facendola - Nov 2020
+/// \author Raffaele D. Facendola - November 2020
+
+// ===========================================================================
 
 #pragma once
 
@@ -20,13 +22,7 @@ namespace Syntropy::Templates
     /* CONCEPTS                                                             */
     /************************************************************************/
 
-    // Type lists.
-    // ===========
 
-    /// \brief True if all types are TypeLists.
-    template <typename... TTypes>
-    concept IsTypeList
-        = (Details::IsTypeList<TTypes> && ...);
 
     // Core concepts.
     // ==============
@@ -267,8 +263,8 @@ namespace Syntropy::Templates
         = IsEqualityComparableWith<TType, UTypes...>
        && IsPartiallyOrderedWith<TType, UTypes...>;
 
-    // Templates concepts.
-    // ===================
+    // Templates.
+    // ==========
 
     /// \brief True if TType is a template specialization of all TTemplates.
     template<typename TType, template <typename...> typename... TTemplates>
@@ -280,6 +276,14 @@ namespace Syntropy::Templates
     template<template <typename...> typename TTemplate, typename... TTypes>
     concept IsTemplateOf
         = (Details::IsTemplateSpecializationOf<TTypes, TTemplate> && ...);
+
+    // Type lists.
+    // ===========
+
+    /// \brief True if all types are TypeLists.
+    template <typename... TTypes>
+    concept IsTypeList
+        = (Details::IsTypeList<TTypes> && ...);
 
     // Sequence.
     // =========

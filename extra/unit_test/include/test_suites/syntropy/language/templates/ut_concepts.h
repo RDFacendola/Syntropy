@@ -42,10 +42,13 @@ namespace UnitTest
     .TestCase(u8"Empty TypeList are typelists.",
     [](auto& fixture)
     {
+        using namespace Syntropy;
         using namespace Syntropy::Templates;
 
         SYNTROPY_UNIT_EQUAL((IsTypeList<TypeList<>>), true);
         SYNTROPY_UNIT_EQUAL((IsTypeList<TypeList<>, TypeList<>>), true);
+
+        SYNTROPY_UNIT_EQUAL((IsTypeList<Immutable<TypeList<>>>), true);
     })
 
     .TestCase(u8"Non-empty TypeList are typelists",

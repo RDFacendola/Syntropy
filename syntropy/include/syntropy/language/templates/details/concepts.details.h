@@ -18,21 +18,6 @@ namespace Syntropy::Templates::Details
     /* CONCEPTS                                                             */
     /************************************************************************/
 
-    // Type lists.
-    // ===========
-
-    /// \brief True if TType is a type-list.
-    template <typename TType>
-    inline constexpr
-    Bool IsTypeList
-        = false;
-
-    /// \brief Partial template specialzation for type lists.
-    template <typename... TTypes>
-    inline constexpr
-    Bool IsTypeList<TypeList<TTypes...>>
-        = true;
-
     // Core concepts.
     // ==============
 
@@ -311,8 +296,29 @@ namespace Syntropy::Templates::Details
     Bool IsTemplateSpecializationOf
         = IsTemplateSpecializationOfHelper<UnqualifiedOf<TType>, TTemplate>;
 
-    // IsSequence.
+    // Type lists.
     // ===========
+
+    /// \brief True if TType is a type-list.
+    template <typename TType>
+    inline constexpr
+    Bool IsTypeListHelper
+        = false;
+
+    /// \brief Partial template specialzation for type lists.
+    template <typename... TTypes>
+    inline constexpr
+    Bool IsTypeListHelper<TypeList<TTypes...>>
+        = true;
+
+    /// \brief True if TType is a type-list.
+    template <typename TType>
+    inline constexpr
+    Bool IsTypeList
+        = IsTypeListHelper<UnqualifiedOf<TType>>;
+
+    // Sequence.
+    // =========
 
     /// \brief True if TSequence is a sequence.
     template <typename TSequence>
@@ -331,9 +337,6 @@ namespace Syntropy::Templates::Details
     inline constexpr
     Bool IsSequence
         = IsSequenceHelper<UnqualifiedOf<TSequence>>;
-
-    // IsContiguousSequence.
-    // =====================
 
     /// \brief Constant equal to true if TSequence is a monotonically
     ///        increasing contiguous sequence, equal to false otherwise.
