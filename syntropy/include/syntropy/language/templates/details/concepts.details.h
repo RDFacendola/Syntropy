@@ -269,10 +269,10 @@ namespace Syntropy::Templates::Details
         { lhs > rhs } -> IsBoolean;
 
         /// \brief Check whether lhs is less-than or equal-to rhs.
-        { lhs <= lhs } -> IsBoolean;
+        { lhs <= rhs } -> IsBoolean;
 
         /// \brief Check whether lhs is greater-than or equal-to rhs.
-        { lhs >= lhs } -> IsBoolean;
+        { lhs >= rhs } -> IsBoolean;
 
         /// \brief Check whether rhs is less-than lhs.
         { rhs < lhs } -> IsBoolean;
@@ -294,30 +294,43 @@ namespace Syntropy::Templates::Details
     ///        TTemplate, equal to false otherwise.
     template<typename TType, template <typename...> typename TTemplate>
     constexpr
-    Bool IsTemplateSpecializationOf
+    Bool IsTemplateSpecializationOfHelper
         = false;
 
     /// \brief Partial template specialization for
     ///        template specializations (duh...).
     template<template <typename...> typename TTemplate, typename... TTypes>
     constexpr
-    Bool IsTemplateSpecializationOf<TTemplate<TTypes...>, TTemplate>
+    Bool IsTemplateSpecializationOfHelper<TTemplate<TTypes...>, TTemplate>
         = true;
+
+    /// \brief Constant equal to true if TType is a specialization of
+    ///        TTemplate, equal to false otherwise.
+    template<typename TType, template <typename...> typename TTemplate>
+    constexpr
+    Bool IsTemplateSpecializationOf
+        = IsTemplateSpecializationOfHelper<UnqualifiedOf<TType>, TTemplate>;
 
     // IsSequence.
     // ===========
 
-    /// \brief True if TType is a sequence.
-    template <typename TType>
+    /// \brief True if TSequence is a sequence.
+    template <typename TSequence>
     inline constexpr
-    Bool IsSequence
+    Bool IsSequenceHelper
         = false;
 
     /// \brief Partial template specialzation for sequences.
     template <Int... TIndices>
     inline constexpr
-    Bool IsSequence<Sequence<TIndices...>>
+    Bool IsSequenceHelper<Sequence<TIndices...>>
         = true;
+
+    /// \brief True if TType is a sequence.
+    template <typename TSequence>
+    inline constexpr
+    Bool IsSequence
+        = IsSequenceHelper<UnqualifiedOf<TSequence>>;
 
     // IsContiguousSequence.
     // =====================
@@ -326,15 +339,22 @@ namespace Syntropy::Templates::Details
     ///        increasing contiguous sequence, equal to false otherwise.
     template <typename TSequence>
     inline constexpr
-    Bool IsContiguousSequence
+    Bool IsContiguousSequenceHelper
         = false;
 
     /// \brief Partial specialization for sequences.
     template <Int THead, Int... TRest>
     inline constexpr Bool
-    IsContiguousSequence<Sequence<THead, TRest...>>
+    IsContiguousSequenceHelper<Sequence<THead, TRest...>>
          = IsSame<Sequence<THead, TRest...>,
                   SequenceAdd<THead, MakeSequence<1 + sizeof...(TRest)>>>;
+
+    /// \brief Constant equal to true if TSequence is a monotonically
+    ///        increasing contiguous sequence, equal to false otherwise.
+    template <typename TSequence>
+    inline constexpr
+    Bool IsContiguousSequence
+        = IsContiguousSequenceHelper<UnqualifiedOf<TSequence>>;
 
 }
 

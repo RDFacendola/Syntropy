@@ -9,6 +9,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
+#include "syntropy/core/foundation/ordering.h"
 
 #include "syntropy/diagnostics/unit_test/unit_test.h"
 
@@ -23,7 +24,11 @@ namespace UnitTest
     /// \brief Concepts test fixture.
     struct ConceptsTestFixture
     {
+        template <typename T>
+        struct Template{};
 
+        template <typename T>
+        struct Template2{};
     };
 
     /************************************************************************/
@@ -1430,6 +1435,329 @@ namespace UnitTest
         // Reference types should not affect result.
 
         SYNTROPY_UNIT_EQUAL((IsTrivial<Immutable<NonTrivial>>), false);
+    })
+
+    .TestCase(u8"Implicitly default constructible types are implicit default constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct ImplicitlyDefaultConstructible
+        {
+            ImplicitlyDefaultConstructible(){};
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsImplicitlyDefaultConstructible<ImplicitlyDefaultConstructible>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsImplicitlyDefaultConstructible<Immutable<ImplicitlyDefaultConstructible>>), true);
+    })
+
+    .TestCase(u8"Non-implicitly default constructible types are not implicit default constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonImplicitlyDefaultConstructible
+        {
+            explicit NonImplicitlyDefaultConstructible(){};
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsImplicitlyDefaultConstructible<NonImplicitlyDefaultConstructible>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsImplicitlyDefaultConstructible<Immutable<NonImplicitlyDefaultConstructible>>), false);
+    })
+
+    .TestCase(u8"Implicitly constructible types are implicit constructible from their constructor arguments.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct ImplicitlyConstructible
+        {
+            ImplicitlyConstructible(Int){};
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsImplicitlyConstructibleFrom<ImplicitlyConstructible, Int>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsImplicitlyConstructibleFrom<Immutable<ImplicitlyConstructible>, Int>), true);
+    })
+
+    .TestCase(u8"Non-implicitly default constructible types are not implicit default constructible.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonImplicitlyConstructible
+        {
+            explicit NonImplicitlyConstructible(Int){};
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsImplicitlyConstructibleFrom<NonImplicitlyConstructible, Int>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsImplicitlyConstructibleFrom<Immutable<NonImplicitlyConstructible>, Int>), false);
+    })
+
+    .TestCase(u8"Types that can be compared for equality are equality-comparable",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct EqualityComparable
+        {
+            Bool operator==(Immutable<EqualityComparable>) const
+            {
+                return true;
+            }
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparable<EqualityComparable>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparable<Immutable<EqualityComparable>>), true);
+    })
+
+    .TestCase(u8"Types that cannot be compared for equality are not equality-comparable.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonEqualityComparable{};
+
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparable<NonEqualityComparable>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparable<Immutable<NonEqualityComparable>>), false);
+    })
+
+    .TestCase(u8"Equality-comparable types are equal-comparable.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct EqualityComparableBar;
+
+        struct EqualityComparableFoo
+        {
+            Bool operator==(Immutable<EqualityComparableBar>) const
+            {
+                return true;
+            }
+        };
+
+        struct EqualityComparableBar
+        {
+            Bool operator==(Immutable<EqualityComparableFoo>) const
+            {
+                return true;
+            }
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparableWith<EqualityComparableFoo, EqualityComparableBar>), true);
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparableWith<EqualityComparableBar, EqualityComparableFoo>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparableWith<Immutable<EqualityComparableFoo>, Immutable<EqualityComparableBar>>), true);
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparableWith<Immutable<EqualityComparableBar>, Immutable<EqualityComparableFoo>>), true);
+    })
+
+    .TestCase(u8"Types that cannot be compared for equality are not equality-comparable.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonEqualityComparableFoo {};
+        struct NonEqualityComparableBar {};
+
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparableWith<NonEqualityComparableFoo, NonEqualityComparableBar>), false);
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparableWith<NonEqualityComparableBar, NonEqualityComparableFoo>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparableWith<Immutable<NonEqualityComparableFoo>, Immutable<NonEqualityComparableBar>>), false);
+        SYNTROPY_UNIT_EQUAL((IsEqualityComparableWith<Immutable<NonEqualityComparableBar>, Immutable<NonEqualityComparableFoo>>), false);
+    })
+
+    .TestCase(u8"Types that can be compared less-than, greater-than, less-than-or-equal-to and greater-than-or-equal-to are partially-ordered.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct PartiallyOrdered
+        {
+            Ordering operator<=>(Immutable<PartiallyOrdered>) const
+            {
+                return Ordering::kEquivalent;
+            }
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsPartiallyOrdered<PartiallyOrdered>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsPartiallyOrdered<Immutable<PartiallyOrdered>>), true);
+    })
+
+    .TestCase(u8"Types that cannot be compared equal, less-than, greater-than, less-than-or-equal-to or greater-than-or-equal-to are not partially-ordered.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct NonPartiallyOrdered {};
+
+        SYNTROPY_UNIT_EQUAL((IsPartiallyOrdered<NonPartiallyOrdered>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsPartiallyOrdered<Immutable<NonPartiallyOrdered>>), false);
+    })
+
+    .TestCase(u8"Types that can be compared less-than, greater-than, less-than-or-equal-to and greater-than-or-equal-to another type are partially-ordered.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct PartiallyOrderedBar;
+
+        struct PartiallyOrderedFoo
+        {
+            Ordering operator<=>(Immutable<PartiallyOrderedBar>) const
+            {
+                return Ordering::kEquivalent;
+            }
+        };
+
+        struct PartiallyOrderedBar
+        {
+            Ordering operator<=>(Immutable<PartiallyOrderedFoo>) const
+            {
+                return Ordering::kEquivalent;
+            }
+        };
+
+        SYNTROPY_UNIT_EQUAL((IsPartiallyOrderedWith<PartiallyOrderedFoo, PartiallyOrderedBar>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsPartiallyOrderedWith<Immutable<PartiallyOrderedFoo>, Immutable<PartiallyOrderedBar>>), true);
+    })
+
+    .TestCase(u8"Types that cannot be compared equal, less-than, greater-than, less-than-or-equal-to or greater-than-or-equal-to another type are not partially-ordered.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        struct PartiallyOrderedBar;
+
+        struct PartiallyOrderedFoo {};
+
+        struct PartiallyOrderedBar {};
+
+        SYNTROPY_UNIT_EQUAL((IsPartiallyOrderedWith<PartiallyOrderedFoo, PartiallyOrderedBar>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsPartiallyOrderedWith<Immutable<PartiallyOrderedFoo>, Immutable<PartiallyOrderedBar>>), false);
+    })
+
+    .TestCase(u8"Types that are template specialization of a template type are template-specialization-of.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsTemplateSpecializationOf<ConceptsTestFixture::Template<Int>, ConceptsTestFixture::Template>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTemplateSpecializationOf<Immutable<ConceptsTestFixture::Template<Int>>, ConceptsTestFixture::Template>), true);
+    })
+
+    .TestCase(u8"Types that are not template specialization of a template type are not template-specialization-of.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsTemplateSpecializationOf<ConceptsTestFixture::Template2<Int>, ConceptsTestFixture::Template>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsTemplateSpecializationOf<Immutable<ConceptsTestFixture::Template2<Int>>, ConceptsTestFixture::Template>), false);
+    })
+
+    .TestCase(u8"Sequence types are sequence.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsSequence<Sequence<1, 3, 5>>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsSequence<Immutable<Sequence<1, 3, 5>>>), true);
+    })
+
+    .TestCase(u8"Non sequence types are not sequence.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsSequence<Int>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsSequence<Immutable<Int>>), false);
+    })
+
+    .TestCase(u8"Contiguous sequence types are contiguous sequence.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsContiguousSequence<Sequence<1, 2, 3>>), true);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsContiguousSequence<Immutable<Sequence<1, 2, 3>>>), true);
+    })
+
+    .TestCase(u8"Non-contiguous sequence types are not contiguous sequence.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsContiguousSequence<Sequence<1, 3, 2>>), false);
+
+        // Reference types should not affect result.
+
+        SYNTROPY_UNIT_EQUAL((IsContiguousSequence<Immutable<Sequence<1, 3, 2>>>), false);
     })
 
     .TestCase(u8"",
