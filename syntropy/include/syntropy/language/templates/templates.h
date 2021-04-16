@@ -6,11 +6,11 @@
 ///
 /// \author Raffaele D. Facendola - November 2020.
 
+// ===========================================================================
+
 #pragma once
 
 #include "syntropy/language/foundation/types.h"
-
-#include "syntropy/language/templates/diagnostics.h"
 
 // ===========================================================================
 
@@ -113,6 +113,27 @@ namespace Syntropy::Templates
     template <Int... TSequence>
     struct AliasSequence
         : Alias<Sequence<TSequence...>> {};
+
+    /************************************************************************/
+    /* ALWAYS FALSE                                                         */
+    /************************************************************************/
+
+    /// \brief Boolean constant which consume any template argument and
+    ///        evaluates to false. Useful for static_assert that should always
+    ///        trigger a compilation error.
+    template <typename... TTypes>
+    inline constexpr Bool
+    AlwaysFalse
+        = false;
+
+    /************************************************************************/
+    /* VOID                                                                 */
+    /************************************************************************/
+
+    /// \brief Metafunction that maps a sequence of types to void.
+    template <typename... TTypes>
+    using Void
+        = void;
 
 }
 
