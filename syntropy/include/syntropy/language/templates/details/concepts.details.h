@@ -33,22 +33,22 @@ namespace Syntropy::Templates::Details
 
     /// \brief Concept for immutable reference-types.
     template <typename TType>
-    concept IsImmutable
+    concept IsImmutableReference
         = IsSame<ImmutableOf<TType>, TType>;
 
     /// \brief Concept for mutable reference-types.
     template <typename TType>
-    concept IsMutable
+    concept IsMutableReference
         = IsSame<MutableOf<TType>, TType>;
 
-    /// \brief Concept for movable reerence-types.
+    /// \brief Concept for movable reference-types.
     template <typename TType>
-    concept IsMovable
+    concept IsMovableReference
         = IsSame<MovableOf<TType>, TType>;
 
     /// \brief Concept for immovable reference-types.
     template <typename TType>
-    concept IsImmovable
+    concept IsImmovableReference
         = IsSame<ImmovableOf<TType>, TType>;
 
     // Fundamental types concepts.
@@ -56,7 +56,8 @@ namespace Syntropy::Templates::Details
 
     /// \brief Concept for boolean types.
     template <typename TType>
-    concept IsBoolean = IsSame<UnqualifiedOf<TType>, Bool>;
+    concept IsBoolean
+        = IsSame<UnqualifiedOf<TType>, Bool>;
 
     /// \brief Concept for signed integral number types.
     template <typename TType>
@@ -73,179 +74,93 @@ namespace Syntropy::Templates::Details
 
     /// \brief Concept for real number types.
     template <typename TType>
-    concept IsReal = IsSame<UnqualifiedOf<TType>, Float>;
+    concept IsReal
+        = IsSame<UnqualifiedOf<TType>, Float>;
 
     // Polymorphism.
     // =============
 
-    /// \brief Concept for types deriving from TBase ignoring
-    ///        constant-qualifiers.
-    template <typename TDerived, typename TBase>
-    concept IsDerivedFrom = std::is_base_of_v<UnqualifiedOf<TBase>,
-                                              UnqualifiedOf<TDerived>>;
+    /// \brief Concept for base classes of TDerived.
+    template <typename TBase, typename TDerived>
+    concept IsBaseOf
+        = std::is_base_of_v<UnqualifiedOf<TBase>, UnqualifiedOf<TDerived>>;
 
     /// \brief Concept for polymorphic types.
     template <typename TType>
-    concept IsPolymorphic = std::is_polymorphic_v<UnqualifiedOf<TType>>;
+    concept IsPolymorphic
+        = std::is_polymorphic_v<UnqualifiedOf<TType>>;
 
     /// \brief Concept for final types.
     template <typename TType>
-    concept IsFinal = std::is_final_v<UnqualifiedOf<TType>>;
+    concept IsFinal
+        = std::is_final_v<UnqualifiedOf<TType>>;
 
     // Properties concepts.
     // ====================
 
-    /// \brief Templates for standard-layout types.
-    template <typename TType>
-    concept IsStandardLayoutType
-        = std::is_standard_layout_v<UnqualifiedOf<TType>>;
-
     /// \brief Concept for types that can be constructed by TArguments... .
     template <typename TType, typename... TArguments>
-    concept IsConstructibleFrom
+    concept IsConstructible
         = std::is_constructible_v<UnqualifiedOf<TType>, TArguments...>;
 
-    /// \brief Concept for default-constructible types.
+    /// \brief Concept for types that are both move-constructible
+    ///        and move-assignable.
     template <typename TType>
-    concept IsDefaultConstructible
-        = std::is_default_constructible_v<UnqualifiedOf<TType>>;
+    concept IsMovable
+         = std::is_move_constructible_v<UnqualifiedOf<TType>>
+        && std::is_move_assignable_v<UnqualifiedOf<TType>>;
 
-    /// \brief Concept for types that can be value-initialized (T()),
-    ///        direct-list-initialized from and empty initializer list (T{})
-    ///        or default-initialized (T t).
+    /// \brief Concept for types that are movable, copy-constructible and
+    ///        copy-assignable.
     template <typename TType>
-    concept IsDefaultInitializable
-         = IsConstructibleFrom<UnqualifiedOf<TType>>
-        && requires { UnqualifiedOf<TType>{}; }
-        && requires
-        {
-            ::new (static_cast<RWTypelessPtr>(nullptr)) UnqualifiedOf<TType>;
-        };
+    concept IsCopyable
+         = std::is_move_constructible_v<UnqualifiedOf<TType>>
+        && std::is_move_assignable_v<UnqualifiedOf<TType>>
+        && std::is_copy_constructible_v<UnqualifiedOf<TType>>
+        && std::is_copy_assignable_v<UnqualifiedOf<TType>>;
 
-    /// \brief Concept for copy-constructible types.
-    template <typename TType>
-    concept IsCopyConstructible
-        = std::is_copy_constructible_v<UnqualifiedOf<TType>>;
-
-    /// \brief Concept for move-constructible types.
-    template <typename TType>
-    concept IsMoveConstructible
-        = std::is_move_constructible_v<UnqualifiedOf<TType>>;
-
-    /// \brief Concept for copy-assignable types.
-    template <typename TType>
-    concept IsCopyAssignable
-        = std::is_copy_assignable_v<UnqualifiedOf<TType>>;
-
-    /// \brief Concept for move-assignable types.
-    template <typename TType>
-    concept IsMoveAssignable
-        = std::is_move_assignable_v<UnqualifiedOf<TType>>;
-
-        /// \brief Concept for types that can be assigned from UType.
+    /// \brief Concept for types that can be assigned from UType.
     template <typename TType, typename UType>
-    concept IsAssignableFrom = std::is_assignable_v<TType, UType>;
-
-    /// \brief Concept for types whose instances can safely be destroyed at
-    ///        the end of their lifetime (including reference types).
-    template <typename TType>
-    concept IsDestructible = std::is_destructible_v<UnqualifiedOf<TType>>;
+    concept IsAssignable
+        = std::is_assignable_v<TType, UType>;
 
     // Trivial.
     // ========
 
-    /// \brief Concept for trivially default-constructible types.
-    template <typename TType>
-    concept IsTriviallyDefaultConstructible
-        = std::is_trivially_default_constructible_v<UnqualifiedOf<TType>>;
-
-    /// \brief Concept for trivially copy-constructible types.
-    template <typename TType>
-    concept IsTriviallyCopyConstructible
-        = std::is_trivially_copy_constructible_v<UnqualifiedOf<TType>>;
-
-    /// \brief Concept for trivially move-constructible types.
-    template <typename TType>
-    concept IsTriviallyMoveConstructible
-        = std::is_trivially_move_constructible_v<UnqualifiedOf<TType>>;
-
-    /// \brief Concept for trivially copy-assignable types.
-    template <typename TType>
-    concept IsTriviallyCopyAssignable
-        = std::is_trivially_copy_assignable_v<UnqualifiedOf<TType>>;
-
-    /// \brief Concept for trivially move-assignable types.
-    template <typename TType>
-    concept IsTriviallyMoveAssignable
-        = std::is_trivially_move_assignable_v<UnqualifiedOf<TType>>;
-
-    /// \brief Concept for types whose instances can safely be destroyed at
-    ///        the end of their lifetime via trivial destructor.
-    template <typename TType>
-    concept IsTriviallyDestructible
-        = std::is_trivially_destructible_v<UnqualifiedOf<TType>>;
-
-    /// \brief Concept for trivially-copyable types.
+    /// \brief Concept for types that are both trivially-copy-constructible,
+    ///        trivially-copy-assignable, trivially-move-constructible and
+    ///        trivially-move-assignable.
     template <typename TType>
     concept IsTriviallyCopyable
         = std::is_trivially_copyable_v<UnqualifiedOf<TType>>;
 
-    /// \brief Concept for trivial types.
+    /// \brief Concepts for types that are both trivially copyable,
+    ///        trivially-default-constructibles and trivially-destructible.
     template <typename TType>
     concept IsTrivial
-        = std::is_trivial_v<UnqualifiedOf<TType>>;
-
-    // Implicit.
-    // =========
-
-    /// \brief Dummy method used to copy construct an instance.
-    template <typename TType>
-    void CopyConstruct(const TType&);
-
-    /// \brief Concept for types that can be implicitly default constructed
-    //         from an empty initializer list.
-    template <typename TType>
-    concept IsImplicitlyDefaultConstructible = requires()
-    {
-        { CopyConstruct<TType>({}) };
-    };
-
-    /// \brief Concept for types that can be implicitly direct-constructed
-    ///        from a initializer list.
-    template <typename TType, typename... TArguments>
-    concept IsImplicitlyConstructibleFrom = requires()
-    {
-        { CopyConstruct<TType>( { Declval<TArguments>()... }) };
-    };
+         = std::is_trivial_v<UnqualifiedOf<TType>>
+        && std::is_trivially_destructible_v<UnqualifiedOf<TType>>;
 
     // Comparison concepts.
     // ====================
 
-    /// \brief Concept for types which define both the equality and inequality
-    ///        operators against a possibily different type.
-    template <typename TType, typename UType>
-    concept IsEqualityComparableWith = requires(ImmutableOf<TType> lhs,
-                                                ImmutableOf<UType> rhs)
+    /// \brief Concept for types that can be compared equal.
+    template <typename TType>
+    concept IsEqualityComparable
+        = requires(ImmutableOf<TType> lhs, ImmutableOf<TType> rhs)
     {
         /// \brief Compare lhs and rhs for equality.
         { lhs == rhs } -> IsBoolean;
 
         /// \brief Compare lhs and rhs for inequality.
         { lhs != rhs } -> IsBoolean;
-
-        /// \brief Compare rhs and lhs for equality.
-        { rhs == lhs } -> IsBoolean;
-
-        /// \brief Compare rhs and lhs for inequality.
-        { rhs != lhs } -> IsBoolean;
     };
 
-    /// \brief Concept for types which define boh the less-than, greater-than,
-    ///        less-than-or-equal-to and greater-than-or-equal-to operators
-    ///        against a possibly different type.
-    template <typename TType, typename UType>
-    concept IsPartiallyOrderedWith = requires(ImmutableOf<TType> lhs,
-                                              ImmutableOf<UType> rhs)
+    /// \brief Concept for types that can be compared to themselves.
+    template <typename TType>
+    concept IsComparable
+         = IsEqualityComparable<TType>
+        && requires(ImmutableOf<TType> lhs, ImmutableOf<TType> rhs)
     {
         /// \brief Check whether lhs is less-than rhs.
         { lhs < rhs } -> IsBoolean;
@@ -282,15 +197,13 @@ namespace Syntropy::Templates::Details
     Bool IsTemplateSpecializationOfHelper
         = false;
 
-    /// \brief Partial template specialization for
-    ///        template specializations (duh...).
+    /// \brief Partial template specialization for template specializations.
     template<template <typename...> typename TTemplate, typename... TTypes>
     constexpr
     Bool IsTemplateSpecializationOfHelper<TTemplate<TTypes...>, TTemplate>
         = true;
 
-    /// \brief Constant equal to true if TType is a specialization of
-    ///        TTemplate, equal to false otherwise.
+    /// \brief Concept for types that are template specialization of TTemplate.
     template<typename TType, template <typename...> typename TTemplate>
     constexpr
     Bool IsTemplateSpecializationOf

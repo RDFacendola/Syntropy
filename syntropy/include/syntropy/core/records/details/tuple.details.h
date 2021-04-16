@@ -32,14 +32,13 @@ namespace Syntropy::Details
     template <typename... TElements>
     inline constexpr
     Bool TupleDefaultConstructor
-        = Templates::IsDefaultConstructible<TElements...>;
+        = (Templates::IsConstructible<TElements> && ...);
 
-    /// \brief True if at least one tuple element is explicit
-    ///        default-constructible.
+    /// \brief True if at least one tuple element is default-constructible.
     template <typename... TTypes>
     inline constexpr
     Bool TupleExplicitDefaultConstructor
-        = !Templates::IsImplicitlyDefaultConstructible<TTypes...>;
+        = !(Templates::IsConstructible<TTypes> && ...);
 
     // Direct constructor.
     // ===================
@@ -56,7 +55,7 @@ namespace Syntropy::Details
     requires (sizeof...(TElements) == sizeof...(UElements))
     inline constexpr
     Bool TupleDirectConstructor<TupleList<TElements...>, UElements...>
-        = (Templates::IsConstructibleFrom<
+        = (Templates::IsConstructible<
                TElements, Templates::ForwardingOf<UElements>> && ...);
 
     /// \brief True if at least one among UElements is not implicitly
@@ -90,7 +89,7 @@ namespace Syntropy::Details
     requires (sizeof...(TElements) == sizeof...(UElements))
     inline constexpr
     Bool TupleCopyConstructor<TupleList<TElements...>, UElements...>
-        = (Templates::IsConstructibleFrom<
+        = (Templates::IsConstructible<
                TElements, Templates::ImmutableOf<UElements>> && ...);
 
     /// \brief True if at least one among UElements is not implicitly
@@ -124,7 +123,7 @@ namespace Syntropy::Details
     requires (sizeof...(TElements) == sizeof...(UElements))
     inline constexpr
     Bool TupleMoveConstructor<TupleList<TElements...>, UElements...>
-        = (Templates::IsConstructibleFrom<
+        = (Templates::IsConstructible<
                TElements, Templates::MovableOf<UElements>> && ...);
 
     /// \brief True if at least one among UElements is not implicitly
@@ -158,7 +157,7 @@ namespace Syntropy::Details
     requires (sizeof...(TElements) == sizeof...(UElements))
     inline constexpr
     Bool TupleCopyAssignment<TupleList<TElements...>, UElements...>
-        = (Templates::IsAssignableFrom<
+        = (Templates::IsAssignable<
                TElements, Templates::ImmutableOf<UElements>> && ...);
 
    // Move assignment.
@@ -177,7 +176,7 @@ namespace Syntropy::Details
    requires (sizeof...(TElements) == sizeof...(UElements))
    inline constexpr
    Bool TupleMoveAssignment<TupleList<TElements...>, UElements...>
-       = (Templates::IsAssignableFrom<
+       = (Templates::IsAssignable<
               TElements, Templates::MovableOf<UElements>> && ...);
 
     /************************************************************************/
