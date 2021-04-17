@@ -428,6 +428,78 @@ namespace UnitTest
             (IsConvertible<Immovable<Int>, Movable<Int>>), false);
     })
 
+    .TestCase(u8"Value-types are not reference-types.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsSame<ReadOnly<Int>, Immutable<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<ReadOnly<Int>, Mutable<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<ReadOnly<Int>, Immovable<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<ReadOnly<Int>, Movable<Int>>), false);
+
+        SYNTROPY_UNIT_EQUAL((IsSame<ReadWrite<Int>, Immutable<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<ReadWrite<Int>, Mutable<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<ReadWrite<Int>, Immovable<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<ReadWrite<Int>, Movable<Int>>), false);
+    })
+
+    .TestCase(u8"Reference-types are not value-types.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsSame<Immutable<Int>, ReadOnly<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<Immutable<Int>, ReadWrite<Int>>), false);
+
+        SYNTROPY_UNIT_EQUAL((IsSame<Mutable<Int>, ReadOnly<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<Mutable<Int>, ReadWrite<Int>>), false);
+
+        SYNTROPY_UNIT_EQUAL((IsSame<Immovable<Int>, ReadOnly<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<Immovable<Int>, ReadWrite<Int>>), false);
+
+        SYNTROPY_UNIT_EQUAL((IsSame<Movable<Int>, ReadOnly<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<Movable<Int>, ReadWrite<Int>>), false);
+    })
+
+    .TestCase(u8"Read-only value-types are read-only.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsReadOnlyValue<ReadOnly<Int>>), true);
+    })
+
+    .TestCase(u8"Read-write value-types are not read-only.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsReadOnlyValue<ReadWrite<Int>>), false);
+    })
+
+    .TestCase(u8"Read-write value-types are read-write.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsReadWriteValue<ReadWrite<Int>>), true);
+    })
+
+    .TestCase(u8"Read-only value-types are not read-write.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsReadWriteValue<ReadOnly<Int>>), false);
+    })
+
     .TestCase(u8"Immutable reference-types are immutable.",
     [](auto& fixture)
     {

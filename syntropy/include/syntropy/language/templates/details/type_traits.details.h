@@ -76,20 +76,37 @@ namespace Syntropy::Templates::Details
 
     //
 
-    /// \brief Mutable reference type of TType.
+    /// \brief Read-only value-type of TType.
     template <typename TType>
-    struct MutableOfHelper
-        : Alias<std::add_lvalue_reference_t<std::remove_cvref_t<TType>>> {};
+    struct ReadOnlyOfHelper
+        : Alias<std::add_const_t<UnqualifiedOf<TType>>> {};
 
     /// \brief Partial template specialization for type lists.
     template <typename... TTypes>
-    struct MutableOfHelper<TypeList<TTypes...>>
-        : AliasListHelper<MutableOfHelper<TTypes>...> {};
+    struct ReadOnlyOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<ReadOnlyOfHelper<TTypes>...> {};
 
-    /// \brief Mutable reference type of TType.
+    /// \brief Read-only value-type of TType.
     template <typename TType>
-    using MutableOf
-        = typename MutableOfHelper<TType>::Type;
+    using ReadOnlyOf
+        = typename ReadOnlyOfHelper<TType>::Type;
+
+    //
+
+    /// \brief Read-write value-type of TType.
+    template <typename TType>
+    struct ReadWriteOfHelper
+        : Alias<UnqualifiedOf<TType>> {};
+
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct ReadWriteOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<ReadWriteOfHelper<TTypes>...> {};
+
+    /// \brief Read-write value-type of TType.
+    template <typename TType>
+    using ReadWriteOf
+        = typename ReadWriteOfHelper<TType>::Type;
 
     //
 
@@ -110,20 +127,20 @@ namespace Syntropy::Templates::Details
         = typename ImmutableOfHelper<TType>::Type;
     //
 
-    /// \brief Movable reference type of TType.
+    /// \brief Mutable reference type of TType.
     template <typename TType>
-    struct MovableOfHelper
-        : Alias<std::add_rvalue_reference_t<std::remove_cvref_t<TType>>> {};
+    struct MutableOfHelper
+        : Alias<std::add_lvalue_reference_t<std::remove_cvref_t<TType>>> {};
 
     /// \brief Partial template specialization for type lists.
     template <typename... TTypes>
-    struct MovableOfHelper<TypeList<TTypes...>>
-        : AliasListHelper<MovableOfHelper<TTypes>...> {};
+    struct MutableOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<MutableOfHelper<TTypes>...> {};
 
-    /// \brief Movable reference type of TType.
+    /// \brief Mutable reference type of TType.
     template <typename TType>
-    using MovableOf
-        = typename MovableOfHelper<TType>::Type;
+    using MutableOf
+        = typename MutableOfHelper<TType>::Type;
 
     //
 
@@ -142,6 +159,23 @@ namespace Syntropy::Templates::Details
     template <typename TType>
     using ImmovableOf
         = typename ImmovableOfHelper<TType>::Type;
+
+    //
+
+    /// \brief Movable reference type of TType.
+    template <typename TType>
+    struct MovableOfHelper
+        : Alias<std::add_rvalue_reference_t<std::remove_cvref_t<TType>>> {};
+
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct MovableOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<MovableOfHelper<TTypes>...> {};
+
+    /// \brief Movable reference type of TType.
+    template <typename TType>
+    using MovableOf
+        = typename MovableOfHelper<TType>::Type;
 
     //
 

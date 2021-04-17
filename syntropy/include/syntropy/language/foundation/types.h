@@ -32,11 +32,11 @@ namespace Syntropy
     /* VALUE TYPES                                                          */
     /************************************************************************/
 
-    /// \brief Immutable value-type o TType.
+    /// \brief Read-only value-type o TType.
     template <typename TType>
     using ReadOnly = const TType;
 
-    /// \brief Mutable value-type of TType.
+    /// \brief Read-write value-type of TType.
     template <typename TType>
     using ReadWrite = TType;
 

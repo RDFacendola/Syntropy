@@ -35,6 +35,16 @@ namespace Syntropy::Templates
     concept IsConvertible
         = Details::IsConvertible<TType, UType>;
 
+    /// \brief True if TType is a read-only value-type.
+    template <typename TType>
+    concept IsReadOnlyValue
+        = Details::IsReadOnlyValue<TType>;
+
+    /// \brief True if TType is a read-write value-type.
+    template <typename TType>
+    concept IsReadWriteValue
+        = Details::IsReadWriteValue<TType>;
+
     /// \brief True if TType is an immutable reference-type.
     template <typename TType>
     concept IsImmutableReference

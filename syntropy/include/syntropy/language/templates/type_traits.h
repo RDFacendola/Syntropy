@@ -50,13 +50,21 @@ namespace Syntropy::Templates
     using QualifiedOf
         = Details::QualifiedOf<TType>;
 
-    /// \brief Mutable reference type of TType.
+    /// \brief Read-only value type of TType.
     ///
     /// \remarks Providing a TypeList yields a list whose elements have been
     ///          transformed accordingly.
     template <typename TType>
-    using MutableOf
-        = Details::MutableOf<TType>;
+    using ReadOnlyOf
+        = Details::ReadOnlyOf<TType>;
+
+    /// \brief Read-write value type of TType.
+    ///
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
+    template <typename TType>
+    using ReadWriteOf
+        = Details::ReadWriteOf<TType>;
 
     /// \brief Immutable reference type of TType.
     ///
@@ -66,13 +74,13 @@ namespace Syntropy::Templates
     using ImmutableOf
         = Details::ImmutableOf<TType>;
 
-    /// \brief Movable reference type of TType.
+    /// \brief Mutable reference type of TType.
     ///
     /// \remarks Providing a TypeList yields a list whose elements have been
     ///          transformed accordingly.
     template <typename TType>
-    using MovableOf
-        = Details::MovableOf<TType>;
+    using MutableOf
+        = Details::MutableOf<TType>;
 
     /// \brief Immovable reference type of TType.
     ///
@@ -81,6 +89,14 @@ namespace Syntropy::Templates
     template <typename TType>
     using ImmovableOf
         = Details::ImmovableOf<TType>;
+
+    /// \brief Movable reference type of TType.
+    ///
+    /// \remarks Providing a TypeList yields a list whose elements have been
+    ///          transformed accordingly.
+    template <typename TType>
+    using MovableOf
+        = Details::MovableOf<TType>;
 
     /// \brief Either mutable or immutable reference type of TType.
     ///
