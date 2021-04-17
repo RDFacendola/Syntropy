@@ -3,12 +3,14 @@
 ///
 /// \author Raffaele D. Facendola - 2018
 
+// ===========================================================================
+
 #pragma once
 
 #include "syntropy/core/strings/string.h"
-
 #include "syntropy/core/algorithms/to_string.h"
 
+#include "syntropy/language/templates/concepts.h"
 #include "syntropy/language/preprocessor/macro.h"
 
 // ===========================================================================
@@ -20,19 +22,34 @@ namespace Syntropy::UnitTest
     /************************************************************************/
 
     #undef SYNTROPY_UNIT_EQUAL
-    #define SYNTROPY_UNIT_EQUAL(expression, expected) \
-        if (auto&& result = (expression); result != expected) \
-        { \
-            Syntropy::UnitTest::ReportFailure( SYNTROPY_HERE, \
-                                               SYNTROPY_CAT(u8, #expression), \
-                                               result, \
-                                               expected ); \
-        } \
-        else \
-        { \
-            Syntropy::UnitTest::ReportSuccess( SYNTROPY_HERE, \
-                                               SYNTROPY_CAT(u8, \
-                                                            #expression) ); \
+    #define SYNTROPY_UNIT_EQUAL(expression, expected)                         \
+        if (auto&& result = (expression); result != expected)                 \
+        {                                                                     \
+            Syntropy::UnitTest::ReportFailure(SYNTROPY_HERE,                  \
+                                              SYNTROPY_CAT(u8, #expression),  \
+                                              result,                         \
+                                              expected );                     \
+        }                                                                     \
+        else                                                                  \
+        {                                                                     \
+            Syntropy::UnitTest::ReportSuccess(SYNTROPY_HERE,                  \
+                                              SYNTROPY_CAT(u8, #expression)); \
+        }
+
+    #undef SYNTROPY_UNIT_SAME
+    #define SYNTROPY_UNIT_SAME(type, expected)                                \
+        if(!Syntropy::Templates::IsSame<SYNTROPY_TYPENAME(type),              \
+                                       SYNTROPY_TYPENAME(expected)>)          \
+        {                                                                     \
+            Syntropy::UnitTest::ReportFailure(SYNTROPY_HERE,                  \
+                                              SYNTROPY_CAT(u8, #type),        \
+                                              SYNTROPY_CAT(u8, #type),        \
+                                              SYNTROPY_CAT(u8, #expected));   \
+        }                                                                     \
+        else                                                                  \
+        {                                                                     \
+            Syntropy::UnitTest::ReportSuccess(SYNTROPY_HERE,                  \
+                                              SYNTROPY_CAT(u8, #type) );      \
         }
 
     /************************************************************************/

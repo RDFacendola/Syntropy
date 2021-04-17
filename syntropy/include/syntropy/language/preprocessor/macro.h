@@ -6,6 +6,8 @@
 ///
 /// \author Raffaele D. Facendola - November 2016
 
+// ===========================================================================
+
 #pragma once
 
 #include "syntropy/hal/hal_macro.h"
@@ -14,7 +16,11 @@
 
 // ===========================================================================
 
-namespace Syntropy
+#include "details/macro.details.h"
+
+// ===========================================================================
+
+namespace Syntropy::Macros
 {
     /************************************************************************/
     /* MACROS                                                               */
@@ -49,6 +55,14 @@ namespace Syntropy
     /// \brief Concatenate two tokens.
     #define SYNTROPY_CAT(left, right) \
         left##right
+
+    /// \brief Expand a typename even in presence of type templates.
+    ///
+    /// \usage SYNTROPY_TYPENAME((TypeList<Int, Float>)) expands to
+    ///           TypeList<Int, Float>.
+    /// \usage SYNTROPY_TYPENAME(Int) expands to Int.
+    #define SYNTROPY_TYPENAME(type) \
+        typename Syntropy::Macros::Details::ExpandTypename<void(type)>::Type
 
     /// \brief Expands to the current file name.
     #define SYNTROPY_FILE \

@@ -6,6 +6,8 @@
 ///
 /// \author Raffaele D. Facendola - 2018
 
+// ===========================================================================
+
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
@@ -30,6 +32,11 @@ namespace Syntropy::UnitTest
     /// \usage SYNTROPY_UNIT_EQUAL(1 + 2, 3);
     #define SYNTROPY_UNIT_EQUAL(expression, expected) \
         SYNTROPY_MACRO_DECLARATION(expression, expected)
+
+    /// \brief Unit test macro: report a success if type is the same type as
+    ///        expected, otherwise report a failure and continue.
+    #define SYNTROPY_UNIT_SAME(type, expected) \
+       SYNTROPY_MACRO_DECLARATION(type, expected)
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
