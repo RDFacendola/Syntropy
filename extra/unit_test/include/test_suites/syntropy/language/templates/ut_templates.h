@@ -24,7 +24,7 @@ namespace UnitTest
     /* TEMPLATES TEST FIXTURE                                               */
     /************************************************************************/
 
-    /// \brief Invoke test fixture.
+    /// \brief Templates test fixture.
     struct TemplatesTestFixture
     {
 
@@ -34,7 +34,7 @@ namespace UnitTest
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline auto& ut_invoke
+    inline auto& ut_templates
         = Syntropy::UnitTest::MakeAutoUnitTest<TemplatesTestFixture>(
             u8"templates.templates.language.syntropy")
 
