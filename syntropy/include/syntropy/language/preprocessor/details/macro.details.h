@@ -21,6 +21,12 @@ namespace Syntropy::Macros::Details
     template <typename TTypename>
     struct ExpandTypename {};
 
+    /// \brief Template specialization for void types.
+    template <typename TVoid>
+    struct ExpandTypename<TVoid()>
+        : Templates::Alias<void> {};
+
+    /// \brief Template specialization for routine types.
     template <typename TVoid, typename TTypename>
     struct ExpandTypename<TVoid(TTypename)>
         : Templates::Alias<TTypename> {};
