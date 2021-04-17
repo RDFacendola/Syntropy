@@ -27,18 +27,18 @@ namespace Syntropy::Templates::Details
 
     /// \brief Type identical to TType.
     template <typename TType>
-    struct ExactOfHelper
+    struct IdentityOfHelper
         : Alias<TType> {};
 
     /// \brief Partial template specialization for type lists.
     template <typename... TTypes>
-    struct ExactOfHelper<TypeList<TTypes...>>
-        : AliasListHelper<ExactOfHelper<TTypes>...> {};
+    struct IdentityOfHelper<TypeList<TTypes...>>
+        : AliasListHelper<IdentityOfHelper<TTypes>...> {};
 
     /// \brief Type identical to TType.
     template <typename TType>
-    using ExactOf
-        = typename ExactOfHelper<TType>::Type;
+    using IdentityOf
+        = typename IdentityOfHelper<TType>::Type;
 
     //
 

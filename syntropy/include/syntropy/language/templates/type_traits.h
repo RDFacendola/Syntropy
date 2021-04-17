@@ -31,8 +31,8 @@ namespace Syntropy::Templates
     /// \remarks Providing a TypeList yields a list whose elements have been
     ///          transformed accordingly.
     template <typename TType>
-    using ExactOf
-        = Details::ExactOf<TType>;
+    using IdentityOf
+        = Details::IdentityOf<TType>;
 
     /// \brief Qualifier-removing value type of TType.
     ///
