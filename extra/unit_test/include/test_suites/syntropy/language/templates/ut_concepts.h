@@ -272,6 +272,22 @@ namespace UnitTest
         using namespace Syntropy::Templates;
 
         SYNTROPY_UNIT_EQUAL((IsSame<Int, Int>), true);
+        SYNTROPY_UNIT_EQUAL((IsSame<ReadOnly<Int>, ReadOnly<Int>>), true);
+    })
+
+    .TestCase(u8"Types with different qualifiers are not the same.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_EQUAL((IsSame<ReadWrite<Int>, ReadOnly<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<ReadOnly<Int>, ReadWrite<Int>>), false);
+
+        SYNTROPY_UNIT_EQUAL((IsSame<Immutable<Int>, Mutable<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<Mutable<Int>, Immutable<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<Immovable<Int>, Movable<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((IsSame<Movable<Int>, Immovable<Int>>), false);
     })
 
     .TestCase(u8"Types are not same-as other types.",

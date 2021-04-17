@@ -29,16 +29,28 @@ namespace Syntropy
     using Float = float;
 
     /************************************************************************/
+    /* VALUE TYPES                                                          */
+    /************************************************************************/
+
+    /// \brief Immutable value-type o TType.
+    template <typename TType>
+    using ReadOnly = const TType;
+
+    /// \brief Mutable value-type of TType.
+    template <typename TType>
+    using ReadWrite = TType;
+
+    /************************************************************************/
     /* REFERENCE TYPES                                                      */
     /************************************************************************/
 
     /// \brief Reference to an immutable instance of TType.
     template <typename TType>
-    using Immutable = const TType&;
+    using Immutable = ReadOnly<TType>&;
 
     /// \brief Reference to a mutable instance of TType.
     template <typename TType>
-    using Mutable = TType&;
+    using Mutable = ReadWrite<TType>&;
 
     /// \brief Reference to an immutable instance of TType whose resources
     ///        can be efficiently moved to another instance.
@@ -46,12 +58,12 @@ namespace Syntropy
     /// \remarks This type is meant to be used as a mean of deleting functions
     ///          overloads for which movable instances are not desiderable.
     template <typename TType>
-    using Immovable = const TType&&;
+    using Immovable = ReadOnly<TType>&&;
 
     /// \brief Reference to a mutable instance of TType whose resources
     ///        can be efficiently moved to another instance.
     template <typename TType>
-    using Movable = TType&&;
+    using Movable = ReadWrite<TType>&&;
 
     /************************************************************************/
     /* POINTER TYPES                                                        */
@@ -62,11 +74,11 @@ namespace Syntropy
 
     /// \brief A non-owning pointer to an immutable instance of TType.
     template <typename TType>
-    using Ptr = const TType*;
+    using Ptr = ReadOnly<TType>*;
 
     /// \brief A non-owning pointer to a mutable instance of TType.
     template <typename TType>
-    using RWPtr = TType*;
+    using RWPtr = ReadWrite<TType>*;
 
     /// \brief A non-owning pointer to a typeless immutable instance.
     using TypelessPtr = Ptr<void>;
@@ -145,9 +157,5 @@ namespace Syntropy
     ///       instance of TType.
     template <typename TType>
     using BasePtr = TType*;
-
-    /// \brief Constant value type.
-    template <typename TType>
-    using Const = const TType;
 
 }
