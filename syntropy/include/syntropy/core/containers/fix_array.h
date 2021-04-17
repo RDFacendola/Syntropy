@@ -178,7 +178,7 @@ namespace Syntropy
     /// \brief Partial template specialization for fix-arrays.
     template <typename TType, Int TCount>
     struct Records::RankTrait<FixArray<TType, TCount>>
-        : Templates::IntConstant<TCount> {};
+        : Templates::IntType<TCount> {};
 
     /// \brief Partial template specialization fix-arrays.
     template <Int TIndex, typename TType, Int TCount>

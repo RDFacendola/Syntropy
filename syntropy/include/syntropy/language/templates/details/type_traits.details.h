@@ -294,7 +294,7 @@ namespace Syntropy::Templates::Details
     /// \brief End of recursion.
     template <Int TIndex, typename... TTypes>
     struct ElementIndexOfHelper<TIndex, HeadTypeOf<TTypes...>, TTypes...>
-        : IntConstant<TIndex> {};
+        : IntType<TIndex> {};
 
     /// \brief Index of the first element in a type list or parameter pack with
     ///        a given type.

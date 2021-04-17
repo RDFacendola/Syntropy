@@ -39,7 +39,7 @@ namespace Syntropy::Records
     template <typename TRecord>
     struct RankTrait
     {
-        // : Syntropy::Templates::IntConstant<rank>
+        // : Syntropy::Templates::IntType<rank>
     };
 
     /// \brief Type of an element in a record, by index.

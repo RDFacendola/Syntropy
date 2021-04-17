@@ -183,7 +183,7 @@ namespace Syntropy
 
         /// \brief Default destructor.
         ~Tuple() noexcept = default;
-        
+
     };
 
     /// \brief Deduction rule.
@@ -297,7 +297,7 @@ namespace Syntropy
     /// \brief Partial template specialization for tuples.
     template <IsTuple TTuple>
     struct Records::RankTrait<TTuple>
-        : Templates::IntConstant<TTuple::kCount> {};
+        : Templates::IntType<TTuple::kCount> {};
 
     /// \brief Partial template specialization for tuples.
     template <Int TIndex, IsTuple TTuple>

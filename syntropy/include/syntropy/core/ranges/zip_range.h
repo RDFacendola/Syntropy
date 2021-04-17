@@ -207,7 +207,7 @@ namespace Syntropy::Records
     /// \brief Partial template specialization for tuples.
     template <Syntropy::Ranges::ForwardRange... TRanges>
     struct RankTrait<ZipRange<TRanges...>>
-        : Templates::IntConstant<sizeof...(TRanges)> {};
+        : Templates::IntType<sizeof...(TRanges)> {};
 }
 
 // ===========================================================================

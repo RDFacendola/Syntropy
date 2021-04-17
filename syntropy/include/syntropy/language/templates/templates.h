@@ -39,23 +39,23 @@ namespace Syntropy::Templates
         kValue = TValue;
     };
 
-    /// \brief Boolean constant.
+    /// \brief Boolean constant type.
     template <Bool TValue>
-    using BoolConstant
+    using BoolType
         = Constant<Bool, TValue>;
 
-    /// \brief Integer constant.
+    /// \brief Integer constant type.
     template <Int TValue>
-    using IntConstant
+    using IntType
         = Constant<Int, TValue>;
 
-    /// \brief True boolean constant.
-    using True
-        = BoolConstant<true>;
+    /// \brief True boolean constant type.
+    using TrueType
+        = BoolType<true>;
 
-    /// \brief False boolean constant.
-    using False
-        = BoolConstant<false>;
+    /// \brief False boolean constant type.
+    using FalseType
+        = BoolType<false>;
 
     /************************************************************************/
     /* TYPE LIST                                                            */
