@@ -8,8 +8,8 @@
 
 #include "unit_test/unit_test_application.h"
 
+#include "test_suites/syntropy/language/templates/ut_templates.h"
 #include "test_suites/syntropy/language/templates/ut_concepts.h"
-
 
 // ===========================================================================
 
