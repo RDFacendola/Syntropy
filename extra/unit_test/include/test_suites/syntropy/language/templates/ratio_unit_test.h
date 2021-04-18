@@ -1,5 +1,5 @@
 
-/// \file ut_math.h
+/// \file math_unit_test.h
 ///
 /// \author Raffaele D. Facendola - April 2021.
 
@@ -31,7 +31,7 @@ namespace UnitTest
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline auto& ut_ratio
+    inline auto& ratio_unit_test
         = Syntropy::UnitTest::MakeAutoUnitTest<RatioTestFixture>(
             u8"ratio.templates.language.syntropy")
 

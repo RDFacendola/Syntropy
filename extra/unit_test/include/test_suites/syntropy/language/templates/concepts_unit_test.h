@@ -1,5 +1,5 @@
 
-/// \file ut_concepts.h
+/// \file concepts_unit_test.h
 ///
 /// \author Raffaele D. Facendola - April 2021.
 
@@ -261,7 +261,7 @@ namespace UnitTest
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline auto& ut_concepts
+    inline auto& concepts_unit_test
         = Syntropy::UnitTest::MakeAutoUnitTest<ConceptsTestFixture>(
             u8"concepts.templates.language.syntropy")
 

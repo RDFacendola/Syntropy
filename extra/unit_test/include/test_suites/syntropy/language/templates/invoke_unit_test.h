@@ -1,5 +1,5 @@
 
-/// \file ut_invoke.h
+/// \file invoke_unit_test.h
 ///
 /// \author Raffaele D. Facendola - April 2021.
 
@@ -78,7 +78,7 @@ namespace UnitTest
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline auto& ut_invoke
+    inline auto& invoke_unit_test
         = Syntropy::UnitTest::MakeAutoUnitTest<InvokeTestFixture>(
             u8"invoke.templates.language.syntropy")
 

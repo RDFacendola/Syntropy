@@ -1,5 +1,5 @@
 
-/// \file ut_invoke.h
+/// \file type_traits_unit_test.h
 ///
 /// \author Raffaele D. Facendola - April 2021.
 
@@ -32,7 +32,7 @@ namespace UnitTest
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline auto& ut_type_traits
+    inline auto& type_traits_unit_test
         = Syntropy::UnitTest::MakeAutoUnitTest<TypeTraitsTestFixture>(
             u8"type_traits.templates.language.syntropy")
 

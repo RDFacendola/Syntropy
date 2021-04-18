@@ -42,6 +42,7 @@ namespace UnitTest
 
         std::cout << "\n";
         std::cout << "Syntropy Unit Test Application\n";
+        std::cout << "==============================\n\n";
         std::cout << "(version 0.0.0)\n";
 
         // Test runner events.

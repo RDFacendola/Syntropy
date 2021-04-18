@@ -1,5 +1,5 @@
 
-/// \file ut_math.h
+/// \file math_unit_test.h
 ///
 /// \author Raffaele D. Facendola - April 2021.
 
@@ -31,7 +31,7 @@ namespace UnitTest
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline auto& ut_math
+    inline auto& math_unit_test
         = Syntropy::UnitTest::MakeAutoUnitTest<MathTestFixture>(
             u8"math.templates.language.syntropy")
 

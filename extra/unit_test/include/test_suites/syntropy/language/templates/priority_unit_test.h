@@ -1,5 +1,5 @@
 
-/// \file ut_priority.h
+/// \file priority_unit_test.h
 ///
 /// \author Raffaele D. Facendola - April 2021.
 
@@ -32,7 +32,7 @@ namespace UnitTest
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline auto& ut_priority
+    inline auto& priority_unit_test
         = Syntropy::UnitTest::MakeAutoUnitTest<PriorityTestFixture>(
             u8"priority.templates.language.syntropy")
 
