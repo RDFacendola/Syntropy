@@ -10,6 +10,7 @@
 #include "unit_test/unit_test_application.h"
 
 #include "test_suites/syntropy/language/templates/ut_concepts.h"
+#include "test_suites/syntropy/language/templates/ut_invoke.h"
 #include "test_suites/syntropy/language/templates/ut_math.h"
 #include "test_suites/syntropy/language/templates/ut_priority.h"
 #include "test_suites/syntropy/language/templates/ut_ratio.h"

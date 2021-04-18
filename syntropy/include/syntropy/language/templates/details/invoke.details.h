@@ -22,56 +22,179 @@ namespace Syntropy::Templates::Details
     /* INVOKE                                                               */
     /************************************************************************/
 
-    /// \brief Provides the a type alias Type, which is the argument types a
-    ///        callable object can be called with.
-    /// Partial specialization for lambdas and callable objects.
-    template <typename TCallable>
-    struct ArgumentsOfHelper
-        : ArgumentsOfHelper<decltype(PtrOf(TCallable::operator()))>
+    // InvokeArgumentsOf.
+    // ==================
+
+    /// \brief Type of arguments needed to perform a functor invocation.
+    template <typename TFunctor>
+    struct InvokeArgumentsOfFunctorHelper
     {
 
     };
 
-    /// \brief Provides the a type alias Type, which is the argument types a
-    ///        callable object can be called with.
-    /// Partial specialization for non-const member functions.
+    /// \brief Specialization for non-const functor objects.
     template <typename TCallable, typename TReturn, typename... TArguments>
-    struct ArgumentsOfHelper<TReturn(TCallable::*)(TArguments...)>
+    struct InvokeArgumentsOfFunctorHelper<
+        TReturn(TCallable::*)(TArguments...)>
     {
         using Type = TypeList<TArguments...>;
     };
 
-    /// \brief Provides the a type alias Type, which is the argument types a
-    ///        callable object can be called with.
-    ///
-    /// Partial specialization for const member functions.
+    /// \brief Specialization for const functor objects.
     template <typename TCallable, typename TReturn, typename... TArguments>
-    struct ArgumentsOfHelper<TReturn(TCallable::*)(TArguments...) const>
+    struct InvokeArgumentsOfFunctorHelper<
+        TReturn(TCallable::*)(TArguments...) const>
     {
         using Type = TypeList<TArguments...>;
     };
 
-    /// \brief Type list equal to the argument types a callable object
-    ///        can be called with.
-    ///
-    /// If no matching element could be found, the program is ill-formed.
+    /// \brief Type of arguments needed to perform an invocation.
     template <typename TCallable>
-    using ArgumentsOf
-        = typename ArgumentsOfHelper<TCallable>::Type;
+    struct InvokeArgumentsOfHelper
+        : InvokeArgumentsOfFunctorHelper<decltype(&TCallable::operator())>
+    {
 
-    /// \brief Type alias for the return type of a callable object invocation.
+    };
+
+    /// \brief Specialization for non-member functions.
+    template <typename TReturn, typename... TArguments>
+    struct InvokeArgumentsOfHelper<TReturn(*)(TArguments...)>
+    {
+        using Type = TypeList<TArguments...>;
+    };
+
+    /// \brief Specialization for member functions.
+    template <typename TCallable, typename TReturn, typename... TArguments>
+    struct InvokeArgumentsOfHelper<
+        TReturn(TCallable::*)(TArguments...)>
+    {
+        using Type = TypeList<TCallable, TArguments...>;
+    };
+
+    /// \brief Specialization for ref-qualified (mutable) member functions.
+    template <typename TCallable, typename TReturn, typename... TArguments>
+    struct InvokeArgumentsOfHelper<
+        TReturn(TCallable::*)(TArguments...) &>
+    {
+        using Type = TypeList<Mutable<TCallable>, TArguments...>;
+    };
+
+    /// \brief Specialization for const member functions.
+    template <typename TCallable, typename TReturn, typename... TArguments>
+    struct InvokeArgumentsOfHelper<
+        TReturn(TCallable::*)(TArguments...) const>
+    {
+        using Type = TypeList<Immutable<TCallable>, TArguments...>;
+    };
+
+    /// \brief Specialization for ref-qualified (movable) member functions.
+    template <typename TCallable, typename TReturn, typename... TArguments>
+    struct InvokeArgumentsOfHelper<
+        TReturn(TCallable::*)(TArguments...) &&>
+    {
+        using Type = TypeList<Movable<TCallable>, TArguments...>;
+    };
+
+    /// \brief Specialization for const ref-qualified (immovable) member
+    ///        functions.
+    template <typename TCallable, typename TReturn, typename... TArguments>
+    struct InvokeArgumentsOfHelper<
+        TReturn(TCallable::*)(TArguments...) const &&>
+    {
+        using Type = TypeList<Immovable<TCallable>, TArguments...>;
+    };
+
+    /// \brief List of types needed to perform a callable object invocation.
+    template <typename TCallable>
+    using InvokeArgumentsOf
+        = typename InvokeArgumentsOfHelper<TCallable>::Type;
+
+    // InvokeResultOfHelper.
+    // =====================
+
+    /// \brief Result type of a callable object invocation.
+    template <typename TCallable, typename... TArguments>
+    struct InvokeResultOfHelper
+        : Alias<std::invoke_result_t<TCallable, TArguments...>>
+    {
+
+    };
+
+    /// \brief Specialization for non-member functions.
+    template <typename TReturn,
+              typename... TArguments,
+              typename... UArguments>
+    struct InvokeResultOfHelper<TReturn(*)(TArguments...), UArguments...>
+        : Alias<TReturn>
+    {
+
+    };
+
+    /// \brief Specialization for member functions.
+    template <typename TCallable,
+              typename TReturn,
+              typename... TArguments,
+              typename... UArguments>
+    struct InvokeResultOfHelper<TReturn(TCallable::*)(TArguments...),
+                                UArguments...>
+        : Alias<TReturn>
+    {
+
+    };
+
+    /// \brief Specialization for ref-qualified (mutable) member functions.
+    template <typename TCallable,
+              typename TReturn,
+              typename... TArguments,
+              typename... UArguments>
+    struct InvokeResultOfHelper<TReturn(TCallable::*)(TArguments...) &,
+                                UArguments...>
+        : Alias<TReturn>
+    {
+
+    };
+
+    /// \brief Specialization for const member functions.
+    template <typename TCallable,
+              typename TReturn,
+              typename... TArguments,
+              typename... UArguments>
+    struct InvokeResultOfHelper<TReturn(TCallable::*)(TArguments...) const,
+                                UArguments...>
+        : Alias<TReturn>
+    {
+
+    };
+
+    /// \brief Specialization for ref-qualified (movable) member functions.
+    template <typename TCallable,
+              typename TReturn,
+              typename... TArguments,
+              typename... UArguments>
+    struct InvokeResultOfHelper<TReturn(TCallable::*)(TArguments...) &&,
+                                UArguments...>
+        : Alias<TReturn>
+    {
+
+    };
+
+    /// \brief Specialization for ref-qualified (immovable) member functions.
+    template <typename TCallable,
+              typename TReturn,
+              typename... TArguments,
+              typename... UArguments>
+    struct InvokeResultOfHelper<TReturn(TCallable::*)(TArguments...) const &&,
+                                UArguments...>
+        : Alias<TReturn>
+    {
+
+    };
+
+    /// \brief Result type of a callable object invocation.
     template <typename TCallable, typename... TArguments>
     using InvokeResultOf
-        = std::invoke_result_t<TCallable, TArguments...>;
+        = typename InvokeResultOfHelper<TCallable, TArguments...>::Type;
 
-    template <typename TCallable, typename... TArguments>
-    constexpr InvokeResultOf<TCallable, TArguments...>
-    Invoke(Forwarding<TCallable> callable,
-           Forwarding<TArguments>... arguments) noexcept
-    {
-        return std::invoke(Forward<TCallable>(callable),
-                           Forward<TArguments>(arguments)...);
-    }
 }
 
 // ===========================================================================

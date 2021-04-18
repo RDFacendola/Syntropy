@@ -16,8 +16,8 @@ namespace Syntropy::Templates
     Invoke(Forwarding<TCallable> callable,
            Forwarding<TArguments>... arguments) noexcept
     {
-        return Details::Invoke(Forward<TCallable>(callable),
-                               Forward<TArguments>(arguments)...);
+        return std::invoke(Forward<TCallable>(callable),
+                           Forward<TArguments>(arguments)...);
     }
 }
 
