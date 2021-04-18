@@ -1,3 +1,4 @@
+
 /// \file unit_test.cpp
 ///
 /// Runs the entire Syntropy test suite.
@@ -8,8 +9,9 @@
 
 #include "unit_test/unit_test_application.h"
 
-#include "test_suites/syntropy/language/templates/ut_templates.h"
 #include "test_suites/syntropy/language/templates/ut_concepts.h"
+#include "test_suites/syntropy/language/templates/ut_math.h"
+#include "test_suites/syntropy/language/templates/ut_templates.h"
 #include "test_suites/syntropy/language/templates/ut_type_traits.h"
 
 // ===========================================================================

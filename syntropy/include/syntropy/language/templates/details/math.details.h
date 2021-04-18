@@ -20,14 +20,17 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Get the greatest common divisor between VLeft and VRight.
-    template <Int VLeft, Int VRight>
+    template <Int TLeft, Int TRight>
     inline constexpr
-    Int GCD = std::gcd(VLeft, VRight);
+    Int GCD
+        = std::gcd(TLeft, TRight);
 
     /// \brief Get the lowest common multiple between VLeft and VRight.
-    template <Int VLeft, Int VRight>
+    template <Int TLeft, Int TRight>
     inline constexpr
-    Int LCM = std::lcm(VLeft, VRight);
+    Int LCM
+        = std::lcm(TLeft, TRight);
+
 }
 
 // ===========================================================================
