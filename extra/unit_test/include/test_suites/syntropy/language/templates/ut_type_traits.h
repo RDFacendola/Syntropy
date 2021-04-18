@@ -631,41 +631,42 @@ namespace UnitTest
                            (Sequence<2, 3, 4>));
     })
 
-    .TestCase(u8"SequenceCat of empty sequences is equal to the empty "
+    .TestCase(u8"SequenceConcatenate of empty sequences is equal to the empty "
               u8"sequence.",
     [](auto& fixture)
     {
         using namespace Syntropy;
         using namespace Syntropy::Templates;
 
-        SYNTROPY_UNIT_SAME((SequenceCat<>),
+        SYNTROPY_UNIT_SAME((SequenceConcatenate<>),
                            (Sequence<>));
 
-        SYNTROPY_UNIT_SAME((SequenceCat<Sequence<>>),
+        SYNTROPY_UNIT_SAME((SequenceConcatenate<Sequence<>>),
                            (Sequence<>));
 
-        SYNTROPY_UNIT_SAME((SequenceCat<Sequence<>, Sequence<>>),
+        SYNTROPY_UNIT_SAME((SequenceConcatenate<Sequence<>, Sequence<>>),
                            (Sequence<>));
     })
 
-    .TestCase(u8"SequenceCat of a single sequence is the sequence itself.",
+    .TestCase(u8"SequenceConcatenate of a single sequence is the sequence "
+              u8"itself.",
     [](auto& fixture)
     {
         using namespace Syntropy;
         using namespace Syntropy::Templates;
 
-        SYNTROPY_UNIT_SAME((SequenceCat<Sequence<1, 2, 3>>),
+        SYNTROPY_UNIT_SAME((SequenceConcatenate<Sequence<1, 2, 3>>),
                            (Sequence<1, 2, 3>));
     })
 
-    .TestCase(u8"SequenceCat concatenates one or more sequences skipping "
-              u8"empty ones.",
+    .TestCase(u8"SequenceConcatenate concatenates one or more sequences "
+              u8"skipping empty ones.",
     [](auto& fixture)
     {
         using namespace Syntropy;
         using namespace Syntropy::Templates;
 
-        SYNTROPY_UNIT_SAME((SequenceCat<Sequence<1, 2, 3>,
+        SYNTROPY_UNIT_SAME((SequenceConcatenate<Sequence<1, 2, 3>,
                                         Sequence<>,
                                         Sequence<4, 5>>),
                            (Sequence<1, 2, 3, 4, 5>));

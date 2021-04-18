@@ -232,7 +232,7 @@ namespace Syntropy::Details
     struct TupleEnumerateRecordsHelper<Templates::Sequence<TIndex...>,
                                        TRecords...>
         : Templates::Alias<
-            Templates::SequenceCat<
+            Templates::SequenceConcatenate<
                 Templates::SequenceRepeat<TIndex,
                                           Records::RankOf<TRecords>>...>> {};
 
@@ -245,7 +245,7 @@ namespace Syntropy::Details
     /// \brief Sequence associating each element to the source record element.
     template <Records::RecordReference... TRecords>
     using TupleEnumerateRecordElements
-        = Templates::SequenceCat<Records::SequenceOf<TRecords>...>;
+        = Templates::SequenceConcatenate<Records::SequenceOf<TRecords>...>;
 
 }
 

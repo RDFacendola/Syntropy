@@ -411,30 +411,30 @@ namespace Syntropy::Templates::Details
     using SequenceAdd
         = typename SequenceAddHelper<TValue, TSequence>::Type;
 
-    // SequenceCat.
+    // SequenceConcatenate.
     // ============
 
     /// \brief Concatenate all elements in two or more sequences.
     template <typename TSequence, typename... USequences>
-    struct SequenceCatHelper{};
+    struct SequenceConcatenateHelper{};
 
     /// \brief Specialization for single sequences. End of recursion.
     template <Int... TNumbers>
-    struct SequenceCatHelper<Sequence<TNumbers...>>
+    struct SequenceConcatenateHelper<Sequence<TNumbers...>>
         : AliasSequence<TNumbers...> {};
 
     /// \brief Append the next sequence to the result.
     template <Int... TNumbers, Int... UNumbers, typename... TSequences>
-    struct SequenceCatHelper<Sequence<TNumbers...>,
+    struct SequenceConcatenateHelper<Sequence<TNumbers...>,
                              Sequence<UNumbers...>,
                              TSequences...>
-        : SequenceCatHelper<Sequence<TNumbers..., UNumbers...>,
+        : SequenceConcatenateHelper<Sequence<TNumbers..., UNumbers...>,
                             TSequences...> {};
 
-    /// \brief Concatenate all types in a single type list.
+    /// \brief Concatenate all sequences in a single sequence.
     template <typename... TSequences>
-    using SequenceCat
-        = typename SequenceCatHelper<Sequence<>, TSequences...>::Type;
+    using SequenceConcatenate
+        = typename SequenceConcatenateHelper<Sequence<>, TSequences...>::Type;
 
     // SequenceRepeat.
     // ===============
