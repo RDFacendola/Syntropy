@@ -620,6 +620,26 @@ namespace UnitTest
                            (Sequence<0, 1, 2>));
     })
 
+    .TestCase(u8"SequenceFor of an empty parameter pack returns the empty "
+              u8"sequence.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_SAME((SequenceFor<>), (Sequence<>));
+    })
+
+    .TestCase(u8"SequenceFor of an empty type list returns the empty"
+              u8"sequence.",
+    [](auto& fixture)
+    {
+        using namespace Syntropy;
+        using namespace Syntropy::Templates;
+
+        SYNTROPY_UNIT_SAME((SequenceFor<TypeList<>>), (Sequence<>));
+    })
+
     .TestCase(u8"SequenceAdd increases or decreases each element in a "
               u8"by a given amount.",
     [](auto& fixture)
