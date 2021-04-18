@@ -1,11 +1,13 @@
 
-/// \file string_extensions.h
+/// \file to_string_extensions.h
 ///
 /// \brief This header is part of the Syntropy core module.
 ///        It contains definitions for string-related customization point
 ///        objects.
 ///
 /// \author Raffaele D. Facendola - April 2021
+
+// ===========================================================================
 
 #pragma once
 

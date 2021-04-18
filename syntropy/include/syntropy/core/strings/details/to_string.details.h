@@ -11,7 +11,7 @@
 
 #include "syntropy/core/algorithms/details/algorithms.details.h"
 
-#include "syntropy/core/algorithms/to_string_extensions.h"
+#include "syntropy/core/strings/to_string_extensions.h"
 
 #include "syntropy/core/strings/string.h"
 
