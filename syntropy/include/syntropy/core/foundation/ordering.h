@@ -21,6 +21,12 @@
 namespace Syntropy
 {
     /************************************************************************/
+    /* FORWARD DECLARATIONS                                                 */
+    /************************************************************************/
+
+    class String;
+
+    /************************************************************************/
     /* ORDERING                                                             */
     /************************************************************************/
 
@@ -198,6 +204,12 @@ namespace Syntropy
     /// \brief Three-way-comparison of the null literal against rhs.
     [[nodiscard]] constexpr
     Ordering operator<=>(Null lhs, Immutable<Ordering> rhs) noexcept;
+
+    // ToString.
+    // =========
+
+    /// \brief Convert an ordering value to a string.
+    Immutable<String> ToString(Immutable<Ordering> rhs) noexcept;
 
 }
 

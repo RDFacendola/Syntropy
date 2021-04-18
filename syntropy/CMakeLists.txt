@@ -11,7 +11,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include/)
 include_directories(${PROJECT_SOURCE_DIR}/src/)
 
 add_library(syntropy STATIC
-    src/syntropy/core/strings/string.cpp
+    src/syntropy/core/foundation/ordering.cpp
     src/syntropy/diagnostics/foundation/debugger.cpp
     src/syntropy/diagnostics/unit_test/test_runner.cpp
     src/syntropy/memory/foundation/memory.cpp
