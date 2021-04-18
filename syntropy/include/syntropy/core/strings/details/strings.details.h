@@ -35,6 +35,9 @@ namespace Syntropy::Strings::Details
     /// \brief Priority of a fallback implementation.
     using FallbackPriority = Templates::FallbackPriority;
 
+    /// \brief Priority of a ill-formed implementation.
+    using IllFormedPriority = Templates::IllFormedPriority;
+
     /// \brief Highest priority among method implementations.
     inline constexpr
     Templates::Priority kMaxPriority = Templates::kMaxPriority;

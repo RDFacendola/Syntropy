@@ -15,7 +15,6 @@
 #include "syntropy/memory/foundation/size.h"
 #include "syntropy/memory/foundation/byte.h"
 
-#include "syntropy/core/algorithms/compare.h"
 #include "syntropy/core/strings/string_view.h"
 
 // ===========================================================================

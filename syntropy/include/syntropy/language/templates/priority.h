@@ -50,22 +50,26 @@ namespace Syntropy::Templates
 
     /// \brief Priority of a custom extension implementation.
     using ExtensionPriority
-        = Priority<4>;
+        = Priority<5>;
 
     /// \brief Priority of a member-function implementation.
     using MemberFunctionPriority
-        = Priority<3>;
+        = Priority<4>;
 
     /// \brief Priority of a member-operator implementation.
     using MemberOperatorPriority
-        = Priority<2>;
+        = Priority<3>;
 
     /// \brief Priority of a non-member-function implementation.
     using NonMemberFunctionPriority
-        = Priority<1>;
+        = Priority<2>;
 
     /// \brief Priority of a fallback implementation.
     using FallbackPriority
+        = Priority<1>;
+
+    /// \brief Priority of an ill-formed implementation.
+    using IllFormedPriority
         = Priority<0>;
 
     /// \brief Highest priority among method implementations.

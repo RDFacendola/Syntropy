@@ -67,6 +67,17 @@ namespace Syntropy::Strings::Details
     }
 
     template <typename TType>
+    inline String
+    InvokeToString(Immutable<TType> rhs, IllFormedPriority) noexcept
+    {
+        static_assert(Templates::AlwaysFalse<TType>,
+                      "The type doesn't provide an implementation for "
+                      "ToString().");
+
+        return u8"";
+    }
+
+    template <typename TType>
     inline auto
     RouteToString(Immutable<TType> rhs)
         noexcept -> decltype(InvokeToString(rhs, Templates::kMaxPriority))
