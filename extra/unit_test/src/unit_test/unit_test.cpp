@@ -11,6 +11,7 @@
 
 #include "test_suites/syntropy/language/templates/ut_concepts.h"
 #include "test_suites/syntropy/language/templates/ut_math.h"
+#include "test_suites/syntropy/language/templates/ut_ratio.h"
 #include "test_suites/syntropy/language/templates/ut_templates.h"
 #include "test_suites/syntropy/language/templates/ut_type_traits.h"
 

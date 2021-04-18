@@ -11,6 +11,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/templates/concepts.h"
 
 // ===========================================================================
 
@@ -20,101 +21,106 @@
 
 namespace Syntropy::Templates
 {
-    /// \brief Templates for ratio types.
-    template <typename TType>
-    concept RatioType = Details::RatioType<TType>;
-}
-
-// ===========================================================================
-
-namespace Syntropy::Templates
-{
     /************************************************************************/
     /* RATIO                                                                */
     /************************************************************************/
 
+    // Ratio.
+    // ======
+
     /// \brief A reduced rational number of the form Numerator / Denominator.
-    template <Int VNumerator, Int VDenominator = 1>
+    template <Int TNumerator, Int TDenominator = 1>
     struct Ratio
     {
         /// \brief Ratio numerator.
-        static constexpr Int kNumerator
-            = Details::ReducedRatioNumerator<VNumerator, VDenominator>;
+        static constexpr
+        Int kNumerator
+            = Details::NumeratorOf<TNumerator, TDenominator>;
 
         /// \brief Ratio denominator.
-        static constexpr Int kDenominator
-            = Details::ReducedRatioDenominator<VNumerator, VDenominator>;
+        static constexpr
+        Int kDenominator
+            = Details::DenominatorOf<TNumerator, TDenominator>;
     };
 
+    // IsRatio.
+    // ========
+
+    /// \brief Concept for ratios.
+    template <typename TRatio>
+    concept IsRatio
+        = Details::IsRatio<TRatio, Ratio>;
+
+    // CommonRatio.
+    // ============
+
     /// \brief Common type two ratios can be losslessy-converted to.
-    template <typename TRatio, typename URatio>
+    template <IsRatio TRatio, IsRatio URatio>
     using CommonRatio
-        = Ratio<Details::CommonRatioNumerator<TRatio, URatio>,
-                Details::CommondRatioDenominator<TRatio, URatio>>;
+        = Details::CommonRatio<TRatio, URatio>;
 
     /************************************************************************/
     /* RATIO ARITHMETIC                                                     */
     /************************************************************************/
 
     /// \brief Alias type for the sum of two ratios.
-    template <typename TRatio, typename URatio>
+    template <IsRatio TRatio, IsRatio URatio>
     using RatioAdd
-        = Ratio<Details::AddRatioNumerator<TRatio, URatio>,
-                Details::AddRatioDenominator<TRatio, URatio>>;
+        = Details::RatioAdd<TRatio, URatio>;
 
     /// \brief Alias type for the difference of two ratios.
-    template <typename TRatio, typename URatio>
+    template <IsRatio TRatio, IsRatio URatio>
     using RatioSubtract
-        = Ratio<Details::SubtractRatioNumerator<TRatio, URatio>,
-                Details::SubtractRatioDenominator<TRatio, URatio>>;
+        = Details::RatioSubtract<TRatio, URatio>;
 
     /// \brief Alias type for the product of two ratios.
-    template <typename TRatio, typename URatio>
+    template <IsRatio TRatio, IsRatio URatio>
     using RatioMultiply
-        = Ratio<Details::MultiplyRatioNumerator<TRatio, URatio>,
-                Details::MultiplyRatioDenominator<TRatio, URatio>>;
+        = Details::RatioMultiply<TRatio, URatio>;
 
     /// \brief Alias type for the quotient of two ratios.
-    template <typename TRatio, typename URatio>
+    template <IsRatio TRatio, IsRatio URatio>
     using RatioDivide
-        = Ratio<Details::DivideRatioNumerator<TRatio, URatio>,
-                Details::DivideRatioDenominator<TRatio, URatio>>;
+        = Details::RatioDivide<TRatio, URatio>;
 
     /************************************************************************/
     /* RATIO COMPARISON                                                     */
     /************************************************************************/
 
-    /// \brief Boolean constant equal to true if TRatio and URatio represent
-    ///        the same amount, equal to false otherwise.
-    template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioEqual = Details::RatioEqual<TRatio, URatio>;
+    /// \brief True if TRatio is equivalent to URatio, false otherwise.
+    template <IsRatio TRatio, IsRatio URatio>
+    inline constexpr
+    Bool RatioEqual
+        = Details::RatioEqual<TRatio, URatio>;
 
-    /// \brief Boolean constant equal to true if TRatio and URatio don't
-    ///        represent the same amount, equal to false otherwise.
-    template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioNotEqual
+    /// \brief True if TRatio and URatio are not equal, false otherwise.
+    template <IsRatio TRatio, IsRatio URatio>
+    inline constexpr
+    Bool RatioNotEqual
         = Details::RatioNotEqual<TRatio, URatio>;
 
-    /// \brief Boolean constant equal to true if TRatio represents an amount
-    ///        smaller than URatio, equal to false otherwise.
-    template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioLess = Details::RatioLess<TRatio, URatio>;
+    /// \brief True if TRatio is less than URatio, false otherwise.
+    template <IsRatio TRatio, IsRatio URatio>
+    inline constexpr
+    Bool RatioLess
+        = Details::RatioLess<TRatio, URatio>;
 
-    /// \brief Boolean constant equal to true if TRatio represents an amount
-    ///        smaller-than or equal-to URatio, equal to false otherwise.
-    template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioLessEqual
+    /// \brief True if TRatio is less or equal to URatio, false otherwise.
+    template <IsRatio TRatio, IsRatio URatio>
+    inline constexpr
+    Bool RatioLessEqual
         = Details::RatioLessEqual<TRatio, URatio>;
 
-    /// \brief Boolean constant equal to true if TRatio represents an amount
-    ///        greater than URatio, equal to false otherwise.
-    template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioGreater = Details::RatioGreater<TRatio, URatio>;
+    /// \brief True if TRatio is greater than URatio, false otherwise.
+    template <IsRatio TRatio, IsRatio URatio>
+    inline constexpr
+    Bool RatioGreater
+        = Details::RatioGreater<TRatio, URatio>;
 
-    /// \brief Boolean constant equal to true if TRatio represents an amount
-    ///        greater-than or equal-to URatio, equal to false otherwise.
-    template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioGreaterEqual
+    /// \brief True if TRatio is greater or equal to URatio, false otherwise.
+    template <IsRatio TRatio, IsRatio URatio>
+    inline constexpr
+    Bool RatioGreaterEqual
         = Details::RatioGreaterEqual<TRatio, URatio>;
 
     /************************************************************************/
