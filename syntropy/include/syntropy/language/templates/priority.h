@@ -8,7 +8,9 @@
 /// https://quuxplusone.github.io/blog/2018/03/19/
 /// customization-points-for-functions/
 ///
-/// \author Raffaele D. Facendola - Sep 2020.
+/// \author Raffaele D. Facendola - September 2020.
+
+// ===========================================================================
 
 #pragma once
 

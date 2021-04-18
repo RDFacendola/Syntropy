@@ -1,7 +1,9 @@
 
-/// \file math_details.h
+/// \file math.details.h
 ///
 /// \author Raffaele D. Facendola - September 2020.
+
+// ===========================================================================
 
 #pragma once
 

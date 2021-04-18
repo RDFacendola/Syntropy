@@ -4,7 +4,9 @@
 /// \brief This header is part of Syntropy language module.
 ///        It contains definitions for type traits.
 ///
-/// \author Raffaele D. Facendola - Nov 2020.
+/// \author Raffaele D. Facendola - November 2020.
+
+// ===========================================================================
 
 #pragma once
 

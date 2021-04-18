@@ -1,9 +1,7 @@
 
 /// \file invoke.inl
 ///
-/// \author Raffaele D. Facendola - Dec 2020.
-
-#pragma once
+/// \author Raffaele D. Facendola - December 2020.
 
 // ===========================================================================
 

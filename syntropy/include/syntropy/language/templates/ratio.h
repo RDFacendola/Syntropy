@@ -4,7 +4,9 @@
 /// \brief This header is part of Syntropy language module.
 ///        It contains rational numbers (ratios) template machinery.
 ///
-/// \author Raffaele D. Facendola - Sep 2020.
+/// \author Raffaele D. Facendola - September 2020.
+
+// ===========================================================================
 
 #pragma once
 

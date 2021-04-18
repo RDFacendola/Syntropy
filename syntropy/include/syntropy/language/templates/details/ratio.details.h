@@ -1,7 +1,9 @@
 
 /// \file ratio_details.h
 ///
-/// \author Raffaele D. Facendola - Sep 2020.
+/// \author Raffaele D. Facendola - September 2020.
+
+// ===========================================================================
 
 #pragma once
 

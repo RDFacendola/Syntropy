@@ -3,6 +3,8 @@
 ///
 /// \author Raffaele D. Facendola - 2020.
 
+// ===========================================================================
+
 #pragma once
 
 #include <type_traits>

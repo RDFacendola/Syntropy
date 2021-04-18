@@ -4,7 +4,9 @@
 /// \brief This header is part of Syntropy language module.
 ///        It contains definitions for functions and functors invocation.
 ///
-/// \author Raffaele D. Facendola - Dec 2020.
+/// \author Raffaele D. Facendola - December 2020.
+
+// ===========================================================================
 
 #pragma once
 
