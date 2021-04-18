@@ -115,14 +115,6 @@ namespace Syntropy::Templates
     using ForwardingOf
         = Details::ForwardingOf<TType>;
 
-    /// \brief Function pointer type.
-    ///
-    /// \remarks Providing a TypeList yields a list whose elements have been
-    ///          transformed accordingly.
-    template <typename TType>
-    using FunctionOf
-        = Details::FunctionOf<TType>;
-
     /************************************************************************/
     /* DECLVAL                                                              */
     /************************************************************************/
@@ -138,7 +130,7 @@ namespace Syntropy::Templates
     /* TYPE LIST TRAITS                                                     */
     /************************************************************************/
 
-    /// \brief Concatenate all types in a single type list.
+    /// \brief Concatenate and flattens all types in a single type list.
     template <typename... TTypes>
     using TypeListOf
         = Details::TypeListOf<TTypes...>;

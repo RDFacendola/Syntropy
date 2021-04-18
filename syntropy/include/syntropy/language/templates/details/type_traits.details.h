@@ -211,23 +211,6 @@ namespace Syntropy::Templates::Details
     using ForwardingOf
         = typename ForwardingOfHelper<TType>::Type;
 
-    //
-
-    /// \brief Function pointer type.
-    template <typename TType>
-    struct FunctionOfHelper
-        : Alias<std::add_pointer_t<TType>> {};
-
-    /// \brief Partial template specialization for type lists.
-    template <typename... TTypes>
-    struct FunctionOfHelper<TypeList<TTypes...>>
-        : AliasListHelper<FunctionOfHelper<TTypes>...> {};
-
-    /// \brief Function pointer type.
-    template <typename TType>
-    using FunctionOf
-        = typename FunctionOfHelper<TType>::Type;
-
     /************************************************************************/
     /* TYPE LIST TRAITS                                                     */
     /************************************************************************/
@@ -235,19 +218,33 @@ namespace Syntropy::Templates::Details
     //
 
     /// \brief Concatenate all types in a single type list.
+    template <typename TTypes, typename UTypes>
+    struct TypeListOfHelper{};
+
+    /// \brief Specialization for empty type lists. End of recursion.
     template <typename... TTypes>
-    struct TypeListOfHelper
+    struct TypeListOfHelper<TypeList<>, TypeList<TTypes...>>
         : AliasList<TTypes...> {};
 
-    /// \brief Partial template specialization for type lists.
-    template <typename... TTypes, typename... UTypes>
-    struct TypeListOfHelper<TypeList<TTypes...>, UTypes...>
-        : TypeListOfHelper<TTypes..., UTypes...> {};
+    /// \brief Append the non-type list head of the first list to the second.
+    template <typename TType, typename... TTypes, typename... UTypes>
+    struct TypeListOfHelper<TypeList<TType, TTypes...>,
+                            TypeList<UTypes...>>
+        : TypeListOfHelper<TypeList<TTypes...>,
+                           TypeList<UTypes..., TType>> {};
+
+    /// \brief Specialization for type lists: Expands the type list head.
+    template <typename... TTypes, typename... UTypes, typename... VTypes>
+    struct TypeListOfHelper<TypeList<TypeList<TTypes...>,
+                                     UTypes...>,
+                            TypeList<VTypes...>>
+        : TypeListOfHelper<TypeList<TTypes..., UTypes...>,
+                           TypeList<VTypes...>> {};
 
     /// \brief Concatenate all types in a single type list.
     template <typename... TTypes>
     using TypeListOf
-        = typename TypeListOfHelper<TTypes...>::Type;
+        = typename TypeListOfHelper<TypeList<TTypes...>, TypeList<>>::Type;
 
     //
 
@@ -290,13 +287,25 @@ namespace Syntropy::Templates::Details
     /// \brief Discards elements until the index drops to zero or the list is
     ///        exhausted.
     template <Int TIndex, typename... TTypes>
-    struct ElementTypeOfHelper
-        : ElementTypeOfHelper<TIndex - 1, RestTypeOfHelper<TTypes...>> {};
+    struct ElementTypeOfPackHelper
+        : ElementTypeOfPackHelper<TIndex - 1, RestTypeOf<TTypes...>> {};
 
     /// \brief End of recursion.
     template <typename... TTypes>
-    struct ElementTypeOfHelper<0, TTypes...>
+    struct ElementTypeOfPackHelper<0, TTypes...>
         : Alias<HeadTypeOf<TTypes...>> {};
+
+    /// \brief Helper type for parameters pack.
+    /// \remarks This helper type makes sure not to flatten type lists other
+    ///          than the top-most one.
+    template <Int TIndex, typename... TTypes>
+    struct ElementTypeOfHelper
+        : ElementTypeOfPackHelper<TIndex, TTypes...> {};
+
+    /// \brief Partial template specialization for type lists.
+    template <Int TIndex, typename... TTypes>
+    struct ElementTypeOfHelper<TIndex, TypeList<TTypes...>>
+        : ElementTypeOfPackHelper<TIndex, TTypes...> {};
 
     /// \brief Type of a type list or parameter pack element, by index.
     template <Int TIndex, typename... TTypes>
@@ -322,20 +331,32 @@ namespace Syntropy::Templates::Details
     /// \brief Discards elements until the first element is equal to TType or
     ///        the list is exhausted.
     template <Int TIndex, typename TType, typename... TTypes>
-    struct ElementIndexOfHelper
-        : ElementIndexOfHelper<TIndex + 1, TType, RestTypeOf<TTypes...>> {};
+    struct ElementIndexOfPackHelper
+        : ElementIndexOfPackHelper<TIndex + 1, TType, RestTypeOf<TTypes...>> {};
 
     /// \brief End of recursion.
     template <Int TIndex, typename... TTypes>
-    struct ElementIndexOfHelper<TIndex, HeadTypeOf<TTypes...>, TTypes...>
+    struct ElementIndexOfPackHelper<TIndex, HeadTypeOf<TTypes...>, TTypes...>
         : IntType<TIndex> {};
+
+    /// \brief Helper type for parameters pack.
+    /// \remarks This helper type makes sure not to flatten type lists other
+    ///          than the top-most one.
+    template <typename TType, typename... TTypes>
+    struct ElementIndexOfHelper
+        : ElementIndexOfPackHelper<0, TType, TTypes...> {};
+
+    /// \brief Partial template specialization for type lists.
+    template <typename TType, typename... TTypes>
+    struct ElementIndexOfHelper<TType, TypeList<TTypes...>>
+        : ElementIndexOfPackHelper<0, TType, TTypes...> {};
 
     /// \brief Index of the first element in a type list or parameter pack with
     ///        a given type.
-    template <typename TType, typename TTypes>
+    template <typename TType, typename... TTypes>
     inline constexpr
     Int ElementIndexOf
-        = ElementIndexOfHelper<0, TType, TTypes>::kValue;
+        = ElementIndexOfHelper<TType, TTypes...>::kValue;
 
     //
 
@@ -366,11 +387,12 @@ namespace Syntropy::Templates::Details
     // SequenceFor.
     // ============
 
-    /// \brief Helper alias template used to convert a parameter pack to an
-    ///        integer sequence of the same size.
+    /// \brief Generate a contiguous sequence of integers, starting
+    ///        from 0 with a number of elements equal to the number of
+    ///        elements in a parameter pack or type list.
     template <typename... TTypes>
     using SequenceFor
-        = MakeSequence<sizeof...(TTypes)>;
+        = MakeSequence<ElementCountOf<TTypes...>>;
 
     // SequenceAdd.
     // ============
@@ -392,32 +414,27 @@ namespace Syntropy::Templates::Details
     // SequenceCat.
     // ============
 
-    /// \brief Concatenate one or more sequences together.
-    template <typename... TSequences>
-    struct SequenceCatHelper {};
+    /// \brief Concatenate all elements in two or more sequences.
+    template <typename TSequence, typename... USequences>
+    struct SequenceCatHelper{};
 
-    /// \brief Specialization for zero sequences.
-    template <>
-    struct SequenceCatHelper<>
-        : AliasSequence<> {};
+    /// \brief Specialization for single sequences. End of recursion.
+    template <Int... TNumbers>
+    struct SequenceCatHelper<Sequence<TNumbers...>>
+        : AliasSequence<TNumbers...> {};
 
-    /// \brief Specialization for one sequence.
-    template <Int... TSequence>
-    struct SequenceCatHelper<Sequence<TSequence...>>
-        : AliasSequence<TSequence...> {};
-
-    /// \brief Specialization for two or more sequences.
-    template <Int... TSequence, Int... USequence, typename... TSequences>
-    struct SequenceCatHelper<Sequence<TSequence...>,
-                             Sequence<USequence...>,
+    /// \brief Append the next sequence to the result.
+    template <Int... TNumbers, Int... UNumbers, typename... TSequences>
+    struct SequenceCatHelper<Sequence<TNumbers...>,
+                             Sequence<UNumbers...>,
                              TSequences...>
-        : SequenceCatHelper<Sequence<TSequence..., USequence...>,
+        : SequenceCatHelper<Sequence<TNumbers..., UNumbers...>,
                             TSequences...> {};
 
-    /// \brief Concatenate zero or more sequences together.
+    /// \brief Concatenate all types in a single type list.
     template <typename... TSequences>
     using SequenceCat
-        = typename SequenceCatHelper<TSequences...>::Type;
+        = typename SequenceCatHelper<Sequence<>, TSequences...>::Type;
 
     // SequenceRepeat.
     // ===============
