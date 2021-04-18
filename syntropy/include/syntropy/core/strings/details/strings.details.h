@@ -1,22 +1,20 @@
 
-/// \file algorithms.details.h
+/// \file strings.details.h
 ///
 /// \brief This header is part of the Syntropy core module.
-///        It contains shared implementation details.
+///        It contains shared implementation details of strings.
 ///
-/// \author Raffaele D. Facendola - November 2020
-
-#pragma once
-
-#include "syntropy/language/foundation/foundation.h"
-
-#include "syntropy/language/templates/priority.h"
-
-#include "syntropy/core/algorithms/compare_extensions.h"
+/// \author Raffaele D. Facendola - April 2021
 
 // ===========================================================================
 
-namespace Syntropy::Algorithms::Details
+#pragma once
+
+#include "syntropy/language/templates/priority.h"
+
+// ===========================================================================
+
+namespace Syntropy::Strings::Details
 {
     /************************************************************************/
     /* CUSTOMIZATION-POINT-OBJECTS                                          */

@@ -9,15 +9,13 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/core/algorithms/details/algorithms.details.h"
-
+#include "syntropy/core/strings/details/strings.details.h"
 #include "syntropy/core/strings/to_string_extensions.h"
-
 #include "syntropy/core/strings/string.h"
 
 // ===========================================================================
 
-namespace Syntropy::Algorithms::Details
+namespace Syntropy::Strings::Details
 {
     /************************************************************************/
     /* TO STRING                                                            */

@@ -62,7 +62,7 @@ namespace Syntropy::UnitTest
                   Forwarding<TExpression> expression) noexcept
     {
         TestContext::context_->ReportSuccess(location,
-                                             Algorithms::ToString(expression));
+                                             Strings::ToString(expression));
     }
 
     template <typename TExpression, typename TResult, typename TExpected>
@@ -73,9 +73,9 @@ namespace Syntropy::UnitTest
                   Forwarding<TExpected> expected) noexcept
     {
         TestContext::context_->ReportFailure(location,
-                                             Algorithms::ToString(expression),
-                                             Algorithms::ToString(result),
-                                             Algorithms::ToString(expected));
+                                             Strings::ToString(expression),
+                                             Strings::ToString(result),
+                                             Strings::ToString(expected));
     }
 
     /************************************************************************/

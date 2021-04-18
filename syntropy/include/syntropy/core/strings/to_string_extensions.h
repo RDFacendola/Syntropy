@@ -13,7 +13,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Algorithms::Extensions
+namespace Syntropy::Strings::Extensions
 {
     /************************************************************************/
     /* STRING EXTENSIONS                                                    */
