@@ -52,6 +52,17 @@ namespace Syntropy::Algorithms::Details
     }
 
     template <typename TType, typename UType>
+    constexpr void
+    InvokeAreEqual(Immutable<TType> lhs,
+                   Immutable<UType> rhs,
+                   IllFormedPriority) noexcept
+    {
+        static_assert(Templates::AlwaysFalse<TType>,
+                      "The type doesn't provide an implementation for "
+                      "AreEqual().");
+    }
+
+    template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     RouteAreEqual(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
         -> decltype(InvokeAreEqual(lhs, rhs, kMaxPriority))
@@ -104,6 +115,17 @@ namespace Syntropy::Algorithms::Details
     }
 
     template <typename TType, typename UType>
+    constexpr void
+    InvokeAreEquivalent(Immutable<TType> lhs,
+                        Immutable<UType> rhs,
+                        IllFormedPriority) noexcept
+    {
+        static_assert(Templates::AlwaysFalse<TType>,
+                      "The type doesn't provide an implementation for "
+                      "AreEquivalent().");
+    }
+
+    template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     RouteAreEquivalent(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
         -> decltype(InvokeAreEquivalent(lhs, rhs, kMaxPriority))
@@ -153,6 +175,17 @@ namespace Syntropy::Algorithms::Details
         -> decltype(lhs <=> rhs)
     {
         return (lhs <=> rhs);
+    }
+
+    template <typename TType, typename UType>
+    constexpr void
+    InvokeCompare(Immutable<TType> lhs,
+                  Immutable<UType> rhs,
+                  IllFormedPriority) noexcept
+    {
+        static_assert(Templates::AlwaysFalse<TType>,
+                      "The type doesn't provide an implementation for "
+                      "Compare().");
     }
 
     template <typename TType, typename UType>

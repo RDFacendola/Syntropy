@@ -67,14 +67,12 @@ namespace Syntropy::Strings::Details
     }
 
     template <typename TType>
-    inline String
+    inline void
     InvokeToString(Immutable<TType> rhs, IllFormedPriority) noexcept
     {
         static_assert(Templates::AlwaysFalse<TType>,
                       "The type doesn't provide an implementation for "
                       "ToString().");
-
-        return u8"";
     }
 
     template <typename TType>

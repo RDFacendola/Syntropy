@@ -59,9 +59,9 @@ namespace Syntropy::Strings::Details
     String
     InvokeToString(TReal rhs, FallbackPriority) noexcept;
 
-    /// \brief Fallback implementation for everything else.
+    /// \brief Ill-formed.
     template <typename TType>
-    String
+    void
     InvokeToString(Immutable<TType> rhs, IllFormedPriority) noexcept;
 
     /// \brief Routes the invocation.

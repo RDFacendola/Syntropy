@@ -56,6 +56,13 @@ namespace Syntropy::Algorithms::Details
                    FallbackPriority) noexcept
         -> decltype(lhs == rhs);
 
+    /// \brief Ill-formed.
+    template <typename TType, typename UType>
+    constexpr void
+    InvokeAreEqual(Immutable<TType> lhs,
+                   Immutable<UType> rhs,
+                   IllFormedPriority) noexcept;
+
     /// \brief Routes the invocation.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
@@ -98,6 +105,13 @@ namespace Syntropy::Algorithms::Details
                         FallbackPriority) noexcept
         -> decltype(lhs == rhs);
 
+    /// \brief Ill-formed.
+    template <typename TType, typename UType>
+    constexpr void
+    InvokeAreEquivalent(Immutable<TType> lhs,
+                        Immutable<UType> rhs,
+                        IllFormedPriority) noexcept;
+
     /// \brief Routes the invocation.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
@@ -139,6 +153,13 @@ namespace Syntropy::Algorithms::Details
                   Immutable<UType> rhs,
                   FallbackPriority) noexcept
         -> decltype(lhs <=> rhs);
+
+    /// \brief Ill-formed.
+    template <typename TType, typename UType>
+    constexpr void
+    InvokeCompare(Immutable<TType> lhs,
+                  Immutable<UType> rhs,
+                  IllFormedPriority) noexcept;
 
     /// \brief Routes the invocation.
     template <typename TType, typename UType>
