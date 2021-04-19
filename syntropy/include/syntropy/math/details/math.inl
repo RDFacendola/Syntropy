@@ -4,7 +4,7 @@
 /// \author Raffaele D. Facendola - 2017
 
 #include <cmath>
-
+#include <limits>
 // ===========================================================================
 
 namespace Syntropy
@@ -14,8 +14,8 @@ namespace Syntropy
     /************************************************************************/
 
     template <typename TValue, typename... TValues>
-    [[nodiscard]] constexpr
-    auto Math
+    [[nodiscard]] constexpr auto
+    Math
     ::Min(Immutable<TValue> first, Immutable<TValues>... rest) noexcept
     {
         auto min = first;
@@ -31,8 +31,8 @@ namespace Syntropy
     }
 
     template <typename TValue, typename... TValues>
-    [[nodiscard]] constexpr
-    auto Math
+    [[nodiscard]] constexpr auto
+    Math
     ::Max(Immutable<TValue> first, Immutable<TValues>... rest) noexcept
     {
         auto max = first;
@@ -48,48 +48,48 @@ namespace Syntropy
     }
 
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    TNumber Math
+    [[nodiscard]] constexpr TNumber
+    Math
     ::Ceil(TNumber rhs)
     {
         return std::ceil(rhs);
     }
 
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    TNumber Math
+    [[nodiscard]] constexpr TNumber
+    Math
     ::Floor(TNumber rhs)
     {
         return std::floor(rhs);
     }
 
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    TNumber Math
+    [[nodiscard]] constexpr TNumber
+    Math
     ::Ceil(TNumber rhs, TNumber multiple)
     {
         return DivCeil(rhs, multiple) * multiple;
     }
 
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    TNumber Math
+    [[nodiscard]] constexpr TNumber
+    Math
     ::Floor(TNumber rhs, TNumber multiple)
     {
         return DivFloor(rhs, multiple) * multiple;
     }
 
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    auto Math
+    [[nodiscard]] constexpr auto
+    Math
     ::DivCeil(TNumber lhs, TNumber rhs)
     {
         return DivFloor(lhs + rhs - TNumber{ 1 }, rhs);
     }
 
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    auto Math
+    [[nodiscard]] constexpr auto
+    Math
     ::DivFloor(TNumber lhs, TNumber rhs)
     {
         auto quotient = lhs / rhs;
@@ -103,6 +103,7 @@ namespace Syntropy
 
         return quotient;
     }
+
 }
 
 // ===========================================================================
