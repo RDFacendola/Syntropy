@@ -13,21 +13,63 @@ namespace Syntropy
     /* ORDERING                                                             */
     /************************************************************************/
 
-    inline constexpr
-    Ordering Ordering::kLess{ Details::ComparisonResult::kLess };
-
-    inline constexpr
-    Ordering Ordering::kEquivalent{ Details::ComparisonResult::kEquivalent };
-
-    inline constexpr
-    Ordering Ordering::kGreater{ Details::ComparisonResult::kGreater };
-
     constexpr
-    Ordering::Ordering(Immutable<std::strong_ordering> value) noexcept
-        : value_(Details::ToComparisonResult(value))
+    Ordering
+    ::Ordering(Immutable<std::strong_ordering> value) noexcept
+        : Ordering(static_cast<std::partial_ordering>(value))
     {
 
     }
+
+    constexpr
+    Ordering
+    ::Ordering(Immutable<std::weak_ordering> value) noexcept
+        : Ordering(static_cast<std::partial_ordering>(value))
+    {
+
+    }
+
+    constexpr
+    Ordering
+    ::Ordering(Immutable<std::partial_ordering> value) noexcept
+    {
+        if(value == std::partial_ordering::less)
+        {
+            value_ = Comparison::kLess;
+        }
+        else if(value == std::partial_ordering::equivalent)
+        {
+            value_ = Comparison::kEquivalent;
+        }
+        else if(value == std::partial_ordering::greater)
+        {
+            value_ = Comparison::kGreater;
+        }
+        else
+        {
+            value_ = Comparison::kIncomparable;
+        }
+    }
+
+    constexpr
+    Ordering
+    ::Ordering(Immutable<Comparison> value) noexcept
+        : value_(value)
+    {
+
+    }
+
+    inline constexpr
+    Ordering Ordering::kLess{ Ordering::Comparison::kLess };
+
+    inline constexpr
+    Ordering Ordering::kEquivalent{ Ordering::Comparison::kEquivalent };
+
+    inline constexpr
+    Ordering Ordering::kGreater{ Ordering::Comparison::kGreater };
+
+    inline constexpr
+    Ordering Ordering::kIncomparable{ Ordering::Comparison::kIncomparable };
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -37,43 +79,50 @@ namespace Syntropy
     // =========
 
     [[nodiscard]] constexpr
-    Bool IsEqual(Immutable<Ordering> rhs) noexcept
+    Bool
+    IsEqual(Immutable<Ordering> rhs) noexcept
     {
-        return rhs == 0;
+        return rhs == nullptr;
     }
 
     [[nodiscard]] constexpr
-    Bool IsNotEqual(Immutable<Ordering> rhs) noexcept
+    Bool
+    IsNotEqual(Immutable<Ordering> rhs) noexcept
     {
-        return rhs != 0;
+        return rhs != nullptr;
     }
 
     [[nodiscard]] constexpr
-    Bool IsLessThan(Immutable<Ordering> rhs) noexcept
+    Bool
+    IsLessThan(Immutable<Ordering> rhs) noexcept
     {
-        return rhs < 0;
+        return rhs < nullptr;
     }
 
     [[nodiscard]] constexpr
-    Bool IsLessEqualTo(Immutable<Ordering> rhs) noexcept
+    Bool
+    IsLessEqualTo(Immutable<Ordering> rhs) noexcept
     {
-        return rhs <= 0;
+        return rhs <= nullptr;
     }
 
     [[nodiscard]] constexpr
-    Bool IsGreaterThan(Immutable<Ordering> rhs) noexcept
+    Bool
+    IsGreaterThan(Immutable<Ordering> rhs) noexcept
     {
-        return rhs > 0;
+        return rhs > nullptr;
     }
 
     [[nodiscard]] constexpr
-    Bool IsGreaterEqualTo(Immutable<Ordering> rhs) noexcept
+    Bool
+    IsGreaterEqualTo(Immutable<Ordering> rhs) noexcept
     {
-        return rhs >= 0;
+        return rhs >= nullptr;
     }
 
     [[nodiscard]] constexpr
-    Ordering Flip(Immutable<Ordering> rhs) noexcept
+    Ordering
+    Flip(Immutable<Ordering> rhs) noexcept
     {
         if (rhs == Ordering::kLess)
         {
@@ -85,96 +134,98 @@ namespace Syntropy
             return Ordering::kLess;
         }
 
-        return Ordering::kEquivalent;
+        return rhs;
     }
 
     // Comparison operators.
     // =====================
 
     [[nodiscard]] constexpr
-    Bool operator==(Immutable<Ordering> lhs, Null rhs) noexcept
+    Bool
+    operator==(Immutable<Ordering> lhs, Null rhs) noexcept
     {
-        return (lhs.value_ == Details::ComparisonResult::kEquivalent);
+        return (lhs.value_ == Ordering::Comparison::kEquivalent);
     }
 
     [[nodiscard]] constexpr
-    Bool operator==(Immutable<Ordering> lhs, Immutable<Ordering> rhs) noexcept
+    Bool
+    operator==(Immutable<Ordering> lhs, Immutable<Ordering> rhs) noexcept
     {
         return (lhs.value_ == rhs.value_);
     }
 
     [[nodiscard]] constexpr
-    Bool operator<(Immutable<Ordering> lhs, Null rhs) noexcept
+    Bool
+    operator<(Immutable<Ordering> lhs, Null rhs) noexcept
     {
-        return (lhs.value_ == Details::ComparisonResult::kLess);
+        return (lhs.value_ == Ordering::Comparison::kLess);
     }
 
     [[nodiscard]] constexpr
-    Bool operator>(Immutable<Ordering> lhs, Null rhs) noexcept
+    Bool
+    operator>(Immutable<Ordering> lhs, Null rhs) noexcept
     {
-        return (lhs.value_ == Details::ComparisonResult::kGreater);
+        return (lhs.value_ == Ordering::Comparison::kGreater);
     }
 
     [[nodiscard]] constexpr
-    Bool operator<=(Immutable<Ordering> lhs, Null rhs) noexcept
+    Bool
+    operator<=(Immutable<Ordering> lhs, Null rhs) noexcept
     {
-        return (lhs.value_ == Details::ComparisonResult::kLess)
-            || (lhs.value_ == Details::ComparisonResult::kEquivalent);
+        return (lhs.value_ == Ordering::Comparison::kLess)
+            || (lhs.value_ == Ordering::Comparison::kEquivalent);
     }
 
     [[nodiscard]] constexpr
-    Bool operator>=(Immutable<Ordering> lhs, Null rhs) noexcept
+    Bool
+    operator>=(Immutable<Ordering> lhs, Null rhs) noexcept
     {
-        return (lhs.value_ == Details::ComparisonResult::kGreater)
-            || (lhs.value_ == Details::ComparisonResult::kEquivalent);
+        return (lhs.value_ == Ordering::Comparison::kGreater)
+            || (lhs.value_ == Ordering::Comparison::kEquivalent);
     }
 
     [[nodiscard]] constexpr
-    Bool operator<(Null lhs, Immutable<Ordering> rhs) noexcept
+    Bool
+    operator<(Null lhs, Immutable<Ordering> rhs) noexcept
     {
-        return (rhs.value_ == Details::ComparisonResult::kGreater);
+        return (rhs.value_ == Ordering::Comparison::kGreater);
     }
 
     [[nodiscard]] constexpr
-    Bool operator>(Null lhs, Immutable<Ordering> rhs) noexcept
+    Bool
+    operator>(Null lhs, Immutable<Ordering> rhs) noexcept
     {
-        return (rhs.value_ == Details::ComparisonResult::kLess);
+        return (rhs.value_ == Ordering::Comparison::kLess);
     }
 
     [[nodiscard]] constexpr
-    Bool operator<=(Null lhs, Immutable<Ordering> rhs) noexcept
+    Bool
+    operator<=(Null lhs, Immutable<Ordering> rhs) noexcept
     {
-        return (rhs.value_ == Details::ComparisonResult::kGreater)
-            || (rhs.value_ == Details::ComparisonResult::kEquivalent);
+        return (rhs.value_ == Ordering::Comparison::kGreater)
+            || (rhs.value_ == Ordering::Comparison::kEquivalent);
     }
 
     [[nodiscard]] constexpr
-    Bool operator>=(Null lhs, Immutable<Ordering> rhs) noexcept
+    Bool
+    operator>=(Null lhs, Immutable<Ordering> rhs) noexcept
     {
-        return (rhs.value_ == Details::ComparisonResult::kLess)
-            || (rhs.value_ == Details::ComparisonResult::kEquivalent);
+        return (rhs.value_ == Ordering::Comparison::kLess)
+            || (rhs.value_ == Ordering::Comparison::kEquivalent);
     }
 
     [[nodiscard]] constexpr
-    Ordering operator<=>(Immutable<Ordering> lhs, Null rhs) noexcept
+    Ordering
+    operator<=>(Immutable<Ordering> lhs, Null rhs) noexcept
     {
         return lhs;
     }
 
     [[nodiscard]] constexpr
-    Ordering operator<=>(Null lhs, Immutable<Ordering> rhs) noexcept
+    Ordering
+    operator<=>(Null lhs, Immutable<Ordering> rhs) noexcept
     {
-        if (rhs.value_ == Details::ComparisonResult::kLess)
-        {
-            return Ordering{ Details::ComparisonResult::kGreater };
-        }
-
-        if (rhs.value_ == Details::ComparisonResult::kGreater)
-        {
-            return Ordering{ Details::ComparisonResult::kLess };
-        }
-
-        return rhs;
+        return Flip(rhs);
     }
 
 }

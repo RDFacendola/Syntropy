@@ -20,6 +20,7 @@ namespace Syntropy
         static const auto kLess = String{u8"Less"};
         static const auto kEquivalent = String{u8"Equivalent"};
         static const auto kGreater = String{u8"Greater"};
+        static const auto kIncomparable = String{u8"Incomparable"};
 
         if(rhs == Ordering::kLess)
         {
@@ -31,7 +32,12 @@ namespace Syntropy
             return kEquivalent;
         }
 
-        return kGreater;
+        if(rhs == Ordering::kGreater)
+        {
+            return kGreater;
+        }
+
+        return kIncomparable;
     }
 
 }

@@ -73,10 +73,13 @@ namespace UnitTest
         SYNTROPY_UNIT_EQUAL(AreEquivalent(1.0f, 2.0f), false);
         SYNTROPY_UNIT_EQUAL(AreEquivalent(2.0f, 1.0f), false);
 
-        SYNTROPY_UNIT_EQUAL(Compare(1.0f, 1.0f), Ordering::kEquivalent);
-        SYNTROPY_UNIT_EQUAL(Compare(1.0f, 2.0f), Ordering::kLess);
-        SYNTROPY_UNIT_EQUAL(Compare(2.0f, 1.0f), Ordering::kGreater);
-    })
+        std::cout << typeid(decltype(Compare(1.0f, 1.0f))).name();
+        //SYNTROPY_UNIT_EQUAL(Compare(1.0f, 1.0f), Ordering::kEquivalent);
+
+        //SYNTROPY_UNIT_EQUAL(Compare(1.0f, 1.0f), Ordering::kEquivalent);
+        //SYNTROPY_UNIT_EQUAL(Compare(1.0f, 2.0f), Ordering::kLess);
+        //SYNTROPY_UNIT_EQUAL(Compare(2.0f, 1.0f), Ordering::kGreater);
+    });
 
 }
 

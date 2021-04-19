@@ -14,10 +14,6 @@
 
 // ===========================================================================
 
-#include "details/ordering.details.h"
-
-// ===========================================================================
-
 namespace Syntropy
 {
     /************************************************************************/
@@ -30,11 +26,9 @@ namespace Syntropy
     /* ORDERING                                                             */
     /************************************************************************/
 
-    /// \brief Defines a strong ordering relationship between objects.
+    /// \brief Defines a (partial) ordering relationship between objects.
     ///
-    /// In strong order relationships, equivalent elements are
-    /// indistinguishable. Incomparable elements are not allowed.
-    /// \author Raffaele D. Facendola - Nov 2020.
+    /// \author Raffaele D. Facendola - November 2020.
     class Ordering
     {
         friend constexpr
@@ -85,26 +79,48 @@ namespace Syntropy
         /// \brief Indicates that an element is greater-than another element.
         static const Ordering kGreater;
 
+        /// \brief Indicates that an element is incomparable with another
+        ///        element.
+        static const Ordering kIncomparable;
+
         /// \brief Convert from std::strong_ordering to Ordering.
-        /// \remarks Allows better interoperability with STL.
         constexpr
         Ordering(Immutable<std::strong_ordering> value) noexcept;
 
+
+        /// \brief Convert from std::weak_ordering to Ordering.
+        constexpr
+        Ordering(Immutable<std::weak_ordering> value) noexcept;
+
+
+        /// \brief Convert from std::partial_ordering to Ordering.
+        constexpr
+        Ordering(Immutable<std::partial_ordering> value) noexcept;
+
     private:
 
-        /// \brief Create a new weak ordering result value.
-        constexpr explicit
-        Ordering(Immutable<Details::ComparisonResult> value) noexcept
-            : value_(value)
+        /// \brief Result of a comparison.
+        enum class Comparison : Enum8
         {
-            // @rfacendola Apparently in VS2019 using the explicit
-            // keyword requires both declaration and definition
-            // at the same time, otherwise it will ignore that and
-            // zero-initialize the instance.
-        }
+            /// \brief Less-than result.
+            kLess,
 
-        /// \brief Underlying compare result.
-        Details::ComparisonResult value_;
+            /// \brief Equivalent-to result.
+            kEquivalent,
+
+            /// \brief Greater-than result.
+            kGreater,
+
+            /// \brief Incomparable result.
+            kIncomparable
+        };
+
+        /// \brief Direct constructor.
+        constexpr
+        Ordering(Immutable<Comparison> value) noexcept;
+
+        /// \brief Comparison value.
+        Comparison value_;
 
     };
 
