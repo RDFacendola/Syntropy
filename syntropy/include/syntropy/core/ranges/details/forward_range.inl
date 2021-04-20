@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/core/algorithms/swap.h"
-#include "syntropy/core/algorithms/compare.h"
+#include "syntropy/core/comparisons/compare.h"
 
 // ===========================================================================
 
@@ -116,7 +116,7 @@ namespace Syntropy::Ranges
 
         for(; !Ranges::IsEmpty(left) && !Ranges::IsEmpty(right);)
         {
-            if(!Algorithms::AreEqual(Ranges::Front(left),
+            if(!Comparisons::AreEqual(Ranges::Front(left),
                                      Ranges::Front(right)))
             {
                 return false;
@@ -140,7 +140,7 @@ namespace Syntropy::Ranges
 
         for(; !Ranges::IsEmpty(left) && !Ranges::IsEmpty(right);)
         {
-            if(!Algorithms::AreEquivalent(Ranges::Front(left),
+            if(!Comparisons::AreEquivalent(Ranges::Front(left),
                                           Ranges::Front(right)))
             {
                 return false;
@@ -165,7 +165,7 @@ namespace Syntropy::Ranges
 
         for(; !Ranges::IsEmpty(left) && !Ranges::IsEmpty(right);)
         {
-            auto compare = Algorithms::Compare(Ranges::Front(left),
+            auto compare = Comparisons::Compare(Ranges::Front(left),
                                                Ranges::Front(right));
 
             if(compare != Ordering::kEquivalent)

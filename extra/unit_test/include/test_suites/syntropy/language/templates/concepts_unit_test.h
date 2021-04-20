@@ -10,7 +10,7 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 
-#include "syntropy/core/foundation/ordering.h"
+#include "syntropy/core/comparisons/ordering.h"
 
 #include "syntropy/diagnostics/unit_test/unit_test.h"
 

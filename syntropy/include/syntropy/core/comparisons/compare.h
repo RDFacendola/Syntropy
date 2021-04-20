@@ -12,7 +12,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/core/foundation/ordering.h"
+#include "syntropy/core/comparisons/ordering.h"
 
 #include <compare>
 
@@ -22,14 +22,14 @@
 
 // ===========================================================================
 
-namespace Syntropy::Algorithms
+namespace Syntropy::Comparisons
 {
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Comparison.
-    // ===========
+    // Comparisons.
+    // ============
 
     /// \brief Check whether lhs and rhs are equal.
     /// \remarks Equality implies equivalence.

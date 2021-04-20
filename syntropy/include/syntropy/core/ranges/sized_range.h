@@ -17,7 +17,7 @@
 #include "syntropy/language/templates/concepts.h"
 
 #include "syntropy/core/ranges/forward_range.h"
-#include "syntropy/core/algorithms/compare.h"
+#include "syntropy/core/comparisons/compare.h"
 
 // ===========================================================================
 

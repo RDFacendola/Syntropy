@@ -2,7 +2,7 @@
 /// \file compare_extensions.h
 ///
 /// \brief This header is part of the Syntropy core module.
-///        It contains definitions for comparison-related customization point
+///        It contains definitions for compare-related customization point
 ///        objects.
 ///
 /// \author Raffaele D. Facendola - March 2021
@@ -11,13 +11,13 @@
 
 // ===========================================================================
 
-namespace Syntropy::Algorithms::Extensions
+namespace Syntropy::Comparisons::Extensions
 {
     /************************************************************************/
     /* COMPARE EXTENSIONS                                                   */
     /************************************************************************/
 
-    /// \brief Check whether two objects are equal..
+    /// \brief Check whether two objects are equal.
     template <typename TType, typename UType, typename = void>
     struct AreEqual;
 

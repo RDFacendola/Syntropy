@@ -12,8 +12,6 @@
 
 #include "syntropy/language/templates/priority.h"
 
-#include "syntropy/core/algorithms/compare_extensions.h"
-
 // ===========================================================================
 
 namespace Syntropy::Algorithms::Details

@@ -14,9 +14,9 @@
 #include "syntropy/language/templates/type_traits.h"
 
 #include "syntropy/core/algorithms/swap.h"
-#include "syntropy/core/algorithms/compare.h"
 
-#include "syntropy/core/foundation/ordering.h"
+#include "syntropy/core/comparisons/compare.h"
+#include "syntropy/core/comparisons/ordering.h"
 
 #include "syntropy/math/math.h"
 

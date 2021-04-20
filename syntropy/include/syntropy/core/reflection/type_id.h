@@ -12,7 +12,7 @@
 #include <typeindex>
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/core/algorithms/compare.h"
+#include "syntropy/core/comparisons/compare.h"
 
 // ===========================================================================
 

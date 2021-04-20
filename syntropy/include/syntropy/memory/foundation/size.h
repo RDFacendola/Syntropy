@@ -11,7 +11,7 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/ratio.h"
 #include "syntropy/language/templates/type_traits.h"
-#include "syntropy/core/algorithms/compare.h"
+#include "syntropy/core/comparisons/compare.h"
 
 #include "syntropy/memory/foundation/byte.h"
 

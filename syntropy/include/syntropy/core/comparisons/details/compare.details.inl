@@ -1,176 +1,201 @@
 
-/// \file compare.details.h
+/// \file compare.details.inl
 ///
-/// \brief This header is part of the Syntropy language module.
-///        It contains implementation details of compare.h.
-///
-/// \author Raffaele D. Facendola - November 2020
+/// \author Raffaele D. Facendola - March 2021
 
 // ===========================================================================
 
-#pragma once
-
-#include "syntropy/language/foundation/foundation.h"
-
-#include "syntropy/core/algorithms/compare_extensions.h"
-
-#include "syntropy/core/algorithms/details/algorithms.details.h"
-
-// ===========================================================================
-
-namespace Syntropy::Algorithms::Details
+namespace Syntropy::Comparisons::Details
 {
     /************************************************************************/
     /* ARE EQUAL                                                            */
     /************************************************************************/
 
-    /// \brief Custom extension.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeAreEqual(Immutable<TType> lhs,
                    Immutable<UType> rhs,
                    ExtensionPriority) noexcept
-        -> decltype(Extensions::AreEqual<TType, UType>{}(lhs, rhs));
+        -> decltype(Extensions::AreEqual<TType, UType>{}(lhs, rhs))
+    {
+        return Extensions::AreEqual<TType, UType>{}(lhs, rhs);
+    }
 
-    /// \brief Member-function.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeAreEqual(Immutable<TType> lhs,
                    Immutable<UType> rhs,
                    MemberFunctionPriority) noexcept
-        -> decltype(lhs.IsEqual(rhs));
+        -> decltype(lhs.IsEqual(rhs))
+    {
+        return lhs.IsEqual(rhs);
+    }
 
-    /// \brief Non-member function, possibly using ADL.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeAreEqual(Immutable<TType> lhs,
                    Immutable<UType> rhs,
                    NonMemberFunctionPriority) noexcept
-        -> decltype(AreEqual(lhs, rhs));
+        -> decltype(AreEqual(lhs, rhs))
+    {
+        return AreEqual(lhs, rhs);
+    }
 
-    /// \brief Fallback.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeAreEqual(Immutable<TType> lhs,
                    Immutable<UType> rhs,
                    FallbackPriority) noexcept
-        -> decltype(lhs == rhs);
+        -> decltype(lhs == rhs)
+    {
+        return (lhs == rhs);
+    }
 
-    /// \brief Ill-formed.
     template <typename TType, typename UType>
     constexpr void
     InvokeAreEqual(Immutable<TType> lhs,
                    Immutable<UType> rhs,
-                   IllFormedPriority) noexcept;
+                   IllFormedPriority) noexcept
+    {
+        static_assert(Templates::AlwaysFalse<TType>,
+                      "The type doesn't provide an implementation for "
+                      "AreEqual().");
+    }
 
-    /// \brief Routes the invocation.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     RouteAreEqual(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
-        -> decltype(InvokeAreEqual(lhs, rhs, kMaxPriority));
+        -> decltype(InvokeAreEqual(lhs, rhs, kMaxPriority))
+    {
+        return InvokeAreEqual(lhs, rhs, kMaxPriority);
+    }
 
     /************************************************************************/
     /* ARE EQUIVALENT                                                       */
     /************************************************************************/
 
-    /// \brief Custom extension.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeAreEquivalent(Immutable<TType> lhs,
                         Immutable<UType> rhs,
                         ExtensionPriority) noexcept
-        -> decltype(Extensions::AreEquivalent<TType, UType>{}(lhs, rhs));
+        -> decltype(Extensions::AreEquivalent<TType, UType>{}(lhs, rhs))
+    {
+        return Extensions::AreEquivalent<TType, UType>{}(lhs, rhs);
+    }
 
-    /// \brief Member-function.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeAreEquivalent(Immutable<TType> lhs,
                         Immutable<UType> rhs,
                         MemberFunctionPriority) noexcept
-        -> decltype(lhs.IsEquivalent(rhs));
+        -> decltype(lhs.IsEquivalent(rhs))
+    {
+        return lhs.IsEquivalent(rhs);
+    }
 
-    /// \brief Non-member function, possibly using ADL.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeAreEquivalent(Immutable<TType> lhs,
                         Immutable<UType> rhs,
                         NonMemberFunctionPriority) noexcept
-        -> decltype(AreEquivalent(lhs, rhs));
+        -> decltype(AreEquivalent(lhs, rhs))
+    {
+        return AreEquivalent(lhs, rhs);
+    }
 
-    /// \brief Fallback.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeAreEquivalent(Immutable<TType> lhs,
-                        Immutable<UType> rhs,
-                        FallbackPriority) noexcept
-        -> decltype(lhs == rhs);
+                   Immutable<UType> rhs,
+                   FallbackPriority) noexcept
+        -> decltype(lhs == rhs)
+    {
+        return (lhs == rhs);
+    }
 
-    /// \brief Ill-formed.
     template <typename TType, typename UType>
     constexpr void
     InvokeAreEquivalent(Immutable<TType> lhs,
                         Immutable<UType> rhs,
-                        IllFormedPriority) noexcept;
+                        IllFormedPriority) noexcept
+    {
+        static_assert(Templates::AlwaysFalse<TType>,
+                      "The type doesn't provide an implementation for "
+                      "AreEquivalent().");
+    }
 
-    /// \brief Routes the invocation.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     RouteAreEquivalent(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
-        -> decltype(InvokeAreEquivalent(lhs, rhs, kMaxPriority));
+        -> decltype(InvokeAreEquivalent(lhs, rhs, kMaxPriority))
+    {
+        return InvokeAreEquivalent(lhs, rhs, kMaxPriority);
+    }
 
     /************************************************************************/
     /* COMPARE                                                              */
     /************************************************************************/
 
-    /// \brief Custom extension.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeCompare(Immutable<TType> lhs,
                   Immutable<UType> rhs,
                   ExtensionPriority) noexcept
-        -> decltype(Extensions::Compare<TType, UType>{}(lhs, rhs));
+        -> decltype(Extensions::Compare<TType, UType>{}(lhs, rhs))
+    {
+        return Extensions::Compare<TType, UType>{}(lhs, rhs);
+    }
 
-    /// \brief Member-function.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeCompare(Immutable<TType> lhs,
                   Immutable<UType> rhs,
                   MemberFunctionPriority) noexcept
-        -> decltype(lhs.Compare(rhs));
+        -> decltype(lhs.Compare(rhs))
+    {
+        return lhs.Compare(rhs);
+    }
 
-    /// \brief Non-member function, possibly using ADL.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeCompare(Immutable<TType> lhs,
                   Immutable<UType> rhs,
                   NonMemberFunctionPriority) noexcept
-        -> decltype(Compare(lhs, rhs));
+        -> decltype(Compare(lhs, rhs))
+    {
+        return Compare(lhs, rhs);
+    }
 
-    /// \brief Fallback.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     InvokeCompare(Immutable<TType> lhs,
                   Immutable<UType> rhs,
                   FallbackPriority) noexcept
-        -> decltype(lhs <=> rhs);
+        -> decltype(lhs <=> rhs)
+    {
+        return (lhs <=> rhs);
+    }
 
-    /// \brief Ill-formed.
     template <typename TType, typename UType>
     constexpr void
     InvokeCompare(Immutable<TType> lhs,
                   Immutable<UType> rhs,
-                  IllFormedPriority) noexcept;
+                  IllFormedPriority) noexcept
+    {
+        static_assert(Templates::AlwaysFalse<TType>,
+                      "The type doesn't provide an implementation for "
+                      "Compare().");
+    }
 
-    /// \brief Routes the invocation.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr auto
     RouteCompare(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
-        -> decltype(InvokeCompare(lhs, rhs, kMaxPriority));
+        -> decltype(InvokeCompare(lhs, rhs, kMaxPriority))
+    {
+        return InvokeCompare(lhs, rhs, kMaxPriority);
+    }
 
 }
-
-// ===========================================================================
-
-#include "compare.details.inl"
 
 // ===========================================================================

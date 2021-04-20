@@ -12,7 +12,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
-#include "syntropy/core/algorithms/compare.h"
+#include "syntropy/core/comparisons/compare.h"
 
 #include "syntropy/diagnostics/foundation/assert.h"
 

@@ -10,7 +10,7 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/concepts.h"
-#include "syntropy/core/algorithms/compare.h"
+#include "syntropy/core/comparisons/compare.h"
 
 #include "syntropy/core/records/record.h"
 

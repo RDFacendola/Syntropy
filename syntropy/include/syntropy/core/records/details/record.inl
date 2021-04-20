@@ -213,8 +213,8 @@ namespace Syntropy::Records
     {
         auto equal = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            return (Algorithms::AreEqual(Records::Get<TIndex>(lhs),
-                                         Records::Get<TIndex>(rhs))
+            return (Comparisons::AreEqual(Records::Get<TIndex>(lhs),
+                                          Records::Get<TIndex>(rhs))
                     && ...);
         };
 
@@ -232,8 +232,8 @@ namespace Syntropy::Records
     {
         auto equivalent = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            return (Algorithms::AreEquivalent(Records::Get<TIndex>(lhs),
-                                              Records::Get<TIndex>(rhs))
+            return (Comparisons::AreEquivalent(Records::Get<TIndex>(lhs),
+                                               Records::Get<TIndex>(rhs))
                     && ...);
         };
 
@@ -257,8 +257,8 @@ namespace Syntropy::Records
         {
             if (result == Ordering::kEquivalent)
             {
-                return Algorithms::Compare(Records::Get<TIndex>(lhs),
-                                           Records::Get<TIndex>(rhs));
+                return Comparisons::Compare(Records::Get<TIndex>(lhs),
+                                            Records::Get<TIndex>(rhs));
             }
 
             return result;
