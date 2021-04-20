@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/core/algorithms/swap.h"
+#include "syntropy/core/toolset/swap.h"
 #include "syntropy/core/comparisons/compare.h"
 
 // ===========================================================================

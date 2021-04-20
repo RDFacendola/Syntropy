@@ -10,8 +10,8 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/diagnostics/unit_test/unit_test.h"
 
-#include "syntropy/core/algorithms/swap.h"
-#include "syntropy/core/algorithms/swap_extensions.h"
+#include "syntropy/core/toolset/swap.h"
+#include "syntropy/core/toolset/swap_extensions.h"
 
 // ===========================================================================
 

@@ -9,7 +9,7 @@
 
 #include "syntropy/core/ranges/sized_range.h"
 #include "syntropy/core/comparisons/compare.h"
-#include "syntropy/core/algorithms/swap.h"
+#include "syntropy/core/toolset/swap.h"
 
 #include "syntropy/memory/allocators/allocator.h"
 #include "syntropy/memory/foundation/buffer.h"

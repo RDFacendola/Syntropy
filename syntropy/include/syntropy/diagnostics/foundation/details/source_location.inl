@@ -6,7 +6,7 @@
 #pragma once
 
 #include "syntropy/language/preprocessor/macro.h"
-#include "syntropy/core/algorithms/swap.h"
+#include "syntropy/core/toolset/swap.h"
 #include "syntropy/memory/foundation/size.h"
 #include "syntropy/memory/foundation/byte_span.h"
 #include "syntropy/memory/foundation/memory.h"

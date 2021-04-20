@@ -13,7 +13,7 @@
 #include "syntropy/language/templates/concepts.h"
 #include "syntropy/language/templates/type_traits.h"
 
-#include "syntropy/core/algorithms/swap.h"
+#include "syntropy/core/toolset/swap.h"
 
 #include "syntropy/core/comparisons/compare.h"
 #include "syntropy/core/comparisons/ordering.h"
