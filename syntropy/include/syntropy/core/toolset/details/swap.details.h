@@ -11,7 +11,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Algorithms::Details
+namespace Syntropy::Toolset::Details
 {
     /************************************************************************/
     /* CUSTOMIZATION-POINT-OBJECTS                                          */

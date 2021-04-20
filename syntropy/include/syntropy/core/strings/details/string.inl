@@ -65,7 +65,7 @@ namespace Syntropy
     String
     ::Swap(Movable<String> rhs) noexcept
     {
-        Algorithms::Swap(code_units_, rhs.code_units_);
+        Toolset::Swap(code_units_, rhs.code_units_);
     }
 
     /************************************************************************/

@@ -13,7 +13,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Algorithms
+namespace Syntropy::Toolset
 {
     /************************************************************************/
     /* QUANTIFIERS                                                          */
@@ -34,7 +34,7 @@ namespace Syntropy::Algorithms
 
 // ===========================================================================
 
-namespace Syntropy::Algorithms
+namespace Syntropy::Toolset
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */

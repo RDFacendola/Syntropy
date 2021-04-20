@@ -94,9 +94,9 @@ namespace Syntropy::Diagnostics
     SourceLocation
     ::Swap(Mutable<SourceLocation> other) noexcept
     {
-        Algorithms::Swap(file_name_, other.file_name_);
-        Algorithms::Swap(function_name_, other.function_name_);
-        Algorithms::Swap(line_, other.line_);
+        Toolset::Swap(file_name_, other.file_name_);
+        Toolset::Swap(function_name_, other.function_name_);
+        Toolset::Swap(line_, other.line_);
     }
 
 }

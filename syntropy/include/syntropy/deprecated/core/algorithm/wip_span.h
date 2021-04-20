@@ -190,9 +190,9 @@ namespace Syntropy
     {
         if (rhs)
         {
-            auto result = Algorithms::Find(lhs, Front(rhs));
+            auto result = Toolset::Find(lhs, Front(rhs));
 
-            for (; Count(result) >= Count(rhs); result = Algorithms::Find(PopFront(result), Front(rhs)))
+            for (; Count(result) >= Count(rhs); result = Toolset::Find(PopFront(result), Front(rhs)))
             {
                 if (StartsWith(result, rhs))
                 {

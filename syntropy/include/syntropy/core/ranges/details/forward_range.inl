@@ -94,7 +94,7 @@ namespace Syntropy::Ranges
 
         for (; !Ranges::IsEmpty(left) && !Ranges::IsEmpty(right); ++count)
         {
-            Algorithms::Swap(Ranges::Front(left), Ranges::Front(right));
+            Toolset::Swap(Ranges::Front(left), Ranges::Front(right));
 
             left = Ranges::PopFront(left);
             right = Ranges::PopFront(right);

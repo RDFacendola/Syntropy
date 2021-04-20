@@ -320,7 +320,7 @@ namespace Syntropy::Details
 
         // Unlink listeners past lhs.
 
-        auto unlinked = Algorithms::Exchange(lhs.next_listener_, nullptr);
+        auto unlinked = Toolset::Exchange(lhs.next_listener_, nullptr);
 
         if (unlinked)
         {

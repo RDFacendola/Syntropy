@@ -11,7 +11,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Algorithms::Extensions
+namespace Syntropy::Toolset::Extensions
 {
     /************************************************************************/
     /* SWAP EXTENSIONS                                                      */
