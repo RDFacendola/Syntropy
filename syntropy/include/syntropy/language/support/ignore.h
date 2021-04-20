@@ -40,6 +40,12 @@ namespace Syntropy
         template <typename... TArguments>
         constexpr Mutable<Ignore>
         operator=(Forwarding<TArguments>...) noexcept;
+
+        /// \brief Callable with any number of arguments.
+        template <typename... TArguments>
+        constexpr void
+        operator()(Forwarding<TArguments>...) noexcept;
+
     };
 
     /// \brief Constant of the placeholder type Ignore used to

@@ -14,17 +14,27 @@ namespace Syntropy
     /************************************************************************/
 
     template <typename... TArguments>
-    constexpr Ignore
+    constexpr
+    Ignore
     ::Ignore(Forwarding<TArguments>...) noexcept
     {
 
     }
 
     template <typename... TArguments>
-    constexpr Mutable<Ignore> Ignore
+    constexpr Mutable<Ignore>
+    Ignore
     ::operator=(Forwarding<TArguments>...) noexcept
     {
         return *this;
+    }
+
+    template <typename... TArguments>
+    constexpr void
+    Ignore
+    ::operator()(Forwarding<TArguments>...) noexcept
+    {
+
     }
 }
 
