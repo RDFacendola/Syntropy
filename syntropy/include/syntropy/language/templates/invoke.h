@@ -58,6 +58,21 @@ namespace Syntropy::Templates
     constexpr InvokeResultOf<TCallable, TArguments...>
     Invoke(Forwarding<TCallable> callable,
            Forwarding<TArguments>... arguments) noexcept;
+
+    /// \brief Create a functor to forward an invocation on any of
+    ///        the provided functions.
+    ///
+    /// This method selects the first, well-formed, callable object in the
+    /// provided list. If none of the callable object result in a well-formed
+    /// invocation, the program is ill-formed.
+    ///
+    /// \usage auto invoke_any = InvokeAny([](auto&& ){ ... },
+    ///                                    [](auto&& ){ ... },
+    ///                                    [](auto&& ){ ... });
+    ///       invoke_any(arguments...);
+    template <typename... TFunctions>
+    [[nodiscard]] constexpr auto
+    InvokeAny(TFunctions... function) noexcept;
 }
 
 // ===========================================================================

@@ -19,6 +19,13 @@ namespace Syntropy::Templates
         return std::invoke(Forward<TCallable>(callable),
                            Forward<TArguments>(arguments)...);
     }
+
+    template <typename... TFunctions>
+    [[nodiscard]] constexpr auto
+    InvokeAny(TFunctions... functions) noexcept
+    {
+        return Details::InvocationSet<TFunctions...>{ Move(functions)... };
+    }
 }
 
 // ===========================================================================
