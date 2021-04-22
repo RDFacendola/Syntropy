@@ -68,7 +68,11 @@ namespace Syntropy::Templates
     ///
     /// \usage auto invoke_any = InvokeAny([](auto&& ){ ... },
     ///                                    [](auto&& ){ ... },
+<<<<<<< HEAD
     ///                                    [](auto&& ){ ... });
+=======
+    ///                                    [](auto&& ){ ,,, });
+>>>>>>> 2fec289e86ac94a30191cba43f207dfc781eead8
     ///       invoke_any(arguments...);
     template <typename... TFunctions>
     [[nodiscard]] constexpr auto
