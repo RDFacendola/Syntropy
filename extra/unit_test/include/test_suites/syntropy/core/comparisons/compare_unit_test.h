@@ -11,7 +11,6 @@
 #include "syntropy/diagnostics/unit_test/unit_test.h"
 
 #include "syntropy/core/comparisons/compare.h"
-#include "syntropy/core/comparisons/compare_extensions.h"
 #include "syntropy/core/comparisons/ordering.h"
 
 #include "syntropy/math/numbers.h"

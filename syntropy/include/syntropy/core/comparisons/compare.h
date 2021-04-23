@@ -4,7 +4,7 @@
 /// \brief This header is part of the Syntropy core module.
 ///        It contains definitions for comparisons.
 ///
-/// \author Raffaele D. Facendola - November 2020
+/// \author Raffaele D. Facendola - November 2020.
 
 // ===========================================================================
 
@@ -14,42 +14,51 @@
 
 #include "syntropy/core/comparisons/ordering.h"
 
-#include <compare>
-
 // ===========================================================================
 
-#include "details/compare.details.h"
+namespace Syntropy::Comparisons::Extensions
+{
+    /************************************************************************/
+    /* COMPARE EXTENSIONS                                                   */
+    /************************************************************************/
+
+    /// \brief Check whether two objects are equal.
+    template <typename TType, typename UType, typename = void>
+    struct AreEqual;
+
+    /// \brief Check whether two objects are equivalent.
+    template <typename TType, typename UType, typename = void>
+    struct AreEquivalent;
+
+    /// \brief Compare two objects.
+    template <typename TType, typename UType, typename = void>
+    struct Compare;
+
+}
 
 // ===========================================================================
 
 namespace Syntropy::Comparisons
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* COMPARE                                                              */
     /************************************************************************/
-
-    // Comparisons.
-    // ============
 
     /// \brief Check whether lhs and rhs are equal.
     /// \remarks Equality implies equivalence.
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr auto
-    AreEqual(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
-        -> decltype(Details::RouteAreEqual(lhs, rhs));
+    [[nodiscard]] constexpr decltype(auto)
+    AreEqual(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
 
     /// \brief Check whether lhs and rhs are equivalent.
-    /// \brief Equivalence doesn't imply equality.
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr auto
-    AreEquivalent(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
-        -> decltype(Details::RouteAreEquivalent(lhs, rhs));
+    [[nodiscard]] constexpr decltype(auto)
+    AreEquivalent(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
 
     /// \brief Compare lhs against rhs.
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr auto
-    Compare(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
-        -> decltype(Details::RouteCompare(lhs, rhs));
+    [[nodiscard]] constexpr decltype(auto)
+    Compare(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
 
 }
 
