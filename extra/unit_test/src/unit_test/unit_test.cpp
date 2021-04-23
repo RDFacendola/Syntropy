@@ -10,7 +10,8 @@
 #include "unit_test/unit_test_application.h"
 
 #include "test_suites/syntropy/core/comparisons/compare_unit_test.h"
-#include "test_suites/syntropy/core/algorithms/swap_unit_test.h"
+
+#include "test_suites/syntropy/core/toolset/swap_unit_test.h"
 
 #include "test_suites/syntropy/language/templates/concepts_unit_test.h"
 #include "test_suites/syntropy/language/templates/invoke_unit_test.h"

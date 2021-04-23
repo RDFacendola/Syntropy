@@ -13,30 +13,38 @@
 
 // ===========================================================================
 
-#include "details/swap.details.h"
+namespace Syntropy::Toolset::Extensions
+{
+    /************************************************************************/
+    /* EXTENSIONS                                                           */
+    /************************************************************************/
+
+    /// \brief Swap two elements and return the old value of the first.
+    template <typename TType, typename UType, typename = void>
+    struct Exchange;
+
+    /// \brief Swap two elements.
+    template <typename TType, typename = void>
+    struct Swap;
+}
 
 // ===========================================================================
 
 namespace Syntropy::Toolset
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* SWAP                                                                 */
     /************************************************************************/
-
-    // Swap.
-    // =====
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr auto
-    Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept
-        -> decltype(Details::RouteExchange(lhs, Forward<UType>(rhs)));
+    [[nodiscard]] constexpr decltype(auto)
+    Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept;
 
     /// \brief Swap lhs with rhs.
     template <typename TType>
-    constexpr auto
-    Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept
-        -> decltype(Details::RouteSwap(lhs, rhs));
+    constexpr decltype(auto)
+    Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
 
 }
 

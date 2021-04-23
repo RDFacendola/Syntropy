@@ -11,12 +11,13 @@
 #include "syntropy/diagnostics/unit_test/unit_test.h"
 
 #include "syntropy/core/toolset/swap.h"
-#include "syntropy/core/toolset/swap_extensions.h"
 
 // ===========================================================================
 
 namespace UnitTest
 {
+    namespace Sy = Syntropy;
+
     /************************************************************************/
     /* SWAP TEST FIXTURE                                                    */
     /************************************************************************/
@@ -25,6 +26,14 @@ namespace UnitTest
     struct SwapTestFixture
     {
 
+    };
+
+    struct Banane
+    {
+        void Swap(Sy::Mutable<Banane>)
+        {
+
+        }
     };
 
     /************************************************************************/
@@ -38,8 +47,10 @@ namespace UnitTest
     .TestCase(u8"",
     [](auto& fixture)
     {
-        using namespace Syntropy;
-        using namespace Syntropy::Templates;
+        auto a = Banane{};
+        auto b = Banane{};
+
+        Sy::Toolset::Swap(a, b);
     });
 
 }
