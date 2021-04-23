@@ -32,7 +32,8 @@ namespace Syntropy::ComparisonsADL
 
     /// \brief Invoke the AreEqual function via extension functor.
     template <typename TType, typename UType>
-    auto InvokeAreEqualExtension(Immutable<TType> lhs, Immutable<UType> rhs)
+    [[nodiscard]] auto
+    InvokeAreEqualExtension(Immutable<TType> lhs, Immutable<UType> rhs)
         noexcept -> decltype(AreEqualExtension<TType, UType>{}(lhs, rhs))
     {
         return AreEqualExtension<TType, UType>{}(lhs, rhs);
@@ -40,8 +41,8 @@ namespace Syntropy::ComparisonsADL
 
     /// \brief Invoke the AreEquivalent function via extension functor.
     template <typename TType, typename UType>
-    auto InvokeAreEquivalentExtension(Immutable<TType> lhs,
-                                      Immutable<UType> rhs)
+    [[nodiscard]] auto
+    InvokeAreEquivalentExtension(Immutable<TType> lhs, Immutable<UType> rhs)
         noexcept -> decltype(AreEquivalentExtension<TType, UType>{}(lhs, rhs))
     {
         return AreEquivalentExtension<TType, UType>{}(lhs, rhs);
@@ -49,7 +50,8 @@ namespace Syntropy::ComparisonsADL
 
     /// \brief Invoke the Compare function via extension functor.
     template <typename TType, typename UType>
-    auto InvokeCompareExtension(Immutable<TType> lhs, Immutable<UType> rhs)
+    [[nodiscard]] auto
+    InvokeCompareExtension(Immutable<TType> lhs, Immutable<UType> rhs)
         noexcept -> decltype(CompareExtension<TType, UType>{}(lhs, rhs))
     {
         return CompareExtension<TType, UType>{}(lhs, rhs);
