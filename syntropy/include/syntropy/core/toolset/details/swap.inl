@@ -14,6 +14,39 @@
 namespace Syntropy::ToolsetADL
 {
     /************************************************************************/
+    /* SWAP EXTENSIONS                                                      */
+    /************************************************************************/
+
+    /// \brief Type alias for the AreEqual extension functor.
+    template <typename TType, typename UType>
+    using ExchangeExtension
+        = Toolset::Extensions::Exchange<TType, UType>;
+
+    /// \brief Type alias for the AreEquivalent extension functor.
+    template <typename TType, typename UType>
+    using SwapExtension
+        = Toolset::Extensions::Swap<TType, UType>;
+
+    /// \brief Invoke the Exchange function via extension functor.
+    template <typename TType, typename UType>
+    [[nodiscard]] auto
+    InvokeExchangeExtension(Mutable<TType> lhs, Forwarding<UType> rhs)
+        noexcept -> decltype(
+            ExchangeExtension<TType, UType>{}(lhs, Forward<UType>(rhs)))
+    {
+        return ExchangeExtension<TType, UType>{}(lhs, Forward<UType>(rhs));
+    }
+
+    /// \brief Invoke the Swap function via extension functor.
+    template <typename TType, typename UType>
+    [[nodiscard]] auto
+    InvokeSwapExtension(Mutable<TType> lhs, Mutable<TType> rhs)
+        noexcept -> decltype(SwapExtension<TType, UType>{}(lhs, rhs))
+    {
+        return SwapExtension<TType, UType>{}(lhs, rhs);
+    }
+
+    /************************************************************************/
     /* SWAP                                                                 */
     /************************************************************************/
 
@@ -22,27 +55,26 @@ namespace Syntropy::ToolsetADL
     constexpr decltype(auto)
     InvokeExchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept
     {
-        using Toolset::Extensions::Exchange;
-
-        auto extension = [](auto& lhs, auto&& rhs)
-            -> decltype(Exchange<decltype(lhs), decltype(rhs)>{}(lhs, rhs))
+        auto extension = [](auto&& lhs, auto&& rhs)
+            -> decltype(InvokeExchangeExtension(lhs,
+                                                Forward<decltype(rhs)>(rhs)))
         {
-            return Exchange<decltype(lhs), decltype(rhs)>{}(lhs, rhs);
+            return InvokeExchangeExtension(lhs, Forward<decltype(rhs)>(rhs));
         };
 
-        auto member_function = [](auto& lhs, auto&& rhs)
+        auto member_function = [](auto&& lhs, auto&& rhs)
             -> decltype(lhs.Exchange(Forward<decltype(rhs)>(rhs)))
         {
             return lhs.Exchange(Forward<decltype(rhs)>(rhs));
         };
 
-        auto non_member_function = [](auto& lhs, auto&& rhs)
+        auto non_member_function = [](auto&& lhs, auto&& rhs)
             -> decltype(Exchange(lhs, Forward<decltype(rhs)>(rhs)))
         {
             return Exchange(lhs, Forward<decltype(rhs)>(rhs));
         };
 
-        auto fallback = [](auto& lhs, auto&& rhs)
+        auto fallback = [](auto&& lhs, auto&& rhs)
         {
             auto result = Move(lhs);
 
@@ -62,27 +94,25 @@ namespace Syntropy::ToolsetADL
     constexpr decltype(auto)
     InvokeSwap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept
     {
-        using Toolset::Extensions::Swap;
-
-        auto extension = [](auto& lhs, auto& rhs)
-            -> decltype(Swap<decltype(lhs)>{}(lhs, rhs))
+        auto extension = [](auto&& lhs, auto&& rhs)
+            -> decltype(InvokeSwapExtension(lhs, rhs))
         {
-            return Swap<decltype(lhs)>{}(lhs, rhs);
+            return InvokeSwapExtension(lhs, rhs);
         };
 
-        auto member_function = [](auto& lhs, auto& rhs)
+        auto member_function = [](auto&& lhs, auto&& rhs)
             -> decltype(lhs.Swap(rhs))
         {
             return lhs.Swap(rhs);
         };
 
-        auto non_member_function = [](auto& lhs, auto& rhs)
+        auto non_member_function = [](auto&& lhs, auto&& rhs)
             -> decltype(Swap(lhs, rhs))
         {
             return Swap(lhs, rhs);
         };
 
-        auto fallback =[](auto& lhs, auto& rhs)
+        auto fallback =[](auto&& lhs, auto&& rhs)
         {
             rhs = Toolset::Exchange(lhs, rhs);
         };

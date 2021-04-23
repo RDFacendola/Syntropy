@@ -16,7 +16,7 @@
 namespace Syntropy::Toolset::Extensions
 {
     /************************************************************************/
-    /* EXTENSIONS                                                           */
+    /* SWAP EXTENSIONS                                                      */
     /************************************************************************/
 
     /// \brief Swap two elements and return the old value of the first.
