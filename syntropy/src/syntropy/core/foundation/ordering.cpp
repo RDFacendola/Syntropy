@@ -15,12 +15,20 @@ namespace Syntropy
     /* ORDERING                                                             */
     /************************************************************************/
 
-    Immutable<String> ToString(Immutable<Ordering> rhs) noexcept
+    Immutable<String>
+    ToString(Immutable<Ordering> rhs) noexcept
     {
-        static const auto kLess = String{u8"Less"};
-        static const auto kEquivalent = String{u8"Equivalent"};
-        static const auto kGreater = String{u8"Greater"};
-        static const auto kIncomparable = String{u8"Incomparable"};
+        static const auto kLess
+            = String{u8"Syntropy::Ordering::kLess"};
+
+        static const auto kEquivalent
+            = String{u8"Syntropy::Ordering::kEquivalent"};
+
+        static const auto kGreater
+            = String{u8"Syntropy::Ordering::kGreater"};
+
+        static const auto kIncomparable
+            = String{u8"Syntropy::Ordering::kIncomparable"};
 
         if(rhs == Ordering::kLess)
         {
