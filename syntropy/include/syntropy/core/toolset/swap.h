@@ -15,38 +15,39 @@
 
 // ===========================================================================
 
-namespace Syntropy::Toolset::Extensions
+namespace Syntropy
 {
     /************************************************************************/
-    /* SWAP EXTENSIONS                                                      */
+    /* TOOLSET EXTENSIONS                                                   */
     /************************************************************************/
 
-    /// \brief Swap two elements and return the old value of the first.
-    template <typename TType, typename UType, typename = void>
-    struct Exchange;
+    namespace Toolset::Extensions
+    {
+        /// \brief Swap two elements and return the old value of the first.
+        template <typename TType, typename UType, typename = void>
+        struct Exchange;
 
-    /// \brief Swap two elements.
-    template <typename TType, typename = void>
-    struct Swap;
-}
+        /// \brief Swap two elements.
+        template <typename TType, typename = void>
+        struct Swap;
+    }
 
-// ===========================================================================
-
-namespace Syntropy::Toolset
-{
     /************************************************************************/
-    /* SWAP                                                                 */
+    /* TOOLSET                                                              */
     /************************************************************************/
 
-    /// \brief Swap lhs with rhs and return the old value of lhs.
-    template <typename TType, typename UType>
-    [[nodiscard]] constexpr TType
-    Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept;
+    namespace Toolset
+    {
+        /// \brief Swap lhs with rhs and return the old value of lhs.
+        template <typename TType, typename UType>
+        [[nodiscard]] constexpr TType
+        Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept;
 
-    /// \brief Swap lhs with rhs.
-    template <typename TType>
-    constexpr void
-    Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
+        /// \brief Swap lhs with rhs.
+        template <typename TType>
+        constexpr void
+        Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
+    }
 
 }
 
