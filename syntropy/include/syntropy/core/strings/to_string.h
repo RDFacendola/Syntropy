@@ -14,24 +14,30 @@
 
 // ===========================================================================
 
-#include "details/to_string.details.h"
+namespace Syntropy::Strings::Extensions
+{
+    /************************************************************************/
+    /* STRING EXTENSIONS                                                    */
+    /************************************************************************/
+
+    /// \brief Convert an object to a string.
+    template <typename TType, typename = void>
+    struct ToString;
+
+}
 
 // ===========================================================================
 
 namespace Syntropy::Strings
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* STRINGS                                                              */
     /************************************************************************/
-
-    // ToString.
-    // =========
 
     /// \brief Convert rhs to a string.
     template <typename TType>
-    auto
-    ToString(Immutable<TType> rhs) noexcept
-        -> decltype(Details::RouteToString(rhs));
+    [[nodiscard]] constexpr decltype(auto)
+    ToString(Immutable<TType> rhs) noexcept;
 
 }
 

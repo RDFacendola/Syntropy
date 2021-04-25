@@ -33,7 +33,6 @@
 
 #include "syntropy/core/reflection/type_id.h"
 
-#include "syntropy/core/strings/string_extensions.h"
 #include "syntropy/core/strings/string_view.h"
 #include "syntropy/core/strings/string.h"
 
