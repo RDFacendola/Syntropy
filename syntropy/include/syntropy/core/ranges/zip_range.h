@@ -132,7 +132,7 @@ namespace Syntropy
         template <Records::Record TTuple>
         [[nodiscard]] constexpr auto
         MakeZipRangeFromTuple(Immutable<TTuple> ranges) noexcept;
-        
+
         /// \brief Create a new ZipRange by element-wise joining different,
         ///        ranges flattening eventual ZipRanges on the first level.
         template <ForwardRange... TRanges>
@@ -190,20 +190,20 @@ namespace Syntropy
     [[nodiscard]] constexpr decltype(auto)
     Get(Movable<ZipRange<TRanges...>> range) noexcept;
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Records
-{
     /************************************************************************/
-    /* RECORD TRAITS                                                        */
+    /* RECORDS                                                              */
     /************************************************************************/
 
-    /// \brief Partial template specialization for tuples.
+    /// \brief Partial template specialization for ZipRanges.
     template <Syntropy::Ranges::ForwardRange... TRanges>
-    struct RankTrait<ZipRange<TRanges...>>
+    struct RecordRankTrait<ZipRange<TRanges...>>
         : Templates::IntType<sizeof...(TRanges)> {};
+
+    /// \brief Partial template specialization for ZipRanges.
+    template <Int TIndex, Syntropy::Ranges::ForwardRange... TRanges>
+    struct RecordElementTypeTrait
+        : Templates::Alias<Templates::ElementIndexOf<TIndex, TRanges...>> {};
+
 }
 
 // ===========================================================================
