@@ -26,14 +26,25 @@
 
 // ===========================================================================
 
+namespace Syntropy::Records::Extensions
+{
+    /************************************************************************/
+    /* RECORDS EXTENSIONS                                                   */
+    /************************************************************************/
+
+    /// \brief Access a record element by index.
+    template <Int TIndex, typename TRecord, typename = void>
+    struct Get;
+
+}
+
+// ===========================================================================
+
 namespace Syntropy::Records
 {
     /************************************************************************/
-    /* TYPE TRAITS & FUNCTIONS                                              */
+    /* TYPE TRAITS                                                          */
     /************************************************************************/
-
-    // Record.
-    // =======
 
     /// \brief Number of elements in a record.
     template <typename TRecord>
@@ -48,14 +59,6 @@ namespace Syntropy::Records
     {
         // : Syntropy::Templates::Alias<element type>;
     };
-
-    /// \brief Access a record element by index.
-    ///
-    /// \remarks Ill-formed if no such element exists.
-    template <Int TIndex, typename TRecord>
-    [[nodiscard]] constexpr auto
-    Get(Forwarding<TRecord> record) noexcept
-        -> decltype(Details::RouteGet<TIndex>(Forward<TRecord>(record)));
 
     /************************************************************************/
     /* RECORD                                                               */
@@ -72,7 +75,8 @@ namespace Syntropy::Records
 
     /// \brief Concept for a reference to a record.
     template <typename TRecord>
-    concept RecordReference = Record<Templates::UnqualifiedOf<TRecord>>;
+    concept RecordReference
+        = Record<Templates::UnqualifiedOf<TRecord>>;
 
     /// \brief Tag type associated to records.
     struct RecordTag{};
@@ -129,14 +133,19 @@ namespace Syntropy::Records
     // Element access.
     // ===============
 
+    /// \brief Access a record element by index.
+    ///
+    /// \remarks Ill-formed if the index exceeds record's bounds.
+    template <Int TIndex, RecordReference TRecord>
+    [[nodiscard]] constexpr decltype(auto)
+    Get(Forwarding<TRecord> record) noexcept;
+
     /// \brief Access the first element of type TElement in a record.
     ///
     /// \remarks Ill-formed if no such element exist.
     template <typename TElement, RecordReference TRecord>
-    [[nodiscard]] constexpr auto
-    Get(Forwarding<TRecord> record) noexcept
-        -> decltype(Records::Get<ElementIndexOf<TElement, TRecord>>(
-            Forward<TRecord>(record)));
+    [[nodiscard]] constexpr decltype(auto)
+    Get(Forwarding<TRecord> record) noexcept;
 
     // Functional.
     // ===========

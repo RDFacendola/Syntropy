@@ -7,34 +7,85 @@
 
 // ===========================================================================
 
+namespace Syntropy::RecordsADL
+{
+    /************************************************************************/
+    /* RANGE EXTENSIONS                                                     */
+    /************************************************************************/
+
+    /// \brief Type alias for the Get extension functor.
+    template <Int TIndex, typename TRecord>
+    using GetExtension
+        = Records::Extensions::Get<TIndex, TRecord>;
+
+    /// \brief Invoke the Get function via extension functor.
+    template <Int TIndex, typename TRecord>
+    [[nodiscard]] constexpr auto
+    InvokeGetExtension(Forwarding<TRecord> rhs)
+        noexcept -> decltype(GetExtension<TIndex, TRecord>{}(Forward<TRecord>(rhs)))
+    {
+        return GetExtension<TIndex, TRecord>{}(Forward<TRecord>(rhs));
+    }
+
+    /************************************************************************/
+    /* RECORDS                                                              */
+    /************************************************************************/
+
+    /// \brief Invoke the Get function, trying different implementations.
+    template <typename TIndex, typename TRange>
+    constexpr decltype(auto)
+    InvokeGet(Forwarding<TRange> rhs) noexcept
+    {
+        auto extension = [](auto&& rhs)
+            -> decltype(InvokeGetExtension<TIndex>(Forward<TRange>(rhs)))
+        {
+            return InvokeGetExtension<TIndex>(Forward<TRange>(rhs));
+        };
+
+        auto member_function = [](auto&& rhs)
+            -> decltype(rhs.template Get<TIndex>())
+        {
+            return rhs.template Get<TIndex>();
+        };
+
+        auto non_member_function = [](auto&& rhs)
+            -> decltype(Get<TIndex>(Forward<TRange>(rhs)))
+        {
+            return Get<TIndex>(Forward<TRange>(rhs));
+        };
+
+        return Templates::InvokeAny(extension,
+                                    member_function,
+                                    non_member_function)(rhs);
+    }
+
+}
+
+// ===========================================================================
+
 namespace Syntropy::Records
 {
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Record.
-    // =========
-
-    template <Int TIndex, typename TRecord>
-    [[nodiscard]] constexpr auto
-    Get(Forwarding<TRecord> record) noexcept
-        -> decltype(Details::RouteGet<TIndex>(Forward<TRecord>(record)))
-    {
-        return Details::RouteGet<TIndex>(Forward<TRecord>(record));
-    }
-
     // Element access.
     // ===============
 
-    template <typename TElement, RecordReference TRecord>
-    [[nodiscard]] constexpr auto
+    template <Int TIndex, RecordReference TRecord>
+    [[nodiscard]] constexpr decltype(auto)
     Get(Forwarding<TRecord> record) noexcept
-        -> decltype(Records::Get<ElementIndexOf<TElement, TRecord>>(
-            Forward<TRecord>(record)))
     {
-        return Records::Get<ElementIndexOf<TElement, TRecord>>(
-            Forward<TRecord>(record));
+        return RecordsADL::InvokeGet<TIndex>(Forward<TRecord>(record));
+    }
+
+    template <typename TElement, RecordReference TRecord>
+    [[nodiscard]] constexpr decltype(auto)
+    Get(Forwarding<TRecord> record) noexcept
+    {
+        constexpr auto TIndex = ElementIndexOf<TElement, TRecord>;
+
+        return RecordsADL::InvokeGet<TIndex>(Forward<TRecord>(record));
     }
 
     // Functional.
