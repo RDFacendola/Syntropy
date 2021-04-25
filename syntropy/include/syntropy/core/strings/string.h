@@ -66,11 +66,11 @@ namespace Syntropy
         operator StringView() const noexcept;
 
         /// \brief Access the underlying code-units.
-        [[nodiscard]] Memory::ByteSpan
+        [[nodiscard]] ByteSpan
         GetCodeUnits() const noexcept;
 
         /// \brief Get the allocator the string was allocated on.
-        [[nodiscard]] Mutable<Memory::BaseAllocator>
+        [[nodiscard]] Mutable<BaseAllocator>
         GetAllocator() const noexcept;
 
         /// \brief Swap this string with another one.
@@ -84,7 +84,7 @@ namespace Syntropy
 
         /// \brief Sequence of code-units. Each code-point is encoded by no
         ///        more than four code-units.
-        Memory::Buffer code_units_;
+        Buffer code_units_;
 
     };
 

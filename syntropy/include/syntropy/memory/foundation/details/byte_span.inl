@@ -5,17 +5,15 @@
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* MEMORY                                                               */
     /************************************************************************/
 
-    // Alignment.
-    // ==========
-
     [[nodiscard]] inline ByteSpan
-    Align(Immutable<ByteSpan> lhs, Alignment alignment) noexcept
+    Memory
+    ::Align(Immutable<ByteSpan> lhs, Alignment alignment) noexcept
     {
         auto begin = Align(Ranges::Data(lhs), alignment);
         auto end = Ranges::Data(lhs) + Ranges::Count(lhs);
@@ -24,13 +22,15 @@ namespace Syntropy::Memory
     }
 
     [[nodiscard]] inline RWByteSpan
-    Align(Immutable<RWByteSpan> lhs, Alignment alignment) noexcept
+    Memory
+    ::Align(Immutable<RWByteSpan> lhs, Alignment alignment) noexcept
     {
         return ToReadWrite(Align(ToReadOnly(lhs), alignment));
     }
 
     [[nodiscard]] inline ByteSpan
-    Floor(Immutable<ByteSpan> lhs, Bytes size) noexcept
+    Memory
+    ::Floor(Immutable<ByteSpan> lhs, Bytes size) noexcept
     {
         auto floor_size = Math::Floor(Ranges::Count(lhs), ToInt(size));
 
@@ -38,17 +38,16 @@ namespace Syntropy::Memory
     }
 
     [[nodiscard]] inline RWByteSpan
-    Floor(Immutable<RWByteSpan> lhs, Bytes size) noexcept
+    Memory
+    ::Floor(Immutable<RWByteSpan> lhs, Bytes size) noexcept
     {
         return ToReadWrite(Floor(ToReadOnly(lhs), size));
     }
 
-    // Conversions.
-    // ============
-
     template <typename TObject>
     [[nodiscard]] inline ByteSpan
-    BytesOf(Immutable<TObject> rhs) noexcept
+    Memory
+    ::BytesOf(Immutable<TObject> rhs) noexcept
     {
         auto data = ToBytePtr(PtrOf(rhs));
         auto size = SizeOf<TObject>();
@@ -58,28 +57,32 @@ namespace Syntropy::Memory
 
     template <typename TObject>
     [[nodiscard]] inline RWByteSpan
-    BytesOf(Mutable<TObject> rhs) noexcept
+    Memory
+    ::BytesOf(Mutable<TObject> rhs) noexcept
     {
         return ToReadWrite(BytesOf(ToImmutable(rhs)));
     }
 
     template <typename TObject>
     [[nodiscard]] inline Immutable<TObject>
-    FromBytesOf(Immutable<ByteSpan> rhs) noexcept
+    Memory
+    ::FromBytesOf(Immutable<ByteSpan> rhs) noexcept
     {
         return *FromTypelessPtr<TObject>(Ranges::Data(rhs));
     }
 
     template <typename TObject>
     [[nodiscard]] inline Mutable<TObject>
-    FromBytesOf(Immutable<RWByteSpan> rhs) noexcept
+    Memory
+    ::FromBytesOf(Immutable<RWByteSpan> rhs) noexcept
     {
         return *FromTypelessPtr<TObject>(Ranges::Data(rhs));
     }
 
     template <ContiguousRange TRange>
     [[nodiscard]] inline auto
-    RangeBytesOf(Immutable<TRange> rhs) noexcept
+    Memory
+    ::RangeBytesOf(Immutable<TRange> rhs) noexcept
     {
         using ElementType = RangeElementTypeOf<TRange>;
 
@@ -90,20 +93,23 @@ namespace Syntropy::Memory
     }
 
     [[nodiscard]] inline Immutable<ByteSpan>
-    RangeBytesOf(Immutable<ByteSpan> rhs) noexcept
+    Memory
+    ::RangeBytesOf(Immutable<ByteSpan> rhs) noexcept
     {
         return rhs;
     }
 
     [[nodiscard]] inline Immutable<RWByteSpan>
-    RangeBytesOf(Immutable<RWByteSpan> rhs) noexcept
+    Memory
+    ::RangeBytesOf(Immutable<RWByteSpan> rhs) noexcept
     {
         return rhs;
     }
 
     template <ContiguousRange TRange>
     [[nodiscard]] inline TRange
-    FromRangeBytesOf(Immutable<ByteSpan> rhs) noexcept
+    Memory
+    ::FromRangeBytesOf(Immutable<ByteSpan> rhs) noexcept
     {
         if constexpr (Templates::IsSame<TRange, ByteSpan>)
         {
@@ -122,13 +128,15 @@ namespace Syntropy::Memory
 
     template <ContiguousRange TRange>
     [[nodiscard]] inline TRange
-    FromRangeBytesOf(Immutable<RWByteSpan> rhs) noexcept
+    Memory
+    ::FromRangeBytesOf(Immutable<RWByteSpan> rhs) noexcept
     {
         return ToReadWrite(FromRangeBytesOf<TRange>(ToReadOnly(rhs)));
     }
 
-    // Utilities.
-    // ==========
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
     [[nodiscard]] constexpr ByteSpan
     MakeByteSpan(BytePtr begin, Bytes size) noexcept
@@ -159,7 +167,7 @@ namespace Syntropy::Memory
     MakeByteSpan(TType(&rhs)[VSize]) noexcept
     {
         auto data = ToBytePtr(PtrOf(rhs[0]));
-        auto size = VSize * SizeOf<TType>();
+        auto size = VSize * Memory::SizeOf<TType>();
 
         return MakeByteSpan(data, size);
     }

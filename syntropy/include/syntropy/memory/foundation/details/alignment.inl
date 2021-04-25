@@ -5,34 +5,38 @@
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* MEMORY                                                               */
     /************************************************************************/
 
     template <typename TType>
     [[nodiscard]] constexpr Alignment
-    AlignmentOf(Immutable<TType> rhs) noexcept
+    Memory
+    ::AlignmentOf(Immutable<TType> rhs) noexcept
     {
         return Alignment(std::align_val_t{ alignof(TType) });
     }
 
     template <typename TType>
     [[nodiscard]] constexpr Alignment
-    AlignmentOf() noexcept
+    Memory
+    ::AlignmentOf() noexcept
     {
         return Alignment(std::align_val_t{ alignof(TType) });
     }
 
     [[nodiscard]] constexpr Alignment
-    MaxAlignment() noexcept
+    Memory
+    ::MaxAlignment() noexcept
     {
         return Alignment(std::align_val_t{ alignof(std::max_align_t) });
     }
 
     [[nodiscard]] inline Bool
-    IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept
+    Memory
+    ::IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
@@ -40,7 +44,8 @@ namespace Syntropy::Memory
     }
 
     [[nodiscard]] inline BytePtr
-    Align(BytePtr pointer, Alignment alignment) noexcept
+    Memory
+    ::Align(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
@@ -50,7 +55,8 @@ namespace Syntropy::Memory
     }
 
     [[nodiscard]] inline RWBytePtr
-    Align(RWBytePtr pointer, Alignment alignment) noexcept
+    Memory
+    ::Align(RWBytePtr pointer, Alignment alignment) noexcept
     {
         using Syntropy::ToReadOnly;
         using Syntropy::ToReadWrite;
@@ -59,7 +65,8 @@ namespace Syntropy::Memory
     }
 
     [[nodiscard]] inline BytePtr
-    AlignDown(BytePtr pointer, Alignment alignment) noexcept
+    Memory
+    ::AlignDown(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
@@ -69,7 +76,8 @@ namespace Syntropy::Memory
     }
 
     [[nodiscard]] inline RWBytePtr
-    AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
+    Memory
+    ::AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
     {
         using Syntropy::ToReadOnly;
         using Syntropy::ToReadWrite;
@@ -78,7 +86,18 @@ namespace Syntropy::Memory
     }
 
     /************************************************************************/
-    /* BITWISE OPERATIONS                                                   */
+    /* MEMORY LITERALS                                                      */
+    /************************************************************************/
+
+    [[nodiscard]] constexpr Alignment
+    MemoryLiterals
+    ::operator "" _Alignment(IntLiteral lhs) noexcept
+    {
+        return Alignment(lhs);
+    }
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
     [[nodiscard]] constexpr Mutable<Alignment>
@@ -109,10 +128,6 @@ namespace Syntropy::Memory
         return (rhs >= 0) ? ToAlignment(ToInt(lhs) << rhs) : (lhs >> -rhs);
     }
 
-    /************************************************************************/
-    /* CONVERSION                                                           */
-    /************************************************************************/
-
     [[nodiscard]] constexpr Int
     ToInt(Alignment lhs) noexcept
     {
@@ -135,22 +150,6 @@ namespace Syntropy::Memory
     ToAlignment(Bytes lhs) noexcept
     {
         return ToAlignment(ToInt(lhs));
-    }
-
-}
-
-// ===========================================================================
-
-namespace Syntropy::Memory::Literals
-{
-    /************************************************************************/
-    /* LITERALS                                                             */
-    /************************************************************************/
-
-    [[nodiscard]] constexpr Alignment
-    operator "" _Alignment(IntLiteral lhs) noexcept
-    {
-        return Alignment(lhs);
     }
 
 }

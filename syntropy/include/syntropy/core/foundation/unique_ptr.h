@@ -66,8 +66,8 @@ namespace Syntropy
         ///          undefined.
         template <typename UType>
         BaseUniquePtr(Immutable<RWPtr<UType>> pointee,
-                      Immutable<Memory::Bytes> size,
-                      Mutable<Memory::BaseAllocator> allocator) noexcept;
+                      Immutable<Bytes> size,
+                      Mutable<BaseAllocator> allocator) noexcept;
 
         /// \brief Destroy the underlying object.
         ~BaseUniquePtr() noexcept;
@@ -108,13 +108,13 @@ namespace Syntropy
         Get() const noexcept;
 
         /// \brief Get the size of the pointed object, in Bytes.
-        [[nodiscard]] Memory::Bytes
+        [[nodiscard]] Bytes
         GetSize() const noexcept;
 
         /// \brief Get the allocator the pointed object was allocated on.
         /// \remarks If the pointed object is null, accessing the returned
         ///          value results in undefined behavior.
-        [[nodiscard]] Mutable<Memory::BaseAllocator>
+        [[nodiscard]] Mutable<BaseAllocator>
         GetAllocator() const noexcept;
 
     private:
@@ -125,11 +125,11 @@ namespace Syntropy
         RWPtr<TType> pointee_{ nullptr };
 
         /// \brief Size of the pointed object.
-        Memory::Bytes size_;
+        Bytes size_;
 
         /// \brief Allocator the pointee was allocated by. Null for
         ///        empty pointers.
-        RWPtr<Memory::BaseAllocator> allocator_{ nullptr };
+        RWPtr<BaseAllocator> allocator_{ nullptr };
     };
 
     /************************************************************************/
@@ -258,7 +258,7 @@ namespace Syntropy
     /// \brief Allocate a new object on the given allocator.
     template <typename TType, typename...TArguments>
     [[nodiscard]]  UniquePtr<TType>
-    MakeUniqueOnAllocator(Mutable<Memory::BaseAllocator> allocator,
+    MakeUniqueOnAllocator(Mutable<BaseAllocator> allocator,
                           Forwarding<TArguments>... arguments) noexcept;
 
     /// \brief Allocate a new object on the active allocator.
@@ -269,7 +269,7 @@ namespace Syntropy
     /// \brief Allocate a new object on the given allocator.
     template <typename TType, typename...TArguments>
     [[nodiscard]]  RWUniquePtr<TType>
-    MakeRWUniqueOnAllocator(Mutable<Memory::BaseAllocator> allocator,
+    MakeRWUniqueOnAllocator(Mutable<BaseAllocator> allocator,
                             Forwarding<TArguments>... arguments) noexcept;
 
 }

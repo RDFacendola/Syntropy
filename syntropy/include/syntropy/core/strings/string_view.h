@@ -38,7 +38,7 @@ namespace Syntropy
 
         /// \brief Create a view to a string.
         constexpr
-        explicit StringView(Immutable<Memory::ByteSpan> code_points) noexcept;
+        explicit StringView(Immutable<ByteSpan> code_points) noexcept;
 
         /// \brief Default copy-constructor.
         constexpr
@@ -52,13 +52,13 @@ namespace Syntropy
         ~StringView() noexcept = default;
 
         /// \brief Access the string view code-points.
-        [[nodiscard]] Immutable<Memory::ByteSpan>
+        [[nodiscard]] Immutable<ByteSpan>
         GetCodeUnits() const noexcept;
 
     private:
 
         /// \brief Code-points this view refers to.
-        Memory::ByteSpan code_units_;
+        ByteSpan code_units_;
 
     };
 

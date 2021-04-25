@@ -122,10 +122,10 @@ namespace Syntropy
     template <Int TSize>
     String
     ::String(StringLiteral<TSize> characters) noexcept
-        : code_units_(Memory::ToBytes(TSize))
+        : code_units_(ToBytes(TSize))
     {
         Memory::Copy(code_units_,
-                     Memory::MakeByteSpan(characters));
+                     MakeByteSpan(characters));
     }
 
     inline
@@ -135,14 +135,14 @@ namespace Syntropy
         return StringView{ code_units_ };
     }
 
-    [[nodiscard]] inline Memory::ByteSpan
+    [[nodiscard]] inline ByteSpan
     String
     ::GetCodeUnits() const noexcept
     {
         return ViewOf(code_units_);
     }
 
-    [[nodiscard]] inline Mutable<Memory::BaseAllocator>
+    [[nodiscard]] inline Mutable<BaseAllocator>
     String
     ::GetAllocator() const noexcept
     {

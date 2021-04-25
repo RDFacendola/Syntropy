@@ -5,7 +5,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
     /* SIZE                                                                 */
@@ -36,7 +36,27 @@ namespace Syntropy::Memory
     }
 
     /************************************************************************/
-    /* AIRTHMETIC OPERATIONS                                                */
+    /* MEMORY                                                               */
+    /************************************************************************/
+
+    template <typename TType>
+    [[nodiscard]] constexpr Bytes
+    Memory
+    ::SizeOf(Immutable<TType> rhs) noexcept
+    {
+        return Bytes{ sizeof(rhs) };
+    }
+
+    template <typename TType>
+    [[nodiscard]] constexpr Bytes
+    Memory
+    ::SizeOf() noexcept
+    {
+        return Bytes{ sizeof(TType) };
+    }
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
     template <Templates::IsRatio TUnit>
@@ -187,10 +207,6 @@ namespace Syntropy::Memory
         return Size<TUnit>{ ToInt(lhs) % ToInt(rhs) };
     }
 
-    /************************************************************************/
-    /* COMPARISON                                                           */
-    /************************************************************************/
-
      template <Templates::IsRatio TUnit, Templates::IsRatio UUnit>
      [[nodiscard]] constexpr Ordering
      operator<=>(Immutable<Size<TUnit>> lhs,
@@ -217,73 +233,6 @@ namespace Syntropy::Memory
          return ToInt(common_lhs) == ToInt(common_rhs);
      }
 
-     /************************************************************************/
-     /* CONVERSION                                                           */
-     /************************************************************************/
-
-    template <typename TSize, Templates::IsRatio TUnitTo>
-    requires Templates::IsSame<TSize, Size<TUnitTo>>
-    [[nodiscard]] constexpr TSize
-    ToSize(Int rhs) noexcept
-    {
-        return Size<TUnitTo>{ rhs };
-    }
-
-    template <Templates::IsRatio TUnit>
-    [[nodiscard]] constexpr Int
-    ToInt(Immutable<Size<TUnit>> rhs) noexcept
-    {
-        return static_cast<Int>(rhs);
-    }
-
-    [[nodiscard]] constexpr Bytes
-    ToBytes(Int rhs) noexcept
-    {
-        return ToSize<Bytes>(rhs);
-    }
-
-    template <Templates::IsRatio TUnit>
-    [[nodiscard]] constexpr Bytes
-    ToBytes(Immutable<Size<TUnit>> rhs) noexcept
-    {
-        return ToSize<Bytes>(rhs);
-    }
-
-    template <typename TSize,
-              Templates::IsRatio TUnitFrom,
-              Templates::IsRatio TUnitTo>
-    requires Templates::IsSame<TSize, Size<TUnitTo>>
-    [[nodiscard]] constexpr TSize
-    ToSize(Immutable<Size<TUnitFrom>> rhs) noexcept
-    {
-        using TUnit = Templates::RatioDivide<TUnitFrom, TUnitTo>;
-
-        auto count = (ToInt(rhs) * TUnit::kNumerator) / TUnit::kDenominator;
-
-        return TSize{ count };
-    }
-
-    /************************************************************************/
-    /* BASIC                                                                */
-    /************************************************************************/
-
-    template <typename TType>
-    [[nodiscard]] constexpr Bytes
-    SizeOf(Immutable<TType> rhs) noexcept
-    {
-        return Bytes{ sizeof(rhs) };
-    }
-
-    template <typename TType>
-    [[nodiscard]] constexpr Bytes
-    SizeOf() noexcept
-    {
-        return Bytes{ sizeof(TType) };
-    }
-
-    /************************************************************************/
-    /* POINTERS                                                             */
-    /************************************************************************/
 
     template <Templates::IsRatio TUnit>
     constexpr Mutable<RWBytePtr>
@@ -348,69 +297,116 @@ namespace Syntropy::Memory
     {
         return lhs - ToInt(ToBytes(rhs));
     }
-}
 
-// ===========================================================================
+    template <typename TSize, Templates::IsRatio TUnitTo>
+    requires Templates::IsSame<TSize, Size<TUnitTo>>
+    [[nodiscard]] constexpr TSize
+    ToSize(Int rhs) noexcept
+    {
+        return Size<TUnitTo>{ rhs };
+    }
 
-namespace Syntropy::Memory::Literals
-{
+    template <Templates::IsRatio TUnit>
+    [[nodiscard]] constexpr Int
+    ToInt(Immutable<Size<TUnit>> rhs) noexcept
+    {
+        return static_cast<Int>(rhs);
+    }
+
+    [[nodiscard]] constexpr Bytes
+    ToBytes(Int rhs) noexcept
+    {
+        return ToSize<Bytes>(rhs);
+    }
+
+    template <Templates::IsRatio TUnit>
+    [[nodiscard]] constexpr Bytes
+    ToBytes(Immutable<Size<TUnit>> rhs) noexcept
+    {
+        return ToSize<Bytes>(rhs);
+    }
+
+    template <typename TSize,
+              Templates::IsRatio TUnitFrom,
+              Templates::IsRatio TUnitTo>
+    requires Templates::IsSame<TSize, Size<TUnitTo>>
+    [[nodiscard]] constexpr TSize
+    ToSize(Immutable<Size<TUnitFrom>> rhs) noexcept
+    {
+        using TUnit = Templates::RatioDivide<TUnitFrom, TUnitTo>;
+
+        auto count = (ToInt(rhs) * TUnit::kNumerator) / TUnit::kDenominator;
+
+        return TSize{ count };
+    }
+
     /************************************************************************/
-    /* LITERALS                                                             */
+    /* MEMORY LITERALS                                                      */
     /************************************************************************/
 
     [[nodiscard]]  constexpr Bytes
-    operator "" _Bytes(IntLiteral lhs) noexcept
+    MemoryLiterals
+    ::operator "" _Bytes(IntLiteral lhs) noexcept
     {
         return Bytes(lhs);
     }
 
     [[nodiscard]] constexpr KiloBytes
-    operator "" _KBytes(IntLiteral lhs) noexcept
+    MemoryLiterals
+    ::operator "" _KBytes(IntLiteral lhs) noexcept
     {
         return KiloBytes(lhs);
     }
 
     [[nodiscard]] constexpr MegaBytes
-    operator "" _MBytes(IntLiteral lhs) noexcept
+    MemoryLiterals
+    ::operator "" _MBytes(IntLiteral lhs) noexcept
     {
         return MegaBytes(lhs);
     }
 
     [[nodiscard]] constexpr GigaBytes
-    operator "" _GBytes(IntLiteral lhs) noexcept
+    MemoryLiterals
+    ::operator "" _GBytes(IntLiteral lhs) noexcept
     {
         return GigaBytes(lhs);
     }
 
     [[nodiscard]] constexpr TeraBytes
-    operator "" _TBytes(IntLiteral lhs) noexcept
+    MemoryLiterals
+    ::operator "" _TBytes(IntLiteral lhs) noexcept
     {
         return TeraBytes(lhs);
     }
 
     [[nodiscard]] constexpr KibiBytes
-    operator "" _KiBytes(IntLiteral lhs) noexcept
+    MemoryLiterals
+    ::operator "" _KiBytes(IntLiteral lhs) noexcept
     {
         return KibiBytes(lhs);
     }
 
     [[nodiscard]] constexpr MebiBytes
-    operator "" _MiBytes(IntLiteral lhs) noexcept
+    MemoryLiterals
+    ::operator "" _MiBytes(IntLiteral lhs) noexcept
     {
         return MebiBytes(lhs);
     }
 
     [[nodiscard]] constexpr GibiBytes
-    operator "" _GiBytes(IntLiteral lhs) noexcept
+    MemoryLiterals
+    ::operator "" _GiBytes(IntLiteral lhs) noexcept
     {
         return GibiBytes(lhs);
     }
 
     [[nodiscard]] constexpr TebiBytes
-    operator "" _TiBytes(IntLiteral lhs) noexcept
+    MemoryLiterals
+    ::operator "" _TiBytes(IntLiteral lhs) noexcept
     {
         return TebiBytes(lhs);
     }
+
 }
 
 // ===========================================================================

@@ -5,7 +5,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
     /* BASE ADDRESS                                                         */
@@ -20,7 +20,7 @@ namespace Syntropy::Memory
 
     template <typename TTraits>
     constexpr BaseAddress<TTraits>
-    ::BaseAddress(TPointer pointer) noexcept
+    ::BaseAddress(PointerType pointer) noexcept
         : address_(reinterpret_cast<Int>(pointer))
     {
 
@@ -40,6 +40,60 @@ namespace Syntropy::Memory
     ::operator Bool() const noexcept
     {
         return !!address_;
+    }
+
+    /************************************************************************/
+    /* MEMORY                                                               */
+    /************************************************************************/
+
+    [[nodiscard]] inline Address
+    Memory
+    ::ToAddress(TypelessPtr rhs) noexcept
+    {
+        using Syntropy::ToInt;
+
+        return Address{ ToInt(reinterpret_cast<std::intptr_t>(rhs)) };
+    }
+
+    [[nodiscard]] inline RWAddress
+    Memory
+    ::ToAddress(RWTypelessPtr rhs) noexcept
+    {
+        using Syntropy::ToInt;
+
+        return RWAddress{ ToInt(reinterpret_cast<std::intptr_t>(rhs)) };
+    }
+
+    template <typename TType>
+    [[nodiscard]] inline Ptr<TType>
+    Memory
+    ::FromAddress(Address rhs) noexcept
+    {
+        return reinterpret_cast<Ptr<TType>>(ToInt(rhs));
+    }
+
+    template <typename TType>
+    [[nodiscard]] inline RWPtr<TType>
+    Memory
+    ::FromAddress(RWAddress rhs) noexcept
+    {
+        return reinterpret_cast<RWPtr<TType>>(ToInt(rhs));
+    }
+
+    template <typename TReference>
+    [[nodiscard]] constexpr Address
+    Memory
+    ::MakeAddress(Immutable<TReference> rhs) noexcept
+    {
+        return Address{ PtrOf(rhs) };
+    }
+
+    template <typename TReference>
+    [[nodiscard]] constexpr RWAddress
+    Memory
+    ::MakeAddress(Mutable<TReference> rhs) noexcept
+    {
+        return RWAddress{ PtrOf(rhs) };
     }
 
     /************************************************************************/
@@ -94,46 +148,6 @@ namespace Syntropy::Memory
         return ToInt(lhs) <=> ToInt(rhs);
     }
 
-    // Conversions.
-    // ============
-
-    template <typename TTraits>
-    [[nodiscard]] constexpr Int
-    ToInt(BaseAddress<TTraits> rhs) noexcept
-    {
-        return rhs.address_;
-    }
-
-    [[nodiscard]] inline Address
-    ToAddress(TypelessPtr rhs) noexcept
-    {
-        using Syntropy::ToInt;
-
-        return Address{ ToInt(reinterpret_cast<std::intptr_t>(rhs)) };
-    }
-
-    [[nodiscard]] inline RWAddress
-    ToAddress(RWTypelessPtr rhs) noexcept
-    {
-        using Syntropy::ToInt;
-
-        return RWAddress{ ToInt(reinterpret_cast<std::intptr_t>(rhs)) };
-    }
-
-    template <typename TType>
-    [[nodiscard]] inline Ptr<TType>
-    FromAddress(Address rhs) noexcept
-    {
-        return reinterpret_cast<Ptr<TType>>(ToInt(rhs));
-    }
-
-    template <typename TType>
-    [[nodiscard]] inline RWPtr<TType>
-    FromAddress(RWAddress rhs) noexcept
-    {
-        return reinterpret_cast<RWPtr<TType>>(ToInt(rhs));
-    }
-
     // Access.
     // =======
 
@@ -151,21 +165,14 @@ namespace Syntropy::Memory
         return RWAddress{ ToInt(rhs) };
     }
 
-    // Utilities.
-    // ==========
+    // Conversions.
+    // ============
 
-    template <typename TReference>
-    [[nodiscard]] constexpr Address
-    MakeAddress(Immutable<TReference> rhs) noexcept
+    template <typename TTraits>
+    [[nodiscard]] constexpr Int
+    ToInt(BaseAddress<TTraits> rhs) noexcept
     {
-        return Address{ PtrOf(rhs) };
-    }
-
-    template <typename TReference>
-    [[nodiscard]] constexpr RWAddress
-    MakeAddress(Mutable<TReference> rhs) noexcept
-    {
-        return RWAddress{ PtrOf(rhs) };
+        return rhs.address_;
     }
 
 }

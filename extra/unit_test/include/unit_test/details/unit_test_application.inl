@@ -25,7 +25,7 @@ namespace UnitTest
 
         char buffer[256];
 
-        auto buffer_span = Syntropy::Memory::MakeByteSpan(buffer);
+        auto buffer_span = Syntropy::MakeByteSpan(buffer);
 
         Syntropy::Memory::Copy(buffer_span, string.GetCodeUnits());
 

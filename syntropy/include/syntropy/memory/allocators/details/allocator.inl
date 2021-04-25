@@ -5,8 +5,39 @@
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
+    /************************************************************************/
+    /* MEMORY                                                               */
+    /************************************************************************/
+
+    [[nodiscard]] inline Mutable<BaseAllocator>
+    Memory
+    ::GetSystemAllocator() noexcept
+    {
+        static auto system_allocator = PolymorphicAllocator<SystemAllocator>{};
+
+        return system_allocator;
+    }
+
+    [[nodiscard]] inline Mutable<BaseAllocator>
+    Memory
+    ::GetScopeAllocator() noexcept
+    {
+        return *BaseAllocator::GetAllocator();
+    }
+
+    inline Mutable<BaseAllocator>
+    Memory
+    ::SetAllocator(Mutable<BaseAllocator> allocator) noexcept
+    {
+        auto& scope_allocator = GetScopeAllocator();
+
+        BaseAllocator::GetAllocator() = PtrOf(allocator);
+
+        return scope_allocator;
+    }
+
     /************************************************************************/
     /* BASE ALLOCATOR                                                       */
     /************************************************************************/
@@ -15,7 +46,7 @@ namespace Syntropy::Memory
     BaseAllocator::GetAllocator() noexcept
     {
         static thread_local RWPtr<BaseAllocator> default_allocator_
-            = PtrOf(GetSystemAllocator());
+            = PtrOf(Memory::GetSystemAllocator());
 
         return default_allocator_;
     }
@@ -24,7 +55,7 @@ namespace Syntropy::Memory
     /* POLYMORPHIC ALLOCATOR                                                */
     /************************************************************************/
 
-    template <Templates::Allocator TAllocator>
+    template <Allocator TAllocator>
     template <typename... TArguments>
     inline PolymorphicAllocator<TAllocator>
     ::PolymorphicAllocator(Forwarding<TArguments>... arguments) noexcept
@@ -33,60 +64,35 @@ namespace Syntropy::Memory
 
     }
 
-    template <Templates::Allocator TAllocator>
+    template <Allocator TAllocator>
     [[nodiscard]] inline RWByteSpan PolymorphicAllocator<TAllocator>
     ::Allocate(Bytes size, Alignment alignment) noexcept
     {
         return allocator_.Allocate(size, alignment);
     }
 
-    template <Templates::Allocator TAllocator>
+    template <Allocator TAllocator>
     inline void PolymorphicAllocator<TAllocator>
     ::Deallocate(Immutable<RWByteSpan> block, Alignment alignment) noexcept
     {
         allocator_.Deallocate(block, alignment);
     }
 
-    template <Templates::Allocator TAllocator>
+    template <Allocator TAllocator>
     [[nodiscard]] inline Mutable<TAllocator> PolymorphicAllocator<TAllocator>
     ::GetAllocator()
     {
         return allocator_;
     }
 
-    template <Templates::Allocator TAllocator>
+    template <Allocator TAllocator>
     inline Immutable<TAllocator> PolymorphicAllocator<TAllocator>
     ::GetAllocator() const
     {
         return allocator_;
     }
 
-    // Non-member functions.
-    // =====================
 
-    [[nodiscard]] inline Mutable<BaseAllocator>
-    GetSystemAllocator() noexcept
-    {
-        static auto system_allocator = PolymorphicAllocator<SystemAllocator>{};
-
-        return system_allocator;
-    }
-
-    [[nodiscard]] inline Mutable<BaseAllocator>
-    GetScopeAllocator() noexcept
-    {
-        return *BaseAllocator::GetAllocator();
-    }
-
-    inline Mutable<BaseAllocator>
-    SetAllocator(Mutable<BaseAllocator> allocator) noexcept
-    {
-        auto& scope_allocator = GetScopeAllocator();
-
-        BaseAllocator::GetAllocator() = PtrOf(allocator);
-
-        return scope_allocator;
-    }
 
 }
 

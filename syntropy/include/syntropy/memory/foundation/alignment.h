@@ -18,7 +18,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
     /* ALIGNMENT                                                            */
@@ -28,50 +28,65 @@ namespace Syntropy::Memory
     enum class Alignment : Enum64 {};
 
     /************************************************************************/
+    /* MEMORY                                                               */
+    /************************************************************************/
+
+    namespace Memory
+    {
+        /// \brief Get the alignment of rhs.
+        template <typename TType>
+        [[nodiscard]] constexpr Alignment
+        AlignmentOf(Immutable<TType> rhs) noexcept;
+
+        /// \brief Get the alignment of TType.
+        template <typename TType>
+        [[nodiscard]] constexpr Alignment
+        AlignmentOf() noexcept;
+
+        /// \brief Get an alignment which is at least as large as that of every
+        ///        scalar type.
+        [[nodiscard]] constexpr Alignment
+        MaxAlignment() noexcept;
+
+        /// \brief Check whether a pointer is aligned to a given boundary.
+        [[nodiscard]] Bool
+        IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept;
+
+        /// \brief Move a byte pointer forwards until it gets aligned to a
+        ///        specified value.
+        [[nodiscard]] BytePtr
+        Align(BytePtr pointer, Alignment alignment) noexcept;
+
+        /// \brief Move a byte pointer forwards until it gets aligned to a
+        ///        specified value.
+        [[nodiscard]] RWBytePtr
+        Align(RWBytePtr pointer, Alignment alignment) noexcept;
+
+        /// \brief Move a byte pointer backwards until it gets aligned to
+        ///        a specified value.
+        [[nodiscard]] BytePtr
+        AlignDown(BytePtr pointer, Alignment alignment) noexcept;
+
+        /// \brief Move a byte pointer backwards until it gets aligned to
+        ///        a specified value.
+        [[nodiscard]] RWBytePtr
+        AlignDown(RWBytePtr pointer, Alignment alignment) noexcept;
+    }
+
+    /************************************************************************/
+    /* MEMORY LITERALS                                                      */
+    /************************************************************************/
+
+    namespace MemoryLiterals
+    {
+        /// \brief User-defined literal used to convert a number to Alignment
+        ///        type.
+        [[nodiscard]] constexpr
+        Alignment operator "" _Alignment(IntLiteral lhs) noexcept;
+    }
+
+    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    /// \brief Get the alignment of rhs.
-    template <typename TType>
-    [[nodiscard]] constexpr Alignment
-    AlignmentOf(Immutable<TType> rhs) noexcept;
-
-    /// \brief Get the alignment of TType.
-    template <typename TType>
-    [[nodiscard]] constexpr Alignment
-    AlignmentOf() noexcept;
-
-    /// \brief Get an alignment which is at least as large as that of every
-    ///        scalar type.
-    [[nodiscard]] constexpr Alignment
-    MaxAlignment() noexcept;
-
-    /// \brief Check whether a pointer is aligned to a given boundary.
-    [[nodiscard]] Bool
-    IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept;
-
-    /// \brief Move a byte pointer forwards until it gets aligned to a
-    ///        specified value.
-    [[nodiscard]] BytePtr
-    Align(BytePtr pointer, Alignment alignment) noexcept;
-
-    /// \brief Move a byte pointer forwards until it gets aligned to a
-    ///        specified value.
-    [[nodiscard]] RWBytePtr
-    Align(RWBytePtr pointer, Alignment alignment) noexcept;
-
-    /// \brief Move a byte pointer backwards until it gets aligned to
-    ///        a specified value.
-    [[nodiscard]] BytePtr
-    AlignDown(BytePtr pointer, Alignment alignment) noexcept;
-
-    /// \brief Move a byte pointer backwards until it gets aligned to
-    ///        a specified value.
-    [[nodiscard]] RWBytePtr
-    AlignDown(RWBytePtr pointer, Alignment alignment) noexcept;
-
-    /************************************************************************/
-    /* BITWISE OPERATIONS                                                   */
     /************************************************************************/
 
     /// \brief Shift an alignment value right.
@@ -89,10 +104,6 @@ namespace Syntropy::Memory
     /// \brief Shift an alignment value left.
     [[nodiscard]] constexpr Alignment
     operator<<(Immutable<Alignment> lhs, Int rhs) noexcept;
-
-    /************************************************************************/
-    /* CONVERSION                                                           */
-    /************************************************************************/
 
     /// \brief Convert an alignment value to integer.
     [[nodiscard]] constexpr Int
@@ -114,19 +125,6 @@ namespace Syntropy::Memory
     [[nodiscard]] constexpr Alignment
     ToAlignment(Bytes lhs) noexcept;
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Memory::Literals
-{
-    /************************************************************************/
-    /* LITERALS                                                             */
-    /************************************************************************/
-
-    /// \brief User-defined literal used to convert a number to Alignment type.
-    [[nodiscard]] constexpr
-    Alignment operator "" _Alignment(IntLiteral lhs) noexcept;
 }
 
 // ===========================================================================

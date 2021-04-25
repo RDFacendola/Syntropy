@@ -21,7 +21,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
     /* BUFFER                                                               */
@@ -40,20 +40,20 @@ namespace Syntropy::Memory
 
         /// \brief Create a new empty buffer on the current allocator.
         Buffer(Mutable<BaseAllocator> allocator
-                   = GetScopeAllocator()) noexcept;
+                   = Memory::GetScopeAllocator()) noexcept;
 
         /// \brief Create a new zero-initialized buffer on the current
         ///        allocator.
         Buffer(Bytes size,
                Mutable<BaseAllocator> allocator
-                   = GetScopeAllocator()) noexcept;
+                   = Memory::GetScopeAllocator()) noexcept;
 
         /// \brief Create a new aligned zero-initialized buffer on the current
         ///        allocator.
         Buffer(Bytes size,
                Alignment alignment,
                Mutable<BaseAllocator> allocator
-                   = GetScopeAllocator()) noexcept;
+                   = Memory::GetScopeAllocator()) noexcept;
 
         /// \brief Create a buffer which is a copy of rhs.
         Buffer(Immutable<Buffer> rhs) noexcept;
@@ -136,7 +136,7 @@ namespace Syntropy::Memory
         RWByteSpan data_;
 
         /// \brief Buffer alignment.
-        Alignment alignment_ = MaxAlignment();
+        Alignment alignment_ = Memory::MaxAlignment();
 
     };
 

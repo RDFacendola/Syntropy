@@ -60,11 +60,11 @@ namespace Syntropy
         char8_t file_name_utf8[TSize];
         char8_t function_name_utf8[USize];
 
-        Memory::Copy(Memory::MakeByteSpan(file_name_utf8),
-                     Memory::MakeByteSpan(file_name));
+        Memory::Copy(MakeByteSpan(file_name_utf8),
+                     MakeByteSpan(file_name));
 
-        Memory::Copy(Memory::MakeByteSpan(function_name_utf8),
-                     Memory::MakeByteSpan(function_name));
+        Memory::Copy(MakeByteSpan(function_name_utf8),
+                     MakeByteSpan(function_name));
 
         file_name_ = file_name_utf8;
         function_name_ = function_name_utf8;

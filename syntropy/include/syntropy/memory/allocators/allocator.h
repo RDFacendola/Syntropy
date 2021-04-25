@@ -20,35 +20,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Templates
-{
-    /************************************************************************/
-    /* ALLOCATOR CONCEPTS                                                   */
-    /************************************************************************/
-
-    /// \brief Concept for allocators.
-    template <typename TAllocator>
-    concept Allocator
-        = requires(Mutable<TAllocator> allocator,
-                   Memory::Bytes size,
-                   Memory::Alignment alignment)
-          {
-              // Allocating a memory block.
-              {  allocator.Allocate(size, alignment) }
-                -> IsSame<Memory::RWByteSpan>;
-          }
-        && requires(Mutable<TAllocator> allocator,
-                    Immutable<Memory::RWByteSpan> block,
-                    Memory::Alignment alignment)
-          {
-              // Deallocate a memory block.
-              allocator.Deallocate(block, alignment);
-          };
-}
-
-// ===========================================================================
-
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
     /* FORWARD DECLARATIONS                                                 */
@@ -60,26 +32,52 @@ namespace Syntropy::Memory
     /* MEMORY                                                               */
     /************************************************************************/
 
-    /// \brief Get the system allocator, an allocator that uses the global
-    ///        operator new and operator delete to allocate and
-    ///        deallocate memory.
-    [[nodiscard]] Mutable<BaseAllocator>
-    GetSystemAllocator() noexcept;
+    namespace Memory
+    {
+        /// \brief Get the system allocator, an allocator that uses the global
+        ///        operator new and operator delete to allocate and
+        ///        deallocate memory.
+        [[nodiscard]] Mutable<BaseAllocator>
+        GetSystemAllocator() noexcept;
 
-    /// \brief Get the active thread-local allocator.
-    ///
-    /// \remarks The active allocator is used when an explicit allocator
-    ///          cannot be supplied.
-    [[nodiscard]] Mutable<BaseAllocator>
-    GetScopeAllocator() noexcept;
+        /// \brief Get the active thread-local allocator.
+        ///
+        /// \remarks The active allocator is used when an explicit allocator
+        ///          cannot be supplied.
+        [[nodiscard]] Mutable<BaseAllocator>
+        GetScopeAllocator() noexcept;
 
-    /// \brief Set the active thread-local allocator.
-    /// \return Returns the previous allocator.
-    ///
-    /// \remarks The active allocator is used when an explicit allocator
-    ///          cannot be supplied.
-    Mutable<BaseAllocator>
-    SetAllocator(Mutable<BaseAllocator> allocator) noexcept;
+        /// \brief Set the active thread-local allocator.
+        /// \return Returns the previous allocator.
+        ///
+        /// \remarks The active allocator is used when an explicit allocator
+        ///          cannot be supplied.
+        Mutable<BaseAllocator>
+        SetAllocator(Mutable<BaseAllocator> allocator) noexcept;
+    }
+
+    /************************************************************************/
+    /* ALLOCATOR CONCEPTS                                                   */
+    /************************************************************************/
+
+    /// \brief Concept for allocators.
+    template <typename TAllocator>
+    concept Allocator
+        = requires(Mutable<TAllocator> allocator,
+                   Bytes size,
+                   Alignment alignment)
+          {
+              // Allocating a memory block.
+              { allocator.Allocate(size, alignment) }
+                -> Templates::IsSame<RWByteSpan>;
+          }
+        && requires(Mutable<TAllocator> allocator,
+                    Immutable<RWByteSpan> block,
+                    Alignment alignment)
+          {
+              // Deallocate a memory block.
+              allocator.Deallocate(block, alignment);
+          };
 
     /************************************************************************/
     /* BASE ALLOCATOR                                                       */
@@ -90,13 +88,13 @@ namespace Syntropy::Memory
     class BaseAllocator
     {
         friend Mutable<BaseAllocator>
-        GetSystemAllocator() noexcept;
+        Memory::GetSystemAllocator() noexcept;
 
         friend Mutable<BaseAllocator>
-        GetScopeAllocator() noexcept;
+        Memory::GetScopeAllocator() noexcept;
 
         friend Mutable<BaseAllocator>
-        SetAllocator(Mutable<BaseAllocator>) noexcept;
+        Memory::SetAllocator(Mutable<BaseAllocator>) noexcept;
 
     public:
 
@@ -144,7 +142,7 @@ namespace Syntropy::Memory
     /// \brief Represents a polymorphic allocator used to type-erase the
     ///        concrete type of an underlying allocator.
     /// \author Raffaele D. Facendola - April 2020
-    template <Templates::Allocator TAllocator>
+    template <Allocator TAllocator>
     class PolymorphicAllocator : public BaseAllocator
     {
     public:

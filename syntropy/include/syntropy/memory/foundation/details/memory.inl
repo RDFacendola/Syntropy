@@ -12,14 +12,15 @@
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
     /* MEMORY                                                               */
     /************************************************************************/
 
     inline void
-    Repeat(const RWByteSpan& destination, const ByteSpan& source)
+    Memory
+    ::Repeat(const RWByteSpan& destination, const ByteSpan& source)
     {
         // for (auto span = destination; !Ranges::IsEmpty(span);)
         {
@@ -30,7 +31,8 @@ namespace Syntropy::Memory
     }
 
     inline void
-    Set(const RWByteSpan& destination, Byte value)
+    Memory
+    ::Set(const RWByteSpan& destination, Byte value)
     {
         // std::memset(destination.GetData(),
         //            static_cast<int>(value),
@@ -38,7 +40,8 @@ namespace Syntropy::Memory
     }
 
     inline void
-    Zero(const RWByteSpan& destination)
+    Memory
+    ::Zero(const RWByteSpan& destination)
     {
         Set(destination, Byte{ 0 });
     }

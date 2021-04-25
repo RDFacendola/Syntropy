@@ -13,7 +13,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
     /* BASE BUFFER                                                          */
@@ -21,14 +21,14 @@ namespace Syntropy::Memory
 
     inline Buffer
     ::Buffer(Mutable<BaseAllocator> allocator) noexcept
-        : Buffer(ToBytes(0), MaxAlignment(), allocator)
+        : Buffer(ToBytes(0), Memory::MaxAlignment(), allocator)
     {
 
     }
 
     inline Buffer
     ::Buffer(Bytes size, Mutable<BaseAllocator> allocator) noexcept
-        : Buffer(size, MaxAlignment(), allocator)
+        : Buffer(size, Memory::MaxAlignment(), allocator)
     {
 
     }
@@ -58,7 +58,7 @@ namespace Syntropy::Memory
              Mutable<BaseAllocator> allocator) noexcept
         : Buffer(rhs.GetCount(), rhs.GetAlignment(), allocator)
     {
-        Copy(data_, rhs.data_);
+        Memory::Copy(data_, rhs.data_);
     }
 
     inline Buffer
@@ -80,7 +80,7 @@ namespace Syntropy::Memory
                                              rhs.GetAlignment());
             }
 
-            Copy(data_, rhs.data_);
+            Memory::Copy(data_, rhs.data_);
         }
 
         return *this;

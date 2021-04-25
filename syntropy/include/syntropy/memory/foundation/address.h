@@ -18,7 +18,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
     /* BASE ADDRESS                                                         */
@@ -35,7 +35,7 @@ namespace Syntropy::Memory
     public:
 
         /// \brief Pointer type.
-        using TPointer = typename TTraits::TPointer;
+        using PointerType = typename TTraits::PointerType;
 
         /// \brief Create a null-address.
         constexpr
@@ -47,7 +47,7 @@ namespace Syntropy::Memory
 
         /// \brief Create an address from a pointer.
         constexpr
-        BaseAddress(TPointer pointer) noexcept;
+        BaseAddress(PointerType pointer) noexcept;
 
         /// \brief Create an address from its numeric value.
         explicit constexpr
@@ -75,7 +75,7 @@ namespace Syntropy::Memory
     struct AddressTypeTraits
     {
         /// \brief Pointer to a memory location.
-        using TPointer = TypelessPtr;
+        using PointerType = TypelessPtr;
     };
 
     /// \brief Represents a read-only memory location address.
@@ -89,11 +89,51 @@ namespace Syntropy::Memory
     struct RWAddressTypeTraits
     {
         /// \brief Pointer to a memory location.
-        using TPointer = RWTypelessPtr;
+        using PointerType = RWTypelessPtr;
     };
 
     /// \brief Represents a read-only memory location address.
     using RWAddress = BaseAddress<RWAddressTypeTraits>;
+
+    /************************************************************************/
+    /* MEMORY                                                               */
+    /************************************************************************/
+
+    namespace Memory
+    {
+        /// \brief Get the address to a read-only memory location.
+        [[nodiscard]] Address
+        ToAddress(TypelessPtr rhs) noexcept;
+
+        /// \brief Get the address to a read-write memory location.
+        [[nodiscard]] RWAddress
+        ToAddress(RWTypelessPtr rhs) noexcept;
+
+        /// \brief Convert an address to a strongly-typed read-only
+        ///        instance of TType.
+        template <typename TType>
+        [[nodiscard]] Ptr<TType>
+        FromAddress(Address rhs) noexcept;
+
+        /// \brief Convert an address to a strongly-typed read-write
+        ///        instance of TType.
+        /// \remarks If the address doesn't refer to a read-writable memory
+        ///          location, accessing the returned value results in
+        ///          undefined behavior.
+        template <typename TType>
+        [[nodiscard]] RWPtr<TType>
+        FromAddress(RWAddress rhs) noexcept;
+
+        /// \brief Create an address by deducing templates from arguments.
+        template <typename TReference>
+        [[nodiscard]] constexpr Address
+        MakeAddress(Immutable<TReference> rhs) noexcept;
+
+        /// \brief Create an address by deducing templates from arguments.
+        template <typename TReference>
+        [[nodiscard]] constexpr RWAddress
+        MakeAddress(Mutable<TReference> rhs) noexcept;
+    }
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -130,37 +170,6 @@ namespace Syntropy::Memory
     [[nodiscard]] constexpr Ordering
     operator<=>(BaseAddress<TTraits> lhs, BaseAddress<UTraits> rhs) noexcept;
 
-    // Conversions.
-    // ============
-
-    /// \brief Get the numeric value of an address.
-    template <typename TTraits>
-    [[nodiscard]] constexpr Int
-    ToInt(BaseAddress<TTraits> rhs) noexcept;
-
-    /// \brief Get the address to a read-only memory location.
-    [[nodiscard]] Address
-    ToAddress(TypelessPtr rhs) noexcept;
-
-    /// \brief Get the address to a read-write memory location.
-    [[nodiscard]] RWAddress
-    ToAddress(RWTypelessPtr rhs) noexcept;
-
-    /// \brief Convert an address to a strongly-typed read-only
-    ///        instance of TType.
-    template <typename TType>
-    [[nodiscard]] Ptr<TType>
-    FromAddress(Address rhs) noexcept;
-
-    /// \brief Convert an address to a strongly-typed read-write
-    ///        instance of TType.
-    /// \remarks If the address doesn't refer to a read-writable memory
-    ///          location, accessing the returned value results in undefined
-    ///          behavior.
-    template <typename TType>
-    [[nodiscard]] RWPtr<TType>
-    FromAddress(RWAddress rhs) noexcept;
-
     // Access.
     // =======
 
@@ -176,18 +185,13 @@ namespace Syntropy::Memory
     [[nodiscard]] constexpr RWAddress
     ToReadWrite(BaseAddress<TTraits> rhs) noexcept;
 
-    // Utilities.
-    // ==========
+    // Conversions.
+    // ============
 
-    /// \brief Create an address by deducing templates from arguments.
-    template <typename TReference>
-    [[nodiscard]] constexpr Address
-    MakeAddress(Immutable<TReference> rhs) noexcept;
-
-    /// \brief Create an address by deducing templates from arguments.
-    template <typename TReference>
-    [[nodiscard]] constexpr RWAddress
-    MakeAddress(Mutable<TReference> rhs) noexcept;
+    // \brief Get the numeric value of an address.
+    template <typename TTraits>
+    [[nodiscard]] constexpr Int
+    ToInt(BaseAddress<TTraits> rhs) noexcept;
 
 }
 

@@ -27,7 +27,7 @@ namespace Syntropy
         , size_(rhs.size_)
         , allocator_(rhs.allocator_)
     {
-        using namespace Syntropy::Memory::Literals;
+        using namespace Syntropy::MemoryLiterals;
 
         rhs.pointee_ = nullptr;
         rhs.size_ = 0_Bytes;
@@ -38,8 +38,8 @@ namespace Syntropy
     template <typename UType>
     inline BaseUniquePtr<TType, TTraits>
     ::BaseUniquePtr(Immutable<RWPtr<UType>> pointee,
-                    Immutable<Memory::Bytes> size,
-                    Mutable<Memory::BaseAllocator> allocator) noexcept
+                    Immutable<Bytes> size,
+                    Mutable<BaseAllocator> allocator) noexcept
          : pointee_(pointee)
          , size_(size)
          , allocator_(PtrOf(allocator))
@@ -59,7 +59,7 @@ namespace Syntropy
     inline Mutable<BaseUniquePtr<TType, TTraits>> BaseUniquePtr<TType, TTraits>
     ::operator=(Movable<BaseUniquePtr<UType, UTraits>> rhs) noexcept
     {
-        using namespace Syntropy::Memory::Literals;
+        using namespace Syntropy::MemoryLiterals;
 
         Reset();
 
@@ -112,7 +112,7 @@ namespace Syntropy
     template <typename TType, typename TTraits>
     void BaseUniquePtr<TType, TTraits>::Reset() noexcept
     {
-        using namespace Syntropy::Memory::Literals;
+        using namespace Syntropy::MemoryLiterals;
 
         if (pointee_)
         {
@@ -120,7 +120,7 @@ namespace Syntropy
 
             pointee_->~TType();
 
-            auto block = MakeByteSpan(Memory::ToBytePtr(pointee_), size_);
+            auto block = MakeByteSpan(ToBytePtr(pointee_), size_);
 
             allocator_->Deallocate(block, Memory::AlignmentOf<TType>());
 
@@ -135,7 +135,7 @@ namespace Syntropy
     BaseUniquePtr<TType, TTraits>
     ::Release() noexcept
     {
-        using namespace Syntropy::Memory::Literals;
+        using namespace Syntropy::MemoryLiterals;
 
         auto pointee = pointee_;
 
@@ -155,7 +155,7 @@ namespace Syntropy
     }
 
     template <typename TType, typename TTraits>
-    [[nodiscard]] inline Memory::Bytes
+    [[nodiscard]] inline Bytes
     BaseUniquePtr<TType, TTraits>
     ::GetSize() const noexcept
     {
@@ -163,7 +163,7 @@ namespace Syntropy
     }
 
     template <typename TType, typename TTraits>
-    [[nodiscard]] inline Mutable<Memory::BaseAllocator>
+    [[nodiscard]] inline Mutable<BaseAllocator>
     BaseUniquePtr<TType, TTraits>
     ::GetAllocator() const noexcept
     {
@@ -291,7 +291,7 @@ namespace Syntropy
 
     template <typename TType, typename...TArguments>
     [[nodiscard]] inline UniquePtr<TType>
-    MakeUniqueOnAllocator(Mutable<Memory::BaseAllocator> allocator,
+    MakeUniqueOnAllocator(Mutable<BaseAllocator> allocator,
                           Forwarding<TArguments>... arguments) noexcept
     {
         auto block = allocator.Allocate(Memory::SizeOf<TType>(),
@@ -314,7 +314,7 @@ namespace Syntropy
 
     template <typename TType, typename...TArguments>
     [[nodiscard]] inline RWUniquePtr<TType>
-    MakeRWUniqueOnAllocator(Mutable<Memory::BaseAllocator> allocator,
+    MakeRWUniqueOnAllocator(Mutable<BaseAllocator> allocator,
                             Forwarding<TArguments>... arguments) noexcept
     {
         return ToReadWrite(
