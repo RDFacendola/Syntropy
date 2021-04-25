@@ -8,7 +8,6 @@
 #pragma once
 
 #include "syntropy/core/strings/string.h"
-#include "syntropy/core/strings/to_string.h"
 
 #include "syntropy/language/templates/concepts.h"
 #include "syntropy/language/preprocessor/macro.h"

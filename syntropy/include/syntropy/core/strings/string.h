@@ -89,6 +89,29 @@ namespace Syntropy
     };
 
     /************************************************************************/
+    /* STRINGS EXTENSIONS                                                   */
+    /************************************************************************/
+
+    namespace Strings::Extensions
+    {
+        /// \brief Convert an object to a string.
+        template <typename TType, typename = void>
+        struct ToString;
+    }
+
+    /************************************************************************/
+    /* STRINGS                                                              */
+    /************************************************************************/
+
+    namespace Strings
+    {
+        /// \brief Convert rhs to a string.
+        template <typename TType>
+        [[nodiscard]] constexpr decltype(auto)
+        ToString(Immutable<TType> rhs) noexcept;
+    }
+
+    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
