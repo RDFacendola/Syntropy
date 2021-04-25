@@ -14,19 +14,22 @@
 
 // ===========================================================================
 
-namespace Syntropy::Math
+namespace Syntropy
 {
     /************************************************************************/
     /* MATH                                                                 */
     /************************************************************************/
 
-    /// \brief Get the positive infinity value.
-    [[nodiscard]] constexpr Float
-    Infinity() noexcept;
+    namespace Math
+    {
+        /// \brief Get the positive infinity value.
+        [[nodiscard]] constexpr Float
+        Infinity() noexcept;
 
-    /// \brief Get the not-a-number value.
-    [[nodiscard]] constexpr Float
-    NotANumber() noexcept;
+        /// \brief Get the not-a-number value.
+        [[nodiscard]] constexpr Float
+        NotANumber() noexcept;
+    }
 
 }
 
