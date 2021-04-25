@@ -125,45 +125,49 @@ namespace Syntropy
     };
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* COMPARISONS                                                          */
     /************************************************************************/
 
-    // Ordering.
-    // =========
+    namespace Comparisons
+    {
+        /// \brief Check whether rhs represents equal-to compare result.
+        [[nodiscard]] constexpr
+        Bool IsEqual(Immutable<Ordering> rhs) noexcept;
 
-    /// \brief Check whether rhs represents equal-to compare result.
-    [[nodiscard]] constexpr
-    Bool IsEqual(Immutable<Ordering> rhs) noexcept;
+        /// \brief Check whether rhs represents not-equal-to compare result.
+        [[nodiscard]] constexpr
+        Bool IsNotEqual(Immutable<Ordering> rhs) noexcept;
 
-    /// \brief Check whether rhs represents not-equal-to compare result.
-    [[nodiscard]] constexpr
-    Bool IsNotEqual(Immutable<Ordering> rhs) noexcept;
+        /// \brief Check whether rhs represents less-than compare result.
+        [[nodiscard]] constexpr
+        Bool IsLessThan(Immutable<Ordering> rhs) noexcept;
 
-    /// \brief Check whether rhs represents less-than compare result.
-    [[nodiscard]] constexpr
-    Bool IsLessThan(Immutable<Ordering> rhs) noexcept;
+        /// \brief Check whether rhs represents less-than or
+        ///        equal-to compare result.
+        [[nodiscard]] constexpr
+        Bool IsLessEqualTo(Immutable<Ordering> rhs) noexcept;
 
-    /// \brief Check whether rhs represents less-than or
-    ///        equal-to compare result.
-    [[nodiscard]] constexpr
-    Bool IsLessEqualTo(Immutable<Ordering> rhs) noexcept;
+        /// \brief Check whether rhs represents greater-than compare result.
+        [[nodiscard]] constexpr
+        Bool IsGreaterThan(Immutable<Ordering> rhs) noexcept;
 
-    /// \brief Check whether rhs represents greater-than compare result.
-    [[nodiscard]] constexpr
-    Bool IsGreaterThan(Immutable<Ordering> rhs) noexcept;
+        /// \brief Check whether rhs represents greater-than
+        ///        or equal-to compare result.
+        [[nodiscard]] constexpr
+        Bool IsGreaterEqualTo(Immutable<Ordering> rhs) noexcept;
 
-    /// \brief Check whether rhs represents greater-than
-    ///        or equal-to compare result.
-    [[nodiscard]] constexpr
-    Bool IsGreaterEqualTo(Immutable<Ordering> rhs) noexcept;
+        /// \brief Obtain the comparison value the expression which resulted
+        ///        in rhs would return if its arguments were reversed.
+        ///
+        /// \remarks This method assumes total ordering, that is a relationship
+        ///          which is antisymmetric, transitive
+        [[nodiscard]] constexpr
+        Ordering Flip(Immutable<Ordering> rhs) noexcept;
+    }
 
-    /// \brief Obtain the comparison value the expression which resulted
-    ///        in rhs would return if its arguments were reversed.
-    ///
-    /// \remarks This method assumes total ordering, that is a relationship
-    ///          which is antisymmetric, transitive
-    [[nodiscard]] constexpr
-    Ordering Flip(Immutable<Ordering> rhs) noexcept;
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
     // Comparison operators.
     // =====================

@@ -170,7 +170,7 @@ namespace Syntropy::ComparisonsADL
 
 // ===========================================================================
 
-namespace Syntropy::Comparisons
+namespace Syntropy
 {
     /************************************************************************/
     /* COMPARE                                                              */
@@ -178,21 +178,24 @@ namespace Syntropy::Comparisons
 
     template <typename TType, typename UType>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
+    Comparisons
+    ::AreEqual(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
     {
         return ComparisonsADL::InvokeAreEqual(lhs, rhs);
     }
 
     template <typename TType, typename UType>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
+    Comparisons
+    ::AreEquivalent(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
     {
         return ComparisonsADL::InvokeAreEquivalent(lhs, rhs);
     }
 
     template <typename TType, typename UType>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
+    Comparisons
+    ::Compare(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
     {
         return ComparisonsADL::InvokeCompare(lhs, rhs);
     }

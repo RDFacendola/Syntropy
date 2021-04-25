@@ -70,57 +70,54 @@ namespace Syntropy
     Ordering Ordering::kIncomparable{ Ordering::Comparison::kIncomparable };
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* COMPARISONS                                                          */
     /************************************************************************/
 
-    // Ordering.
-    // =========
-
-    [[nodiscard]] constexpr
-    Bool
-    IsEqual(Immutable<Ordering> rhs) noexcept
+    [[nodiscard]] constexpr Bool
+    Comparisons
+    ::IsEqual(Immutable<Ordering> rhs) noexcept
     {
         return rhs == nullptr;
     }
 
-    [[nodiscard]] constexpr
-    Bool
-    IsNotEqual(Immutable<Ordering> rhs) noexcept
+    [[nodiscard]] constexpr Bool
+    Comparisons
+    ::IsNotEqual(Immutable<Ordering> rhs) noexcept
     {
         return rhs != nullptr;
     }
 
-    [[nodiscard]] constexpr
-    Bool
-    IsLessThan(Immutable<Ordering> rhs) noexcept
+    [[nodiscard]] constexpr Bool
+    Comparisons
+    ::IsLessThan(Immutable<Ordering> rhs) noexcept
     {
         return rhs < nullptr;
     }
 
-    [[nodiscard]] constexpr
-    Bool
-    IsLessEqualTo(Immutable<Ordering> rhs) noexcept
+    [[nodiscard]] constexpr Bool
+    Comparisons
+    ::IsLessEqualTo(Immutable<Ordering> rhs) noexcept
     {
         return rhs <= nullptr;
     }
 
-    [[nodiscard]] constexpr
-    Bool
-    IsGreaterThan(Immutable<Ordering> rhs) noexcept
+    [[nodiscard]] constexpr Bool
+    Comparisons
+    ::IsGreaterThan(Immutable<Ordering> rhs) noexcept
     {
         return rhs > nullptr;
     }
 
-    [[nodiscard]] constexpr
-    Bool
-    IsGreaterEqualTo(Immutable<Ordering> rhs) noexcept
+    [[nodiscard]] constexpr Bool
+    Comparisons
+    ::IsGreaterEqualTo(Immutable<Ordering> rhs) noexcept
     {
         return rhs >= nullptr;
     }
 
-    [[nodiscard]] constexpr
-    Ordering
-    Flip(Immutable<Ordering> rhs) noexcept
+    [[nodiscard]] constexpr Ordering
+    Comparisons
+    ::Flip(Immutable<Ordering> rhs) noexcept
     {
         if (rhs == Ordering::kLess)
         {
@@ -134,6 +131,10 @@ namespace Syntropy
 
         return rhs;
     }
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
     // Comparison operators.
     // =====================
@@ -223,7 +224,7 @@ namespace Syntropy
     Ordering
     operator<=>(Null lhs, Immutable<Ordering> rhs) noexcept
     {
-        return Flip(rhs);
+        return Comparisons::Flip(rhs);
     }
 
 }

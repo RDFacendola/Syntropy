@@ -16,49 +16,49 @@
 
 // ===========================================================================
 
-namespace Syntropy::Comparisons::Extensions
+namespace Syntropy
 {
     /************************************************************************/
-    /* COMPARE EXTENSIONS                                                   */
+    /* COMPARISONS EXTENSIONS                                               */
     /************************************************************************/
 
-    /// \brief Check whether two objects are equal.
-    template <typename TType, typename UType, typename = void>
-    struct AreEqual;
+    namespace Comparisons::Extensions
+    {
+        /// \brief Check whether two objects are equal.
+        template <typename TType, typename UType, typename = void>
+        struct AreEqual;
 
-    /// \brief Check whether two objects are equivalent.
-    template <typename TType, typename UType, typename = void>
-    struct AreEquivalent;
+        /// \brief Check whether two objects are equivalent.
+        template <typename TType, typename UType, typename = void>
+        struct AreEquivalent;
 
-    /// \brief Compare two objects.
-    template <typename TType, typename UType, typename = void>
-    struct Compare;
+        /// \brief Compare two objects.
+        template <typename TType, typename UType, typename = void>
+        struct Compare;
+    }
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Comparisons
-{
     /************************************************************************/
-    /* COMPARE                                                              */
+    /* COMPARISONS                                                          */
     /************************************************************************/
 
-    /// \brief Check whether lhs and rhs are equal.
-    /// \remarks Equality implies equivalence.
-    template <typename TType, typename UType>
-    [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
+    namespace Comparisons
+    {
+        /// \brief Check whether lhs and rhs are equal.
+        /// \remarks Equality implies equivalence.
+        template <typename TType, typename UType>
+        [[nodiscard]] constexpr Bool
+        AreEqual(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
 
-    /// \brief Check whether lhs and rhs are equivalent.
-    template <typename TType, typename UType>
-    [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
+        /// \brief Check whether lhs and rhs are equivalent.
+        template <typename TType, typename UType>
+        [[nodiscard]] constexpr Bool
+        AreEquivalent(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
 
-    /// \brief Compare lhs against rhs.
-    template <typename TType, typename UType>
-    [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
+        /// \brief Compare lhs against rhs.
+        template <typename TType, typename UType>
+        [[nodiscard]] constexpr Ordering
+        Compare(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
+    }
 
 }
 
