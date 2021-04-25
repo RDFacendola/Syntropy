@@ -56,12 +56,11 @@ namespace Syntropy
     }
 
     template <Ranges::BidirectionalRange TRange>
-    template <typename TIndex>
     [[nodiscard]] constexpr decltype(auto) ReverseRange<TRange>
-    ::At(Immutable<TIndex> index) const noexcept
+    ::At(Int index) const noexcept
     {
         return Ranges::At(range_,
-                          Ranges::Count(range_) - index - TIndex{ 1 });
+                          Ranges::Count(range_) - index - ToInt(1));
     }
 
 }

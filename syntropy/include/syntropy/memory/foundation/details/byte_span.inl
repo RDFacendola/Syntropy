@@ -16,24 +16,33 @@ namespace Syntropy::Memory
     // Alignment.
     // ==========
 
-    template <typename TTraits>
-    [[nodiscard]] inline BaseByteSpan<TTraits>
-    Align(Immutable<BaseByteSpan<TTraits>> lhs,
-          Immutable<Alignment> alignment) noexcept
+    [[nodiscard]] inline ByteSpan
+    Align(Immutable<ByteSpan> lhs, Alignment alignment) noexcept
     {
-        auto begin = Align(lhs.GetData(), alignment);
-        auto end = lhs.data_() + lhs.GetCount();
+        auto begin = Align(Ranges::Data(lhs), alignment);
+        auto end = Ranges::Data(lhs) + Ranges::Count(lhs);
 
         return { Math::Min(begin, end), end };
     }
 
-    template <typename TTraits>
-    [[nodiscard]] inline BaseByteSpan<TTraits>
-    Floor(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Bytes> size) noexcept
+    [[nodiscard]] inline RWByteSpan
+    Align(Immutable<RWByteSpan> lhs, Alignment alignment) noexcept
     {
-        auto floor_size = Math::Floor(lhs.GetCount(), size);
+        return ToReadWrite(Align(ToReadOnly(lhs), alignment));
+    }
+
+    [[nodiscard]] inline ByteSpan
+    Floor(Immutable<ByteSpan> lhs, Bytes size) noexcept
+    {
+        auto floor_size = Math::Floor(Ranges::Count(lhs), ToInt(size));
 
         return Ranges::Front(lhs, floor_size);
+    }
+
+    [[nodiscard]] inline RWByteSpan
+    Floor(Immutable<RWByteSpan> lhs, Bytes size) noexcept
+    {
+        return ToReadWrite(Floor(ToReadOnly(lhs), size));
     }
 
     // Conversions.
@@ -53,64 +62,80 @@ namespace Syntropy::Memory
     [[nodiscard]] inline RWByteSpan
     BytesOf(Mutable<TObject> rhs) noexcept
     {
-        auto data = ToBytePtr(PtrOf(rhs));
-        auto size = SizeOf<TObject>();
-
-        return { data, size };
+        return ToReadWrite(BytesOf(ToImmutable(rhs)));
     }
 
-    template <typename TObject, typename TTraits>
-    [[nodiscard]] inline Reference<TObject>
-    FromBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    template <typename TObject>
+    [[nodiscard]] inline Immutable<TObject>
+    FromBytesOf(Immutable<ByteSpan> rhs) noexcept
     {
-        return *FromTypelessPtr<TObject>(rhs.GetData());
+        return *FromTypelessPtr<TObject>(Ranges::Data(rhs));
+    }
+
+    template <typename TObject>
+    [[nodiscard]] inline Mutable<TObject>
+    FromBytesOf(Immutable<RWByteSpan> rhs) noexcept
+    {
+        return *FromTypelessPtr<TObject>(Ranges::Data(rhs));
     }
 
     template <Ranges::ContiguousRange TRange>
     [[nodiscard]] inline auto
     RangeBytesOf(Immutable<TRange> rhs) noexcept
     {
-        using RangeElementType = typename Ranges::RangeElementTypeOf<TRange>;
+        using ElementType = typename Ranges::RangeElementTypeOf<TRange>;
 
         auto data = ToBytePtr(Ranges::Data(rhs));
-        auto size = SizeOf<RangeElementType>() * Ranges::Count(rhs);
+        auto size = SizeOf<ElementType>() * Ranges::Count(rhs);
 
         return MakeByteSpan( data, size );
     }
 
-    template <typename TTraits>
-    [[nodiscard]] inline BaseByteSpan<TTraits>
-    RangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    [[nodiscard]] inline Immutable<ByteSpan>
+    RangeBytesOf(Immutable<ByteSpan> rhs) noexcept
     {
         return rhs;
     }
 
-    template <Ranges::ContiguousRange TRange, typename TTraits>
-    [[nodiscard]] inline TRange
-    FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    [[nodiscard]] inline Immutable<RWByteSpan>
+    RangeBytesOf(Immutable<RWByteSpan> rhs) noexcept
     {
-        if constexpr (Templates::IsSame<TRange, BaseByteSpan<TTraits>>)
+        return rhs;
+    }
+
+    template <Ranges::ContiguousRange TRange>
+    [[nodiscard]] inline TRange
+    FromRangeBytesOf(Immutable<ByteSpan> rhs) noexcept
+    {
+        if constexpr (Templates::IsSame<TRange, ByteSpan>)
         {
             return rhs;
         }
         else
         {
-            using RangeElementType = Ranges::RangeElementTypeOf<TRange>;
+            using ElementType = Ranges::RangeElementTypeOf<TRange>;
 
-            auto data = FromTypelessPtr<RangeElementType>(rhs.GetData());
-            auto size = rhs.GetCount() / SizeOf<RangeElementType>();
+            auto data = FromTypelessPtr<ElementType>(Ranges::Data(rhs));
+            auto count = Ranges::Count(rhs) / ToInt(SizeOf<ElementType>());
 
-            return TRange{ data, size };
+            return TRange{ data, count };
         }
+    }
+
+    template <Ranges::ContiguousRange TRange>
+    [[nodiscard]] inline TRange
+    FromRangeBytesOf(Immutable<RWByteSpan> rhs) noexcept
+    {
+        return ToReadWrite(FromRangeBytesOf<TRange>(ToReadOnly(rhs)));
     }
 
     // Utilities.
     // ==========
 
     [[nodiscard]] constexpr ByteSpan
-    MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept
+    MakeByteSpan(BytePtr begin, Bytes size) noexcept
     {
-        return { begin, size };
+        return { begin, ToInt(size) };
     }
 
     [[nodiscard]] constexpr ByteSpan
@@ -120,9 +145,9 @@ namespace Syntropy::Memory
     }
 
     [[nodiscard]] constexpr RWByteSpan
-    MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept
+    MakeByteSpan(RWBytePtr begin, Bytes size) noexcept
     {
-        return { begin, size };
+        return { begin, ToInt(size) };
     }
 
     [[nodiscard]] constexpr RWByteSpan

@@ -41,7 +41,9 @@ namespace Syntropy::Memory
         , data_(allocator.Allocate(size, alignment))
         , alignment_(alignment)
     {
-        SYNTROPY_ASSERT(data_.GetCount() == size);       // Out of memory?
+        // Out-of-memory?
+
+        SYNTROPY_ASSERT(data_.GetCount() == ToInt(size));
     }
 
     inline Buffer
@@ -124,13 +126,13 @@ namespace Syntropy::Memory
     [[nodiscard]] constexpr Mutable<Byte> Buffer
     ::operator[](Bytes offset) noexcept
     {
-        return data_[offset];
+        return data_[ToInt(offset)];
     }
 
     [[nodiscard]] constexpr Immutable<Byte> Buffer
     ::operator[](Bytes offset) const noexcept
     {
-        return data_[offset];
+        return data_[ToInt(offset)];
     }
 
     [[nodiscard]] inline BytePtr Buffer
@@ -148,7 +150,7 @@ namespace Syntropy::Memory
     [[nodiscard]] inline Bytes Buffer
     ::GetCount() const noexcept
     {
-        return data_.GetCount();
+        return Bytes{ data_.GetCount() };
     }
 
     [[nodiscard]] inline Immutable<Alignment> Buffer

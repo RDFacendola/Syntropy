@@ -3,6 +3,9 @@
 ///
 /// \author Raffaele D. Facendola - February 2021
 
+// ===========================================================================
+
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/memory/foundation/memory.h"
 
 #include "syntropy/core/ranges/contiguous_range.h"
@@ -22,7 +25,7 @@ namespace Syntropy::Memory
     {
         auto size = Math::Min(source.GetCount(), destination.GetCount());
 
-        if (size > Bytes{ 0 })
+        if (size > Syntropy::ToInt(0))
         {
             // auto destination_span = Ranges::Front(destination, size);
 
@@ -34,7 +37,7 @@ namespace Syntropy::Memory
 
                 std::memcpy(destination.GetData(),
                             source.GetData(),
-                            ToInt(size));
+                            Syntropy::ToInt(size));
             }
             //else
             {
@@ -42,11 +45,11 @@ namespace Syntropy::Memory
 
                 std::memmove(destination.GetData(),
                              source.GetData(),
-                             ToInt(size));
+                             Syntropy::ToInt(size));
             }
         }
 
-        return size;
+        return Bytes{ size };
     }
 }
 

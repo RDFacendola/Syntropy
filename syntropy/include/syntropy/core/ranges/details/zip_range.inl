@@ -100,9 +100,8 @@ namespace Syntropy
     }
 
     template <Ranges::ForwardRange... TRanges>
-    template <typename TIndex>
     [[nodiscard]] constexpr decltype(auto) ZipRange<TRanges...>
-    ::At(Immutable<TIndex> index) const noexcept
+    ::At(Int index) const noexcept
     {
         auto zip_select = [index](Immutable<TRanges>... ranges)
         {

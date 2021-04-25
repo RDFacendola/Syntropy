@@ -32,16 +32,13 @@ namespace Syntropy::Ranges
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept RandomAccessRange = BidirectionalRange<TRange>
-        && requires(Immutable<TRange> range,
-                    Immutable<RangeCardinalityTypeOf<TRange>> index)
+        && requires(Immutable<TRange> range, Int index)
         {
             /// \brief Access range element by index.
             { Ranges::At(range, index) };
         }
         && requires(
-            Immutable<TRange> range,
-            Immutable<RangeCardinalityTypeOf<TRange>> offset,
-            Immutable<RangeCardinalityTypeOf<TRange>> count)
+            Immutable<TRange> range, Int offset, Int count)
         {
             /// \brief Select a subrange of elements.
             { Ranges::Select(range, offset, count) };
@@ -60,36 +57,32 @@ namespace Syntropy::Ranges
     /// \brief Take a number of elements from the range front.
     ///
     /// \remarks Undefined behavior if range boundaries are exceeded.
-    template <RandomAccessRange TRange,
-              typename TCardinality = RangeCardinalityTypeOf<TRange>>
+    template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    Front(Immutable<TRange> range, Immutable<TCardinality> count) noexcept;
+    Front(Immutable<TRange> range, Int count) noexcept;
 
     /// \brief Take a number of elements from the range back.
     ///
     /// \remarks Undefined behavior if range boundaries are exceeded.
-    template <RandomAccessRange TRange,
-              typename TCardinality = RangeCardinalityTypeOf<TRange>>
+    template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    Back(Immutable<TRange> range, Immutable<TCardinality> count) noexcept;
+    Back(Immutable<TRange> range, Int count) noexcept;
 
     /// \brief Discard the first elements in a range and return the resulting
     ///        subrange.
     ///
     /// \remarks Undefined behavior if range boundaries are exceeded.
-    template <RandomAccessRange TRange,
-              typename TCardinality = RangeCardinalityTypeOf<TRange>>
+    template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    PopFront(Immutable<TRange> range, Immutable<TCardinality> count) noexcept;
+    PopFront(Immutable<TRange> range, Int count) noexcept;
 
     /// \brief Discard the last elements in a range and return the resulting
     ///        subrange.
     ///
     /// \remarks Undefined behavior if range boundaries are exceeded.
-    template <RandomAccessRange TRange,
-              typename TCardinality = RangeCardinalityTypeOf<TRange>>
+    template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    PopBack(Immutable<TRange> range, Immutable<TCardinality> count) noexcept;
+    PopBack(Immutable<TRange> range, Int count) noexcept;
 
     /// \brief Slice a range returning the first element and a subrange to
     ///        the remaining ones.
@@ -111,19 +104,17 @@ namespace Syntropy::Ranges
     ///        and another subrange to the remaining ones.
     ///
     /// \remarks Undefined behavior if range boundaries are exceeded.
-    template <RandomAccessRange TRange,
-              typename TCardinality = RangeCardinalityTypeOf<TRange>>
+    template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    SliceFront(Immutable<TRange> range, Immutable<TCardinality> count) noexcept;
+    SliceFront(Immutable<TRange> range, Int count) noexcept;
 
     /// \brief Slice a range returning a subrange to the first count elements
     ///        and another subrange to the remaining ones.
     ///
     /// \remarks Undefined behavior if range boundaries are exceeded.
-    template <RandomAccessRange TRange,
-              typename TCardinality = RangeCardinalityTypeOf<TRange>>
+    template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    SliceBack(Immutable<TRange> range, Immutable<TCardinality> count) noexcept;
+    SliceBack(Immutable<TRange> range, Int count) noexcept;
 
 }
 

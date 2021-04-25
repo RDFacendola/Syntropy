@@ -62,7 +62,7 @@ namespace Syntropy
         IsEmpty() const noexcept;
 
         /// \brief Get the number of element.
-        [[nodiscard]] constexpr auto
+        [[nodiscard]] constexpr Int
         GetCount() const noexcept;
 
         /// \brief Access the first element in the range.
@@ -95,9 +95,8 @@ namespace Syntropy
         /// \brief Access a range element by index.
         ///
         /// \remarks Undefined behavior if range boundaries are exceeded.
-        template <typename TIndex>
         [[nodiscard]] constexpr decltype(auto)
-        At(Immutable<TIndex> index) const noexcept;
+        At(Int index) const noexcept;
 
         /// \brief Access the storage of all tied ranges.
         ///

@@ -95,11 +95,9 @@ namespace Syntropy::RangesADL
     }
 
     /// \brief Invoke the Select function via extension functor.
-    template <typename TRange, typename TCardinality>
+    template <typename TRange>
     [[nodiscard]] constexpr auto
-    InvokeSelectExtension(Immutable<TRange> rhs,
-                          Immutable<TCardinality> offset,
-                          Immutable<TCardinality> count)
+    InvokeSelectExtension(Immutable<TRange> rhs, Int offset, Int count)
         noexcept -> decltype(SelectExtension(rhs, offset, count))
     {
         return SelectExtension(rhs, offset, count);
@@ -142,9 +140,9 @@ namespace Syntropy::RangesADL
     }
 
     /// \brief Invoke the At function via extension functor.
-    template <typename TRange, typename TIndex>
+    template <typename TRange>
     [[nodiscard]] constexpr auto
-    InvokeAtExtension(Immutable<TRange> rhs, Immutable<TIndex> index)
+    InvokeAtExtension(Immutable<TRange> rhs, Int index)
         noexcept -> decltype(AtExtension(rhs, index))
     {
         return AtExtension(rhs);
@@ -227,9 +225,9 @@ namespace Syntropy::RangesADL
         };
 
         auto fallback = [](auto&& rhs)
-            -> decltype(Ranges::Count(rhs) == Ranges::RangeCardinalityTypeOf<TRange>{})
+            -> decltype(Ranges::Count(rhs) == ToInt(0))
         {
-            return Ranges::Count(rhs) == Ranges::RangeCardinalityTypeOf<TRange>{};
+            return Ranges::Count(rhs) == ToInt(0);
         };
 
         return Templates::InvokeAny(extension,
@@ -273,11 +271,9 @@ namespace Syntropy::RangesADL
     // =======
 
     /// \brief Invoke the Select function, trying different implementations.
-    template <typename TRange, typename TCardinality>
+    template <typename TRange>
     constexpr decltype(auto)
-    InvokeSelect(Immutable<TRange> rhs,
-                Immutable<TCardinality> offset,
-                Immutable<TCardinality> count) noexcept
+    InvokeSelect(Immutable<TRange> rhs, Int offset, Int count) noexcept
     {
         auto extension = [](auto&& rhs, auto&& offset, auto&& count)
             -> decltype(InvokeSelectExtension(rhs, offset, count))
@@ -329,9 +325,9 @@ namespace Syntropy::RangesADL
         };
 
         auto fallback = [](auto&& rhs)
-            -> decltype(Ranges::At(rhs, Ranges::RangeCardinalityTypeOf<TRange>{}))
+            -> decltype(Ranges::At(rhs, ToInt(0)))
         {
-            return Ranges::At(rhs, Ranges::RangeCardinalityTypeOf<TRange>{});
+            return Ranges::At(rhs, ToInt(0));
         };
 
         return Templates::InvokeAny(extension,
@@ -367,11 +363,9 @@ namespace Syntropy::RangesADL
         };
 
         auto fallback = [](auto&& rhs)
-            -> decltype(Ranges::At(rhs,
-                                   Ranges::Count(rhs) - Ranges::RangeCardinalityTypeOf<TRange>{ 1 }))
+            -> decltype(Ranges::At(rhs, Ranges::Count(rhs) - ToInt(1)))
         {
-            return Ranges::At(rhs,
-                              Ranges::Count(rhs) - Ranges::RangeCardinalityTypeOf<TRange>{ 1 });
+            return Ranges::At(rhs, Ranges::Count(rhs) - ToInt(1));
         };
 
         return Templates::InvokeAny(extension,
@@ -408,12 +402,12 @@ namespace Syntropy::RangesADL
 
         auto fallback = [](auto&& rhs)
             -> decltype(Ranges::Select(rhs,
-                                       Ranges::RangeCardinalityTypeOf<TRange>{ 1 },
-                                       Ranges::Count(rhs) - Ranges::RangeCardinalityTypeOf<TRange>{ 1 }))
+                                       ToInt(1),
+                                       Ranges::Count(rhs) - ToInt(1)))
         {
             return Ranges::Select(rhs,
-                                  Ranges::RangeCardinalityTypeOf<TRange>{ 1 },
-                                  Ranges::Count(rhs) - Ranges::RangeCardinalityTypeOf<TRange>{ 1 });
+                                  ToInt(1),
+                                  Ranges::Count(rhs) - ToInt(1));
         };
 
         return Templates::InvokeAny(extension,
@@ -450,12 +444,12 @@ namespace Syntropy::RangesADL
 
         auto fallback = [](auto&& rhs)
             -> decltype(Ranges::Select(rhs,
-                                       Ranges::RangeCardinalityTypeOf<TRange>{ 0 },
-                                       Ranges::Count(rhs) - Ranges::RangeCardinalityTypeOf<TRange>{ 1 }))
+                                       ToInt(0),
+                                       Ranges::Count(rhs) - ToInt(1)))
         {
             return Ranges::Select(rhs,
-                                  Ranges::RangeCardinalityTypeOf<TRange>{ 0 },
-                                  Ranges::Count(rhs) - Ranges::RangeCardinalityTypeOf<TRange>{ 1 });
+                                  ToInt(0),
+                                  Ranges::Count(rhs) - ToInt(1));
         };
 
         return Templates::InvokeAny(extension,
@@ -468,9 +462,9 @@ namespace Syntropy::RangesADL
     // ==
 
     /// \brief Invoke the At function, trying different implementations.
-    template <typename TRange, typename TIndex>
+    template <typename TRange>
     constexpr decltype(auto)
-    InvokeAt(Immutable<TRange> rhs, Immutable<TIndex> index) noexcept
+    InvokeAt(Immutable<TRange> rhs, Int index) noexcept
     {
         auto extension = [](auto&& rhs, auto&& index)
             -> decltype(InvokeAtExtension(rhs, index))
@@ -570,7 +564,7 @@ namespace Syntropy::Ranges
     }
 
     template <typename TRange>
-    [[nodiscard]] constexpr auto
+    [[nodiscard]] constexpr Int
     Count(Forwarding<TRange> range) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
@@ -614,20 +608,18 @@ namespace Syntropy::Ranges
         return RangesADL::InvokePopBack(range_view);
     }
 
-    template <typename TRange, typename TIndex>
+    template <typename TRange>
     [[nodiscard]] constexpr decltype(auto)
-    At(Forwarding<TRange> range, Immutable<TIndex> index) noexcept
+    At(Forwarding<TRange> range, Int index) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
 
         return RangesADL::InvokeAt(range_view, index);
     }
 
-    template <typename TRange, typename TCardinality>
+    template <typename TRange>
     [[nodiscard]] constexpr decltype(auto)
-    Select(Forwarding<TRange> range,
-           Immutable<TCardinality> offset,
-           Immutable<TCardinality> count) noexcept
+    Select(Forwarding<TRange> range, Int offset, Int count) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
 

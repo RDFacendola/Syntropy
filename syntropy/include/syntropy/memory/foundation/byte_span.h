@@ -28,35 +28,15 @@ namespace Syntropy::Memory
     /* BYTE SPAN                                                            */
     /************************************************************************/
 
-    /// \brief A contiguous sequence of bytes.
-    template <typename TTraits>
-    using BaseByteSpan = BaseSpan<Byte, TTraits>;
-
-    /************************************************************************/
-    /* BYTE SPAN                                                            */
-    /************************************************************************/
-
-    /// \brief Traits for read-only byte spans.
-    struct ByteSpanTraits : BaseSpanTraits<BytePtr, Immutable<Byte>, Bytes>
-    {
-
-    };
-
-    /// \brief Represents a span of read-only bytes.
-    using ByteSpan = BaseByteSpan<ByteSpanTraits>;
+    /// \brief A span of read-only bytes.
+    using ByteSpan = Span<Byte>;
 
     /************************************************************************/
     /* RW BYTE SPAN                                                         */
     /************************************************************************/
 
-    /// \brief Traits for read-write byte spans.
-    struct RWByteSpanTraits : BaseSpanTraits<RWBytePtr, Mutable<Byte>, Bytes>
-    {
-
-    };
-
-    /// \brief Represents a span of read-write bytes.
-    using RWByteSpan = BaseByteSpan<RWByteSpanTraits>;
+    /// \brief A span of read-write bytes.
+    using RWByteSpan = RWSpan<Byte>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -67,17 +47,23 @@ namespace Syntropy::Memory
 
     /// \brief Consume lhs from the front until its first byte is aligned to
     ///        rhs or lhs is exhausted.
-    template <typename TTraits>
-    [[nodiscard]] BaseByteSpan<TTraits>
-    Align(Immutable<BaseByteSpan<TTraits>> lhs,
-          Immutable<Alignment> alignment) noexcept;
+    [[nodiscard]] ByteSpan
+    Align(Immutable<ByteSpan> lhs, Alignment alignment) noexcept;
+
+    /// \brief Consume lhs from the front until its first byte is aligned to
+    ///        rhs or lhs is exhausted.
+    [[nodiscard]] RWByteSpan
+    Align(Immutable<RWByteSpan> lhs, Alignment alignment) noexcept;
 
     /// \brief Consume lhs from the back until its size is a multiple of size
     ///        or lhs is exhausted.
-    template <typename TTraits>
-    [[nodiscard]] BaseByteSpan<TTraits>
-    Floor(Immutable<BaseByteSpan<TTraits>> lhs,
-          Immutable<Bytes> size) noexcept;
+    [[nodiscard]] ByteSpan
+    Floor(Immutable<ByteSpan> lhs, Bytes size) noexcept;
+
+    /// \brief Consume lhs from the back until its size is a multiple of size
+    ///        or lhs is exhausted.
+    [[nodiscard]] RWByteSpan
+    Floor(Immutable<RWByteSpan> lhs, Bytes size) noexcept;
 
     // Conversions.
     // ============
@@ -106,38 +92,64 @@ namespace Syntropy::Memory
     /// \brief Get an object TObject from its object representation.
     /// \remarks If rhs is not exactly TObject, accessing the returned value
     ///          results in undefined behavior.
-    template <typename TObject, typename TTraits>
-    [[nodiscard]] Reference<TObject>
-    FromBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+    template <typename TObject>
+    [[nodiscard]] Immutable<TObject>
+    FromBytesOf(Immutable<ByteSpan> rhs) noexcept;
 
-    /// \brief Get the object representation of bytes in the contiguous
-    ///        range rhs.
+    /// \brief Get an object TObject from its object representation.
+    /// \remarks If rhs is not exactly TObject, accessing the returned value
+    ///          results in undefined behavior.
+    template <typename TObject>
+    [[nodiscard]] Mutable<TObject>
+    FromBytesOf(Immutable<RWByteSpan> rhs) noexcept;
+
+    /// \brief Get the object representation of elements in a contiguous range.
     template <Ranges::ContiguousRange TRange>
     [[nodiscard]] auto
     RangeBytesOf(Immutable<TRange> rhs) noexcept;
 
-    /// \brief Get the object representation of bytes in the contiguous
-    ///        range rhs.
-    /// \remarks The range-byte representation of a BaseByteSpan is the
-    ///          span itself.
-    template <typename TTraits>
-    [[nodiscard]] BaseByteSpan<TTraits>
-    RangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+    /// \brief Get the object representation of elements in a contiguous range.
+    /// \remarks The range object representation of a ByteSpan is the span
+    ///          itself.
+    [[nodiscard]] Immutable<ByteSpan>
+    RangeBytesOf(Immutable<ByteSpan> rhs) noexcept;
+
+    /// \brief Get the object representation of elements in a contiguous range.
+    /// \remarks The range object representation of a ByteSpan is the span
+    ///          itself.
+    [[nodiscard]] Immutable<RWByteSpan>
+    RangeBytesOf(Immutable<RWByteSpan> rhs) noexcept;
 
     /// \brief Get a contiguous range of strongly-typed elements from its
     ///        range object representation.
     /// \remarks If rhs is not exactly a range TRange, accessing the returned
     ///          value results in undefined behavior.
-    template <Ranges::ContiguousRange TRange, typename TTraits>
+    template <Ranges::ContiguousRange TRange>
     [[nodiscard]] TRange
-    FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+    FromRangeBytesOf(Immutable<ByteSpan> rhs) noexcept;
+
+    /// \brief Get a contiguous range of strongly-typed elements from its
+    ///        range object representation.
+    /// \remarks If rhs is not exactly a range TRange, accessing the returned
+    ///          value results in undefined behavior.
+    template <Ranges::ContiguousRange TRange>
+    [[nodiscard]] TRange
+    FromRangeBytesOf(Immutable<ByteSpan> rhs) noexcept;
+
+    /// \brief Get a contiguous range of strongly-typed elements from its
+    ///        range object representation.
+    /// \remarks If rhs is not exactly a range TRange, accessing the returned
+    ///          value results in undefined behavior.
+    template <Ranges::ContiguousRange TRange>
+    [[nodiscard]] TRange
+    FromRangeBytesOf(Immutable<RWByteSpan> rhs) noexcept;
 
     // Utilities.
     // ==========
 
     /// \brief Create a new byte span by deducing template from arguments.
     [[nodiscard]] constexpr ByteSpan
-    MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept;
+    MakeByteSpan(BytePtr begin, Bytes size) noexcept;
 
     /// \brief Create a new byte span by deducing template from arguments.
     [[nodiscard]] constexpr ByteSpan
@@ -145,7 +157,7 @@ namespace Syntropy::Memory
 
     /// \brief Create a new byte span by deducing template from arguments.
     [[nodiscard]] constexpr RWByteSpan
-    MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept;
+    MakeByteSpan(RWBytePtr begin, Bytes size) noexcept;
 
     /// \brief Create a new byte span by deducing template from arguments.
     [[nodiscard]] constexpr RWByteSpan

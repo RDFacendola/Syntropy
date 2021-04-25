@@ -66,7 +66,7 @@ namespace Syntropy::Ranges
     ///
     /// \return Returns the number of copied elements.
     template <ForwardRange TRange, ForwardRange URange>
-    constexpr RangeCardinalityTypeOf<URange>
+    constexpr Int
     PartialCopy(Immutable<TRange> destination,
                 Immutable<URange> source,
                 ForwardRangeTag = {}) noexcept;
@@ -76,7 +76,7 @@ namespace Syntropy::Ranges
     ///
     /// \return Returns the number of copied elements.
     template <ForwardRange TRange, ForwardRange URange>
-    constexpr RangeCardinalityTypeOf<URange>
+    constexpr Int
     PartialMove(Immutable<TRange> destination,
                 Immutable<URange> source,
                 ForwardRangeTag = {}) noexcept;
@@ -86,7 +86,7 @@ namespace Syntropy::Ranges
     ///
     /// \return Returns the number of swap elements.
     template <ForwardRange TRange>
-    constexpr RangeCardinalityTypeOf<TRange>
+    constexpr Int
     PartialSwap(Immutable<TRange> lhs,
                 Immutable<TRange> rhs,
                 ForwardRangeTag = {}) noexcept;

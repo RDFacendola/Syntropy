@@ -38,14 +38,14 @@ namespace Syntropy::Ranges
     // ============
 
     template <ForwardRange TRange, ForwardRange URange>
-    constexpr RangeCardinalityTypeOf<URange>
+    constexpr Int
     PartialCopy(Immutable<TRange> destination,
                 Immutable<URange> source,
                 ForwardRangeTag) noexcept
     {
         auto left = Ranges::ViewOf(destination);
         auto right = Ranges::ViewOf(source);
-        auto count = RangeCardinalityTypeOf<URange>{ 0 };
+        auto count = ToInt(0);
 
         for (; !Ranges::IsEmpty(right) && !Ranges::IsEmpty(left); ++count)
         {
@@ -59,14 +59,14 @@ namespace Syntropy::Ranges
     }
 
     template <ForwardRange TRange, ForwardRange URange>
-    constexpr RangeCardinalityTypeOf<URange>
+    constexpr Int
     PartialMove(Immutable<TRange> destination,
                 Immutable<URange> source,
                 ForwardRangeTag) noexcept
     {
         auto left = Ranges::ViewOf(destination);
         auto right = Ranges::ViewOf(source);
-        auto count = RangeCardinalityTypeOf<URange>{ 0 };
+        auto count = ToInt(0);
 
         for (; !Ranges::IsEmpty(right) && !Ranges::IsEmpty(left); ++count)
         {
@@ -83,14 +83,14 @@ namespace Syntropy::Ranges
     // =====
 
     template <ForwardRange TRange>
-    constexpr RangeCardinalityTypeOf<TRange>
+    constexpr Int
     PartialSwap(Immutable<TRange> lhs,
                 Immutable<TRange> rhs,
                 ForwardRangeTag) noexcept
     {
         auto left = Ranges::ViewOf(lhs);
         auto right = Ranges::ViewOf(rhs);
-        auto count = RangeCardinalityTypeOf<TRange>{ 0 };
+        auto count = ToInt(0);
 
         for (; !Ranges::IsEmpty(left) && !Ranges::IsEmpty(right); ++count)
         {

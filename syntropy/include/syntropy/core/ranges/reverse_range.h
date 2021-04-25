@@ -87,9 +87,8 @@ namespace Syntropy
 
         /// \brief Access a range element by index.
         /// \remarks Undefined behavior if range boundaries are exceeded.
-        template <typename TIndex>
         [[nodiscard]] constexpr decltype(auto)
-        At(Immutable<TIndex> index) const noexcept;
+        At(Int index) const noexcept;
 
     private:
 

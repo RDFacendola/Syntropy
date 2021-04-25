@@ -91,7 +91,7 @@ namespace Syntropy::Ranges
 
     /// \brief Get the number of elements in a range.
     template <typename TRange>
-    [[nodiscard]] constexpr auto
+    [[nodiscard]] constexpr Int
     Count(Forwarding<TRange> range) noexcept;
 
     /// \brief Access the first element in a range.
@@ -127,18 +127,16 @@ namespace Syntropy::Ranges
     /// \brief Access range element by index.
     ///
     /// \remarks Undefined behavior if range boundaries are exceeded.
-    template <typename TRange, typename TIndex>
+    template <typename TRange>
     [[nodiscard]] constexpr decltype(auto)
-    At(Forwarding<TRange> range, Immutable<TIndex> index) noexcept;
+    At(Forwarding<TRange> range, Int index) noexcept;
 
     /// \brief Select a subrange of elements.
     ///
     /// \remarks Undefined behavior if range boundaries are exceeded.
-    template <typename TRange, typename TCardinality>
+    template <typename TRange>
     [[nodiscard]] constexpr decltype(auto)
-    Select(Forwarding<TRange> range,
-           Immutable<TCardinality> offset,
-           Immutable<TCardinality> count) noexcept;
+    Select(Forwarding<TRange> range, Int offset, Int count) noexcept;
 
     /// \brief Access a range elements' storage.
     ///
@@ -156,12 +154,6 @@ namespace Syntropy::Ranges
     using RangeViewTypeOf
         = Templates::UnqualifiedOf<decltype(
             Ranges::ViewOf(Templates::Declval<TRange>()))>;
-
-    /// \brief Type of a range's cardinality.
-    template <typename TRange>
-    using RangeCardinalityTypeOf
-        = Templates::UnqualifiedOf<decltype(
-            Ranges::Count(Templates::Declval<TRange>()))>;
 
     /// \brief Type of a range elements.
     template <typename TRange>

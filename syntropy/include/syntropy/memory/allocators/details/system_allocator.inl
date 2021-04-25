@@ -23,7 +23,7 @@ namespace Syntropy::Memory
                                         alignment_value,
                                         std::nothrow))
         {
-            return { ToBytePtr(block), size };
+            return MakeByteSpan(ToBytePtr(block), size);
         }
 
         return {};

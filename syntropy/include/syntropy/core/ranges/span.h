@@ -6,13 +6,13 @@
 ///
 /// \author Raffaele D. Facendola - Jun 2020
 
+// ===========================================================================
+
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/core/comparisons/compare.h"
-
-#include "syntropy/core/ranges/contiguous_range.h"
 
 // ===========================================================================
 
@@ -24,22 +24,19 @@ namespace Syntropy
 
     /// \brief Represents a contiguous, non-owning, range of elements.
     /// \author Raffaele D. Facendola - June 2020.
-    template <typename TType, typename TTraits>
+    template <typename TType>
     class BaseSpan
     {
-        template <typename UType, typename UTraits>
+        template <typename UType>
         friend class BaseSpan;
 
     public:
 
         /// \brief Pointer type.
-        using PointerType = typename TTraits::PointerType;
+        using PointerType = BasePtr<TType>;
 
         /// \brief Reference type.
-        using ReferenceType = typename TTraits::ReferenceType;
-
-        /// \brief Type of the span cardinality.
-        using CardinalityType = typename TTraits::CardinalityType;
+        using ReferenceType = Reference<TType>;
 
         /// \brief Create an empty span.
         constexpr
@@ -52,27 +49,25 @@ namespace Syntropy
         /// \brief Create a span given a pointer to the first element and their
         ///        count.
         constexpr
-        BaseSpan(Immutable<PointerType> begin,
-                 Immutable<CardinalityType> count) noexcept;
+        BaseSpan(PointerType begin, Int count) noexcept;
 
         /// \brief Create a span given a pointer to both the first and past the
         ///        last element.
         constexpr
-        BaseSpan(Immutable<PointerType> begin,
-                 Immutable<PointerType> end) noexcept;
+        BaseSpan(PointerType begin, PointerType nd) noexcept;
 
         /// \brief Converting copy-constructor.
-        template <typename UType, typename UTraits>
+        template <typename UType>
         constexpr
-        BaseSpan(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
+        BaseSpan(Immutable<BaseSpan<UType>> rhs) noexcept;
 
         /// \brief Default destructor.
         ~BaseSpan() noexcept = default;
 
         /// \brief Copy-assignment operator.
-        template <typename UType, typename UTraits>
+        template <typename UType>
         constexpr Mutable<BaseSpan>
-        operator=(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
+        operator=(Immutable<BaseSpan<UType>> rhs) noexcept;
 
         /// \brief Check whether the span is non-empty.
         [[nodiscard]] constexpr explicit
@@ -82,22 +77,21 @@ namespace Syntropy
         ///
         /// \remarks Undefined behavior if range boundaries are exceeded.
         [[nodiscard]] constexpr ReferenceType
-        operator[](Immutable<CardinalityType> index) const noexcept;
+        operator[](Int index) const noexcept;
 
         /// \brief Access the underlying storage.
         [[nodiscard]] constexpr PointerType
         GetData() const noexcept;
 
         /// \brief Get the number of elements in the span.
-        [[nodiscard]] constexpr Immutable<CardinalityType>
+        [[nodiscard]] constexpr Int
         GetCount() const noexcept;
 
         /// \brief Select a subrange of elements.
         ///
         /// \remarks Undefined behavior if range boundaries are exceeded.
         [[nodiscard]] constexpr BaseSpan
-        Select(Immutable<CardinalityType> offset,
-               Immutable<CardinalityType> count) const noexcept;
+        Select(Int offset, Int count) const noexcept;
 
     private:
 
@@ -105,7 +99,7 @@ namespace Syntropy
         PointerType data_{ nullptr };
 
         /// \brief Number of elements in the span.
-        CardinalityType count_{};
+        Int count_{};
 
     };
 
@@ -115,52 +109,20 @@ namespace Syntropy
         = Templates::IsTemplateSpecializationOf<TSpan, BaseSpan>;
 
     /************************************************************************/
-    /* BASE SPAN TRAITS                                                     */
-    /************************************************************************/
-
-    /// \brief Schema for base span traits.
-    template <typename TPointer, typename TReference, typename TCardinality>
-    struct BaseSpanTraits
-    {
-        /// \brief Pointer type.
-        using PointerType = TPointer;
-
-        /// \brief Reference type.
-        using ReferenceType = TReference;
-
-        /// \brief Cardinality type.
-        using CardinalityType = TCardinality;
-    };
-
-    /************************************************************************/
     /* SPAN                                                                 */
     /************************************************************************/
 
-    /// \brief Traits for read-only spans.
+    /// \brief A span of read-only elements.
     template <typename TType>
-    struct SpanTraits : BaseSpanTraits<Ptr<TType>, Immutable<TType>, Int>
-    {
-
-    };
-
-    /// \brief Represents a span of read-only elements.
-    template <typename TType>
-    using Span = BaseSpan<TType, SpanTraits<TType>>;
+    using Span = BaseSpan<Templates::ReadOnlyOf<TType>>;
 
     /************************************************************************/
     /* RW SPAN                                                              */
     /************************************************************************/
 
-    /// \brief Traits for read-write spans.
+    /// \brief A span of read-write elements.
     template <typename TType>
-    struct RWSpanTraits : BaseSpanTraits<RWPtr<TType>, Mutable<TType>, Int>
-    {
-
-    };
-
-    /// \brief Represents a span of read-write elements.
-    template <typename TType>
-    using RWSpan = BaseSpan<TType, RWSpanTraits<TType>>;
+    using RWSpan = BaseSpan<Templates::ReadWriteOf<TType>>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -183,24 +145,24 @@ namespace Syntropy
     // =======
 
     /// \brief Convert rhs to a read-only span.
-    template <typename TType, typename TTraits>
+    template <typename TType>
     [[nodiscard]] constexpr Span<TType>
-    ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    ToReadOnly(Immutable<BaseSpan<TType>> rhs) noexcept;
 
     /// \brief Convert rhs to a read-write span.
     /// \remarks If the original span is not read-writable, accessing the
     ///          returned values results in undefined behavior.
-    template <typename TType, typename TTraits>
+    template <typename TType>
     [[nodiscard]] constexpr RWSpan<TType>
-    ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    ToReadWrite(Immutable<BaseSpan<TType>> rhs) noexcept;
 
     // Utilities.
     // ==========
 
     /// \brief Create a read-only span by deducing template from arguments.
-    template <typename TType, typename TCardinality>
+    template <typename TType>
     [[nodiscard]] constexpr Span<TType>
-    MakeSpan(Ptr<TType> begin, Immutable<TCardinality> count) noexcept;
+    MakeSpan(Ptr<TType> begin, Int count) noexcept;
 
     /// \brief Create a read-only span by deducing template from arguments.
     template <typename TType>
@@ -208,9 +170,9 @@ namespace Syntropy
     MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept;
 
     /// \brief Create a read-write span by deducing template from arguments.
-    template <typename TType, typename TCardinality>
+    template <typename TType>
     [[nodiscard]] constexpr RWSpan<TType>
-    MakeSpan(RWPtr<TType> begin, Immutable<TCardinality> count) noexcept;
+    MakeSpan(RWPtr<TType> begin, Int count) noexcept;
 
     /// \brief Create a read-write span by deducing template from arguments.
     template <typename TType>
