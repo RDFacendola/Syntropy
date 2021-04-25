@@ -71,90 +71,90 @@ namespace Syntropy::RangesADL
     template <typename TRange>
     [[nodiscard]] constexpr auto
     InvokeViewOfExtension(Forwarding<TRange> rhs)
-        noexcept -> decltype(ViewOfExtension(Forward<TRange>(rhs)))
+        noexcept -> decltype(ViewOfExtension<TRange>{}(Forward<TRange>(rhs)))
     {
-        return ViewOfExtension(Forward<TRange>(rhs));
+        return ViewOfExtension<TRange>{}(Forward<TRange>(rhs));
     }
 
     /// \brief Invoke the IsEmpty function via extension functor.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     InvokeIsEmptyExtension(Immutable<TRange> rhs)
-        noexcept -> decltype(IsEmptyExtension(rhs))
+        noexcept -> decltype(IsEmptyExtension<TRange>{}(rhs))
     {
-        return IsEmptyExtension(rhs);
+        return IsEmptyExtension<TRange>{}(rhs);
     }
 
     /// \brief Invoke the Count function via extension functor.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     InvokeCountExtension(Immutable<TRange> rhs)
-        noexcept -> decltype(CountExtension(rhs))
+        noexcept -> decltype(CountExtension<TRange>{}(rhs))
     {
-        return CountExtension(rhs);
+        return CountExtension<TRange>{}(rhs);
     }
 
     /// \brief Invoke the Select function via extension functor.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     InvokeSelectExtension(Immutable<TRange> rhs, Int offset, Int count)
-        noexcept -> decltype(SelectExtension(rhs, offset, count))
+        noexcept -> decltype(SelectExtension<TRange>{}(rhs, offset, count))
     {
-        return SelectExtension(rhs, offset, count);
+        return SelectExtension<TRange>{}(rhs, offset, count);
     }
 
     /// \brief Invoke the Front function via extension functor.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     InvokeFrontExtension(Immutable<TRange> rhs)
-        noexcept -> decltype(FrontExtension(rhs))
+        noexcept -> decltype(FrontExtension<TRange>{}(rhs))
     {
-        return FrontExtension(rhs);
+        return FrontExtension<TRange>{}(rhs);
     }
 
     /// \brief Invoke the Back function via extension functor.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     InvokeBackExtension(Immutable<TRange> rhs)
-        noexcept -> decltype(BackExtension(rhs))
+        noexcept -> decltype(BackExtension<TRange>{}(rhs))
     {
-        return BackExtension(rhs);
+        return BackExtension<TRange>{}(rhs);
     }
 
     /// \brief Invoke the PopFront function via extension functor.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     InvokePopFrontExtension(Immutable<TRange> rhs)
-        noexcept -> decltype(PopFrontExtension(rhs))
+        noexcept -> decltype(PopFrontExtension<TRange>{}(rhs))
     {
-        return PopFrontExtension(rhs);
+        return PopFrontExtension<TRange>{}(rhs);
     }
 
     /// \brief Invoke the PopBack function via extension functor.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     InvokePopBackExtension(Immutable<TRange> rhs)
-        noexcept -> decltype(PopBackExtension(rhs))
+        noexcept -> decltype(PopBackExtension<TRange>{}(rhs))
     {
-        return PopBackExtension(rhs);
+        return PopBackExtension<TRange>{}(rhs);
     }
 
     /// \brief Invoke the At function via extension functor.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     InvokeAtExtension(Immutable<TRange> rhs, Int index)
-        noexcept -> decltype(AtExtension(rhs, index))
+        noexcept -> decltype(AtExtension<TRange>{}(rhs, index))
     {
-        return AtExtension(rhs);
+        return AtExtension<TRange>{}(rhs);
     }
 
     /// \brief Invoke the Data function via extension functor.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     InvokeDataExtension(Immutable<TRange> rhs)
-        noexcept -> decltype(DataExtension(rhs))
+        noexcept -> decltype(DataExtension<TRange>{}(rhs))
     {
-        return DataExtension(rhs);
+        return DataExtension<TRange>{}(rhs);
     }
 
     /************************************************************************/
