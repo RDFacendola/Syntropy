@@ -13,7 +13,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Diagnostics
+namespace Syntropy
 {
     /************************************************************************/
     /* MACROS                                                               */
@@ -21,15 +21,16 @@ namespace Syntropy::Diagnostics
 
     #undef SYNTROPY_HERE
     #define SYNTROPY_HERE \
-        Syntropy::Diagnostics::SourceLocation{ SYNTROPY_FILE, \
-                                               SYNTROPY_FUNCTION, \
-                                               SYNTROPY_LINE }
+        Syntropy::SourceLocation{ SYNTROPY_FILE, \
+                                  SYNTROPY_FUNCTION, \
+                                  SYNTROPY_LINE }
 
     /************************************************************************/
     /* SOURCE LOCATION                                                      */
     /************************************************************************/
 
-    inline SourceLocation
+    inline
+    SourceLocation
     ::SourceLocation(String file_name, String function_name, Int line) noexcept
         : file_name_(Move(file_name))
         , function_name_(Move(function_name))
@@ -39,7 +40,8 @@ namespace Syntropy::Diagnostics
     }
 
     template <typename TCharacter, Int TSize, Int USize>
-    inline SourceLocation
+    inline
+    SourceLocation
     ::SourceLocation(StringLiteralType<TCharacter, TSize> file_name,
                      StringLiteralType<TCharacter, USize> function_name,
                      Int line)
