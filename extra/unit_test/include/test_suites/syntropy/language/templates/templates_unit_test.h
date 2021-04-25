@@ -35,7 +35,7 @@ namespace UnitTest
     /************************************************************************/
 
     inline auto& templates_unit_test
-        = Syntropy::UnitTest::MakeAutoUnitTest<TemplatesTestFixture>(
+        = Syntropy::MakeAutoUnitTest<TemplatesTestFixture>(
             u8"templates.templates.language.syntropy")
 
     .TestCase(u8"Alias types provide a member Type equal to the alias type.",

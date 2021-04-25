@@ -79,7 +79,7 @@ namespace UnitTest
     /************************************************************************/
 
     inline auto& invoke_unit_test
-        = Syntropy::UnitTest::MakeAutoUnitTest<InvokeTestFixture>(
+        = Syntropy::MakeAutoUnitTest<InvokeTestFixture>(
             u8"invoke.templates.language.syntropy")
 
     .TestCase(u8"InvokeArgumentOf of a function object return the list of "

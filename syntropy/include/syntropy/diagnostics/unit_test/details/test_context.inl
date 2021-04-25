@@ -14,7 +14,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::UnitTest
+namespace Syntropy
 {
     /************************************************************************/
     /* UNIT TEST MACROS                                                     */
@@ -24,31 +24,31 @@ namespace Syntropy::UnitTest
     #define SYNTROPY_UNIT_EQUAL(expression, expected)                         \
         if (auto&& result = (expression); result != expected)                 \
         {                                                                     \
-            Syntropy::UnitTest::ReportFailure(SYNTROPY_HERE,                  \
-                                              SYNTROPY_CAT(u8, #expression),  \
-                                              result,                         \
-                                              expected );                     \
+            Syntropy::ReportFailure(SYNTROPY_HERE,                            \
+                                    SYNTROPY_CAT(u8, #expression),            \
+                                    result,                                   \
+                                    expected );                               \
         }                                                                     \
         else                                                                  \
         {                                                                     \
-            Syntropy::UnitTest::ReportSuccess(SYNTROPY_HERE,                  \
-                                              SYNTROPY_CAT(u8, #expression)); \
+            Syntropy::ReportSuccess(SYNTROPY_HERE,                            \
+                                    SYNTROPY_CAT(u8, #expression));           \
         }
 
     #undef SYNTROPY_UNIT_SAME
     #define SYNTROPY_UNIT_SAME(type, expected)                                \
         if(!Syntropy::Templates::IsSame<SYNTROPY_TYPENAME(type),              \
-                                       SYNTROPY_TYPENAME(expected)>)          \
+                                        SYNTROPY_TYPENAME(expected)>)         \
         {                                                                     \
-            Syntropy::UnitTest::ReportFailure(SYNTROPY_HERE,                  \
-                                              SYNTROPY_CAT(u8, #type),        \
-                                              SYNTROPY_CAT(u8, #type),        \
-                                              SYNTROPY_CAT(u8, #expected));   \
+            Syntropy::ReportFailure(SYNTROPY_HERE,                            \
+                                    SYNTROPY_CAT(u8, #type),                  \
+                                    SYNTROPY_CAT(u8, #type),                  \
+                                    SYNTROPY_CAT(u8, #expected));             \
         }                                                                     \
         else                                                                  \
         {                                                                     \
-            Syntropy::UnitTest::ReportSuccess(SYNTROPY_HERE,                  \
-                                              SYNTROPY_CAT(u8, #type) );      \
+            Syntropy::ReportSuccess(SYNTROPY_HERE,                            \
+                                    SYNTROPY_CAT(u8, #type) );                \
         }
 
     /************************************************************************/

@@ -262,7 +262,7 @@ namespace UnitTest
     /************************************************************************/
 
     inline auto& concepts_unit_test
-        = Syntropy::UnitTest::MakeAutoUnitTest<ConceptsTestFixture>(
+        = Syntropy::MakeAutoUnitTest<ConceptsTestFixture>(
             u8"concepts.templates.language.syntropy")
 
     .TestCase(u8"Types are same-as themselves.",

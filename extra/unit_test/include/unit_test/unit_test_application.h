@@ -58,32 +58,32 @@ namespace UnitTest
 
         /// \brief Called whenever a test suite starts.
         void
-        OnSuiteStarted(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
-                       Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerSuiteStartedEventArgs> event_args)
+        OnSuiteStarted(Syntropy::Immutable<Syntropy::TestRunner> sender,
+                       Syntropy::Immutable<Syntropy::OnTestRunnerSuiteStartedEventArgs> event_args)
         noexcept;
 
         /// \brief Called whenever a test case starts.
-        void OnCaseStarted(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
-                           Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseStartedEventArgs> event_args)
+        void OnCaseStarted(Syntropy::Immutable<Syntropy::TestRunner> sender,
+                           Syntropy::Immutable<Syntropy::OnTestRunnerCaseStartedEventArgs> event_args)
         noexcept;
 
         /// \brief Called whenever a test case failure is reported.
-        void OnCaseFailure(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
-                           Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseFailureEventArgs> event_args)
+        void OnCaseFailure(Syntropy::Immutable<Syntropy::TestRunner> sender,
+                           Syntropy::Immutable<Syntropy::OnTestRunnerCaseFailureEventArgs> event_args)
         noexcept;
 
         /// \brief Called whenever a test case finishes.
-        void OnCaseFinished(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
-                            Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseFinishedEventArgs> event_args)
+        void OnCaseFinished(Syntropy::Immutable<Syntropy::TestRunner> sender,
+                            Syntropy::Immutable<Syntropy::OnTestRunnerCaseFinishedEventArgs> event_args)
         noexcept;
 
         /// \brief Called whenever a test suite finishes.
-        void OnSuiteFinished(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
-                             Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerSuiteFinishedEventArgs> event_args)
+        void OnSuiteFinished(Syntropy::Immutable<Syntropy::TestRunner> sender,
+                             Syntropy::Immutable<Syntropy::OnTestRunnerSuiteFinishedEventArgs> event_args)
         noexcept;
 
         /// \brief Test runner.
-        Syntropy::UnitTest::TestRunner test_runner_;
+        Syntropy::TestRunner test_runner_;
 
         /// \brief Listener for the test runner events.
         Syntropy::Listener test_listener_;

@@ -33,7 +33,7 @@ namespace UnitTest
     /************************************************************************/
 
     inline auto& priority_unit_test
-        = Syntropy::UnitTest::MakeAutoUnitTest<PriorityTestFixture>(
+        = Syntropy::MakeAutoUnitTest<PriorityTestFixture>(
             u8"priority.templates.language.syntropy")
 
     .TestCase(u8"Priorities are implicitly convertible to all lower "

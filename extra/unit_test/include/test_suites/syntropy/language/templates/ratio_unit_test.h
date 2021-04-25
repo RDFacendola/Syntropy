@@ -32,7 +32,7 @@ namespace UnitTest
     /************************************************************************/
 
     inline auto& ratio_unit_test
-        = Syntropy::UnitTest::MakeAutoUnitTest<RatioTestFixture>(
+        = Syntropy::MakeAutoUnitTest<RatioTestFixture>(
             u8"ratio.templates.language.syntropy")
 
     .TestCase(u8"A ratio-type is a ratio.",

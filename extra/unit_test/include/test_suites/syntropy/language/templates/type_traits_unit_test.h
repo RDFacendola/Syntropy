@@ -33,7 +33,7 @@ namespace UnitTest
     /************************************************************************/
 
     inline auto& type_traits_unit_test
-        = Syntropy::UnitTest::MakeAutoUnitTest<TypeTraitsTestFixture>(
+        = Syntropy::MakeAutoUnitTest<TypeTraitsTestFixture>(
             u8"type_traits.templates.language.syntropy")
 
     .TestCase(u8"IdentityOf is equal to the type itself.",

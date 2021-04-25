@@ -87,8 +87,8 @@ namespace UnitTest
 
     inline void
     UnitTestApplication
-    ::OnSuiteStarted(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
-                     Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerSuiteStartedEventArgs> event_args)
+    ::OnSuiteStarted(Syntropy::Immutable<Syntropy::TestRunner> sender,
+                     Syntropy::Immutable<Syntropy::OnTestRunnerSuiteStartedEventArgs> event_args)
     noexcept
     {
         test_suite_failed_ = false;
@@ -98,8 +98,8 @@ namespace UnitTest
 
     inline void
     UnitTestApplication
-    ::OnCaseStarted(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
-                    Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseStartedEventArgs> event_args)
+    ::OnCaseStarted(Syntropy::Immutable<Syntropy::TestRunner> sender,
+                    Syntropy::Immutable<Syntropy::OnTestRunnerCaseStartedEventArgs> event_args)
     noexcept
     {
         test_case_failed_ = false;
@@ -109,8 +109,8 @@ namespace UnitTest
 
     inline void
     UnitTestApplication
-    ::OnCaseFailure(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
-                    Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseFailureEventArgs> event_args)
+    ::OnCaseFailure(Syntropy::Immutable<Syntropy::TestRunner> sender,
+                    Syntropy::Immutable<Syntropy::OnTestRunnerCaseFailureEventArgs> event_args)
     noexcept
     {
         if (!test_suite_failed_)
@@ -147,8 +147,8 @@ namespace UnitTest
 
     inline void
     UnitTestApplication
-    ::OnCaseFinished(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
-                     Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerCaseFinishedEventArgs> event_args)
+    ::OnCaseFinished(Syntropy::Immutable<Syntropy::TestRunner> sender,
+                     Syntropy::Immutable<Syntropy::OnTestRunnerCaseFinishedEventArgs> event_args)
     noexcept
     {
         if (test_case_failed_)
@@ -163,8 +163,8 @@ namespace UnitTest
 
     inline void
     UnitTestApplication
-    ::OnSuiteFinished(Syntropy::Immutable<Syntropy::UnitTest::TestRunner> sender,
-                      Syntropy::Immutable<Syntropy::UnitTest::OnTestRunnerSuiteFinishedEventArgs> event_args)
+    ::OnSuiteFinished(Syntropy::Immutable<Syntropy::TestRunner> sender,
+                      Syntropy::Immutable<Syntropy::OnTestRunnerSuiteFinishedEventArgs> event_args)
     noexcept
     {
         if (test_suite_failed_)

@@ -81,7 +81,7 @@ namespace CompareUnitTest
     /************************************************************************/
 
     inline auto& compare_unit_test
-        = Sy::UnitTest::MakeAutoUnitTest<Fixture>(
+        = Sy::MakeAutoUnitTest<Fixture>(
             u8"compare.algorithms.core.syntropy")
 
     .TestCase(u8"Integral types support comparison.",

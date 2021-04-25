@@ -41,7 +41,7 @@ namespace UnitTest
     /************************************************************************/
 
     inline auto& swap_unit_test
-        = Syntropy::UnitTest::MakeAutoUnitTest<SwapTestFixture>(
+        = Syntropy::MakeAutoUnitTest<SwapTestFixture>(
             u8"swap.algorithms.core.syntropy")
 
     .TestCase(u8"",

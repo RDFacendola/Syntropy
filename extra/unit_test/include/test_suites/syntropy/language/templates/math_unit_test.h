@@ -32,7 +32,7 @@ namespace UnitTest
     /************************************************************************/
 
     inline auto& math_unit_test
-        = Syntropy::UnitTest::MakeAutoUnitTest<MathTestFixture>(
+        = Syntropy::MakeAutoUnitTest<MathTestFixture>(
             u8"math.templates.language.syntropy")
 
     .TestCase(u8"The greatest common divisor of a number and 1 is 1.",
