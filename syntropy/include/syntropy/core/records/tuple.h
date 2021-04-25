@@ -244,12 +244,12 @@ namespace Syntropy
     ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
-    template <Records::RecordReference... TRecords>
+    template <RecordReference... TRecords>
     [[nodiscard]] constexpr auto
     Concatenate(Forwarding<TRecords>... records) noexcept;
 
     /// \brief Flatten a tuple recursively.
-    template <Records::RecordReference TRecord>
+    template <RecordReference TRecord>
     [[nodiscard]] constexpr auto
     Flatten(Forwarding<TRecord> record) noexcept;
 
@@ -296,12 +296,12 @@ namespace Syntropy
 
     /// \brief Partial template specialization for tuples.
     template <IsTuple TTuple>
-    struct Records::RankTrait<TTuple>
+    struct RecordRankTrait<TTuple>
         : Templates::IntType<TTuple::kCount> {};
 
     /// \brief Partial template specialization for tuples.
     template <Int TIndex, IsTuple TTuple>
-    struct Records::ElementTypeTrait<TIndex, TTuple>
+    struct RecordElementTypeTrait<TIndex, TTuple>
         : Templates::Alias<
             Templates::ElementTypeOf<TIndex,
                                      typename TTuple::ElementTypes>> {};

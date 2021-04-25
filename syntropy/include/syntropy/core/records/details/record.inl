@@ -20,7 +20,8 @@ namespace Syntropy::RecordsADL
     template <Int TIndex, typename TRecord>
     [[nodiscard]] constexpr auto
     InvokeGetExtension(Forwarding<TRecord> rhs)
-        noexcept -> decltype(GetExtension<TIndex, TRecord>{}(Forward<TRecord>(rhs)))
+        noexcept -> decltype(GetExtension<TIndex, TRecord>{}(
+            Forward<TRecord>(rhs)))
     {
         return GetExtension<TIndex, TRecord>{}(Forward<TRecord>(rhs));
     }
@@ -61,37 +62,35 @@ namespace Syntropy::RecordsADL
 
 // ===========================================================================
 
-namespace Syntropy::Records
+namespace Syntropy
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* RECORDS                                                              */
     /************************************************************************/
-
-    // Element access.
-    // ===============
 
     template <Int TIndex, RecordReference TRecord>
     [[nodiscard]] constexpr decltype(auto)
-    Get(Forwarding<TRecord> record) noexcept
+    Records
+    ::Get(Forwarding<TRecord> record) noexcept
     {
         return RecordsADL::InvokeGet<TIndex>(Forward<TRecord>(record));
     }
 
     template <typename TElement, RecordReference TRecord>
     [[nodiscard]] constexpr decltype(auto)
-    Get(Forwarding<TRecord> record) noexcept
+    Records
+    ::Get(Forwarding<TRecord> record) noexcept
     {
         constexpr auto TIndex = ElementIndexOf<TElement, TRecord>;
 
         return RecordsADL::InvokeGet<TIndex>(Forward<TRecord>(record));
     }
 
-    // Functional.
-    // ===========
-
     template <typename TFunction, RecordReference TRecord>
     constexpr decltype(auto)
-    Apply(Forwarding<TFunction> function, Forwarding<TRecord> record) noexcept
+    Records
+    ::Apply(Forwarding<TFunction> function, Forwarding<TRecord> record)
+    noexcept
     {
         auto apply = [&]<Int... TIndex> (Templates::Sequence<TIndex...>)
         {
@@ -103,8 +102,9 @@ namespace Syntropy::Records
 
     template <typename TFunction, RecordReference TRecord>
     constexpr void
-    ForEachApply(Forwarding<TFunction> function,
-                 Forwarding<TRecord> record) noexcept
+    Records
+    ::ForEachApply(Forwarding<TFunction> function,
+                   Forwarding<TRecord> record) noexcept
     {
         auto apply = [&]<Int... TIndex> (Templates::Sequence<TIndex...>)
         {
@@ -116,16 +116,18 @@ namespace Syntropy::Records
 
     template <Int TIndex, typename TFunction, RecordReference... TRecords>
     constexpr decltype(auto)
-    ProjectApply(Forwarding<TFunction> function,
-                 Forwarding<TRecords>... records) noexcept
+    Records
+    ::ProjectApply(Forwarding<TFunction> function,
+                   Forwarding<TRecords>... records) noexcept
     {
         return function(Records::Get<TIndex>(Forward<TRecords>(records))...);
     }
 
     template <typename TFunction, RecordReference... TRecords>
     constexpr void
-    LockstepApply(Forwarding<TFunction> function,
-                  Forwarding<TRecords>... records) noexcept
+    Records
+    ::LockstepApply(Forwarding<TFunction> function,
+                    Forwarding<TRecords>... records) noexcept
     {
         constexpr auto kMinRank = Math::Min(RankOf<TRecords>...);
 
@@ -140,7 +142,8 @@ namespace Syntropy::Records
 
     template <typename TType, RecordReference TRecord>
     [[nodiscard]] constexpr TType
-    MakeFromRecord(Forwarding<TRecord> record) noexcept
+    Records
+    ::MakeFromRecord(Forwarding<TRecord> record) noexcept
     {
         auto make = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
@@ -150,30 +153,37 @@ namespace Syntropy::Records
         return make(SequenceOf<TRecord>{});
     }
 
-    // Copy, Move, Swap.
-    // =================
-
     template <Record TRecord, Record URecord>
-    requires IsSameRank<TRecord, URecord>
     constexpr void
-    Copy(Mutable<TRecord> destination, Immutable<URecord> source) noexcept
+    Records
+    ::Copy(Mutable<TRecord> destination, Immutable<URecord> source) noexcept
     {
+        static_assert(IsSameRank<TRecord, URecord>,
+                      "Both records must have the same rank");
+
         return PartialCopy(destination, source);
     }
 
     template <Record TRecord, RecordReference URecord>
-    requires IsSameRank<TRecord, URecord>
+    //requires Records::IsSameRank<TRecord, URecord>
     constexpr void
-    Move(Mutable<TRecord> destination, Forwarding<URecord> source) noexcept
+    Records
+    ::Move(Mutable<TRecord> destination, Forwarding<URecord> source) noexcept
     {
+        static_assert(IsSameRank<TRecord, URecord>,
+                      "Both records must have the same rank");
+
         return PartialMove(destination, Forward<URecord>(source));
     }
 
     template <Record TRecord, Record URecord>
-    requires Records::IsSameRank<TRecord, URecord>
     constexpr void
-    Swap(Mutable<TRecord> lhs, Mutable<URecord> rhs) noexcept
+    Records
+    ::Swap(Mutable<TRecord> lhs, Mutable<URecord> rhs) noexcept
     {
+        static_assert(IsSameRank<TRecord, URecord>,
+                      "Both records must have the same rank");
+
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
             (Toolset::Swap(Records::Get<TIndex>(lhs),
@@ -184,10 +194,13 @@ namespace Syntropy::Records
     }
 
     template <Record TRecord, RecordReference URecord>
-    requires Records::IsSameRank<TRecord, URecord>
     [[nodiscard]] constexpr TRecord
-    Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept
+    Records
+    ::Exchange(Mutable<TRecord> lhs, Forwarding<URecord> rhs) noexcept
     {
+        static_assert(IsSameRank<TRecord, URecord>,
+                      "Both records must have the same rank");
+
         auto exchange = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
             return TRecord
@@ -202,7 +215,8 @@ namespace Syntropy::Records
 
     template <Record TRecord, Record URecord>
     constexpr Int
-    PartialCopy(Mutable<TRecord> destination, Immutable<URecord> source)
+    Records
+    ::PartialCopy(Mutable<TRecord> destination, Immutable<URecord> source)
     noexcept
     {
         auto elementwise_copy = [](auto& destination_element,
@@ -218,7 +232,8 @@ namespace Syntropy::Records
 
     template <Record TRecord, RecordReference URecord>
     constexpr Int
-    PartialMove(Mutable<TRecord> destination, Forwarding<URecord> source)
+    Records
+    ::PartialMove(Mutable<TRecord> destination, Forwarding<URecord> source)
     noexcept
     {
         auto elementwise_move = [](auto& destination_element,
@@ -237,12 +252,11 @@ namespace Syntropy::Records
     }
 
     template <Record TRecord, Record URecord>
-    constexpr void
-    PartialSwap(Mutable<TRecord> lhs, Mutable<URecord> rhs) noexcept
+    constexpr Int
+    Records
+    ::PartialSwap(Mutable<TRecord> lhs, Mutable<URecord> rhs) noexcept
     {
-        constexpr auto kLeftRank = Records::RankOf<TRecord>;
-        constexpr auto kRightRank = Records::RankOf<URecord>;
-        constexpr auto KSwapRank = Math::Min(kLeftRank, kRightRank);
+        constexpr auto kSwapRank = Math::Min(RankOf<TRecord>, RankOf<URecord>);
 
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
@@ -250,15 +264,15 @@ namespace Syntropy::Records
                            Records::Get<TIndex>(rhs)), ...);
         };
 
-        swap(Templates::MakeSequence<KSwapRank>{});
-    }
+        swap(Templates::MakeSequence<kSwapRank>{});
 
-    // Compare.
-    // ========
+        return kSwapRank;
+    }
 
     template <Record TRecord, Record URecord>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
+    Records
+    ::AreEqual(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
         auto equal = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
@@ -277,7 +291,8 @@ namespace Syntropy::Records
 
     template <Record TRecord, Record URecord>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
+    Records
+    ::AreEquivalent(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
         auto equivalent = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
@@ -296,7 +311,8 @@ namespace Syntropy::Records
 
     template <Record TRecord, Record URecord>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
+    Records
+    ::Compare(Immutable<TRecord> lhs, Immutable<URecord> rhs) noexcept
     {
         constexpr auto LeftRank = RankOf<TRecord>;
         constexpr auto RightRank = RankOf<URecord>;
@@ -341,7 +357,7 @@ namespace std
     /* STRUCTURED BINDINGS                                                  */
     /************************************************************************/
 
-    template <Syntropy::Records::Record TRecord>
+    template <Syntropy::Record TRecord>
     struct std::tuple_size<TRecord>
     {
         static constexpr
@@ -349,19 +365,19 @@ namespace std
     };
 
     template <std::size_t TIndex,
-              Syntropy::Records::Record TRecord>
+              Syntropy::Record TRecord>
     struct std::tuple_element<TIndex, TRecord>
     {
         using type = Syntropy::Records::ElementTypeOf<TIndex, TRecord>;
     };
 
-    template <std::size_t TIndex, Syntropy::Records::Record TRecord>
+    template <std::size_t TIndex, Syntropy::Record TRecord>
     decltype(auto) get(Syntropy::Immutable<TRecord> record)
     {
         return Get<TIndex>(record);
     }
 
-    template <std::size_t TIndex, Syntropy::Records::Record TRecord>
+    template <std::size_t TIndex, Syntropy::Record TRecord>
     decltype(auto) get(Syntropy::Movable<TRecord> record)
     {
         return Get<TIndex>(Syntropy::Move(record));

@@ -189,11 +189,11 @@ namespace Syntropy
                    Forward<TElements>(elements)...);
     }
 
-    template <Records::RecordReference... TRecords>
+    template <RecordReference... TRecords>
     [[nodiscard]] constexpr auto
     Concatenate(Forwarding<TRecords>... records) noexcept
     {
-        auto concatenate = [&]<Records::RecordReference TRecord,
+        auto concatenate = [&]<RecordReference TRecord,
                                Int... TTupleIndex,
                                Int... TElementIndex>
             (Forwarding<TRecord> record,
@@ -212,7 +212,7 @@ namespace Syntropy
             Details::TupleEnumerateRecordElements<TRecords...>{});
     }
 
-    template <Records::RecordReference TRecord>
+    template <RecordReference TRecord>
     [[nodiscard]] constexpr auto
     Flatten(Forwarding<TRecord> record) noexcept
     {

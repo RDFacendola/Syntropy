@@ -226,11 +226,11 @@ namespace Syntropy::Details
     // Second sequence: 012-01-0 abc-de-f
 
     /// \brief Sequence associating each element to the generating tuple.
-    template <typename TSequence, Records::RecordReference... TRecords>
+    template <typename TSequence, RecordReference... TRecords>
     struct TupleEnumerateRecordsHelper {};
 
     /// \brief Partial template specialization for sequence-records pairs.
-    template <Int... TIndex, Records::RecordReference... TRecords>
+    template <Int... TIndex, RecordReference... TRecords>
     struct TupleEnumerateRecordsHelper<Templates::Sequence<TIndex...>,
                                        TRecords...>
         : Templates::Alias<
@@ -239,13 +239,13 @@ namespace Syntropy::Details
                                           Records::RankOf<TRecords>>...>> {};
 
     /// \brief Sequence associating each element to the source record.
-    template <Records::RecordReference... TRecords>
+    template <RecordReference... TRecords>
     using TupleEnumerateRecords
         = typename TupleEnumerateRecordsHelper<
             Templates::SequenceFor<TRecords...>, TRecords...>::Type;
 
     /// \brief Sequence associating each element to the source record element.
-    template <Records::RecordReference... TRecords>
+    template <RecordReference... TRecords>
     using TupleEnumerateRecordElements
         = Templates::SequenceConcatenate<Records::SequenceOf<TRecords>...>;
 
