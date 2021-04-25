@@ -1,9 +1,7 @@
 
 /// \file assert.inl
 ///
-/// \author Raffaele D. Facendola - 2016
-
-#pragma once
+/// \author Raffaele D. Facendola - 2016.
 
 // ===========================================================================
 

@@ -1,9 +1,7 @@
 
 /// \file record.inl
 ///
-/// \author Raffaele D. Facendola - Nov 2020
-
-#pragma once
+/// \author Raffaele D. Facendola - November 2020.
 
 // ===========================================================================
 

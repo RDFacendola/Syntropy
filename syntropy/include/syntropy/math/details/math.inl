@@ -1,10 +1,13 @@
 
 /// \file math.inl
 ///
-/// \author Raffaele D. Facendola - 2017
+/// \author Raffaele D. Facendola - 2017.
+
+// ===========================================================================
 
 #include <cmath>
 #include <limits>
+
 // ===========================================================================
 
 namespace Syntropy

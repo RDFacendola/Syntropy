@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy allocators module.
 ///        It contains base interfaces and definitions for allocators.
 ///
-/// \author Raffaele D. Facendola - 2020
+/// \author Raffaele D. Facendola - 2020.
+
+// ===========================================================================
 
 #pragma once
 

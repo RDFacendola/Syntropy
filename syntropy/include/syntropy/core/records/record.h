@@ -5,7 +5,9 @@
 ///        It contains definitions for record concepts and related
 ///        functionalities.
 ///
-/// \author Raffaele D. Facendola - November 2020
+/// \author Raffaele D. Facendola - November 2020.
+
+// ===========================================================================
 
 #pragma once
 

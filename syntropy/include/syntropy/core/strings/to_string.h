@@ -4,7 +4,7 @@
 /// \brief This header is part of the Syntropy core module.
 ///        It contains definitions to stringify objects.
 ///
-/// \author Raffaele D. Facendola - February 2021
+/// \author Raffaele D. Facendola - February 2021.
 
 // ===========================================================================
 

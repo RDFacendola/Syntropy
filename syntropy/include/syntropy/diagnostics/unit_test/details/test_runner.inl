@@ -1,9 +1,7 @@
 
 /// \file test_runner.inl
 ///
-/// \author Raffaele D. Facendola - 2020
-
-#pragma once
+/// \author Raffaele D. Facendola - 2020.
 
 // ===========================================================================
 

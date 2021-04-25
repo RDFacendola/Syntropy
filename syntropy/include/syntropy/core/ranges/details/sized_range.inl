@@ -1,8 +1,8 @@
 
 /// \file sized_range.inl
 ///
-/// \author Raffaele D. Facendola - November 2020
-/// \author Raffaele D. Facendola - January 2021
+/// \author Raffaele D. Facendola - November 2020.
+/// \author Raffaele D. Facendola - January 2021.
 
 // ===========================================================================
 

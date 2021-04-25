@@ -2,9 +2,9 @@
 /// \file test_runner.h
 ///
 /// \brief This header is part of the Syntropy diagnostics module.
-/// \brief It contains classes used to run test suites.
+///        It contains classes used to run test suites.
 ///
-/// \author Raffaele D. Facendola - 2020
+/// \author Raffaele D. Facendola - 2020.
 
 // ===========================================================================
 

@@ -1,9 +1,7 @@
 
 /// \file auto_test_case.inl
 ///
-/// \author Raffaele D. Facendola - 2020
-
-#pragma once
+/// \author Raffaele D. Facendola - 2020.
 
 // ===========================================================================
 

@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy core module.
 //         It contains definitions for scope-based guards.
 ///
-/// \author Raffaele D. Facendola - Dec 2016
+/// \author Raffaele D. Facendola - December 2016.
+
+// ===========================================================================
 
 #pragma once
 

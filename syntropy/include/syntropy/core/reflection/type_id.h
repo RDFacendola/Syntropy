@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy core module.
 /// It contains definitions for type identifiers.
 ///
-/// \author Raffaele D. Facendola - January 2021
+/// \author Raffaele D. Facendola - January 2021.
+
+// ===========================================================================
 
 #pragma once
 

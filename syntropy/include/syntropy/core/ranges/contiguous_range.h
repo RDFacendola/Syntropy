@@ -7,8 +7,10 @@
 /// Ranges specifications based on the awesome
 /// https://www.slideshare.net/rawwell/iteratorsmustgo
 ///
-/// \author Raffaele D. Facendola - November 2020
-/// \author Raffaele D. Facendola - January 2021
+/// \author Raffaele D. Facendola - November 2020.
+/// \author Raffaele D. Facendola - January 2021.
+
+// ===========================================================================
 
 #pragma once
 

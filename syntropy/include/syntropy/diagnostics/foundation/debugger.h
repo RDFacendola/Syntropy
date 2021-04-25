@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy diagnostic module.
 ///        It contains debugger functionalities.
 ///
-/// \author Raffaele D. Facendola - 2019
+/// \author Raffaele D. Facendola - 2019.
+
+// ===========================================================================
 
 #pragma once
 

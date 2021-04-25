@@ -1,10 +1,8 @@
 
 /// \file random_access_range.inl
 ///
-/// \author Raffaele D. Facendola - Nov 2020
-/// \author Raffaele D. Facendola - Jan 2021
-
-#pragma once
+/// \author Raffaele D. Facendola - November 2020.
+/// \author Raffaele D. Facendola - January 2021.
 
 // ===========================================================================
 

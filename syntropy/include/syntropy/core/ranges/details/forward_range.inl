@@ -1,10 +1,10 @@
 
 /// \file forward_range.inl
 ///
-/// \author Raffaele D. Facendola - November 2020
-/// \author Raffaele D. Facendola - January 2021
+/// \author Raffaele D. Facendola - November 2020.
+/// \author Raffaele D. Facendola - January 2021.
 
-#pragma once
+// ===========================================================================
 
 #include "syntropy/core/toolset/swap.h"
 #include "syntropy/core/comparisons/compare.h"

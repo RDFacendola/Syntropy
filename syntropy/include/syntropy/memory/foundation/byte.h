@@ -4,7 +4,9 @@
 /// \brief This header is part of Syntropy memory module.
 ///        It contains definitions for byte definitions.
 ///
-/// \author Raffaele D. Facendola - Aug 2020
+/// \author Raffaele D. Facendola - August 2020.
+
+// ===========================================================================
 
 #pragma once
 

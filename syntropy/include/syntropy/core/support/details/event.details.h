@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy core module.
 ///        It contains implementation details of events and listeners.
 ///
-/// \author Raffaele D. Facendola - 2017
+/// \author Raffaele D. Facendola - 2017.
+
+// ===========================================================================
 
 #pragma once
 

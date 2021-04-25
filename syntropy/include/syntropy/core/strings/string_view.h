@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy core module.
 ///        It contains definitions for string views.
 ///
-/// \author Raffaele D. Facendola - February 2021
+/// \author Raffaele D. Facendola - February 2021.
+
+// ===========================================================================
 
 #pragma once
 

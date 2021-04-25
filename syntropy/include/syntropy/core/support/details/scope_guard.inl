@@ -1,9 +1,7 @@
 
 /// \file scope_guard.inl
 ///
-/// \author Raffaele D. Facendola - Dec 2016
-
-#pragma once
+/// \author Raffaele D. Facendola - December 2016.
 
 // ===========================================================================
 
@@ -51,7 +49,7 @@ namespace Syntropy
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
-    
+
     template <typename TFunctor>
     [[nodiscard]] inline ScopeGuard<TFunctor>
     MakeScopeGuard(TFunctor functor) noexcept

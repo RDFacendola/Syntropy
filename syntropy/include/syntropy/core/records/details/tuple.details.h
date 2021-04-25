@@ -6,6 +6,8 @@
 ///
 /// \author Raffaele D. Facendola - 2020.
 
+// ===========================================================================
+
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"

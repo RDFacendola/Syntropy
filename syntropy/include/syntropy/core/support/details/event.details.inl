@@ -1,9 +1,9 @@
 
 /// \file event.details.inl
 ///
-/// \author Raffaele D. Facendola - 2017
+/// \author Raffaele D. Facendola - 2017.
 
-#pragma once
+// ===========================================================================
 
 #include "syntropy/core/toolset/swap.h"
 

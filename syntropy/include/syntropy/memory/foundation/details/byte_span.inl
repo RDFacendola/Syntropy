@@ -1,9 +1,7 @@
 
 /// \file byte_span.inl
 ///
-/// \author Raffaele D. Facendola - July 2020
-
-#pragma once
+/// \author Raffaele D. Facendola - July 2020.
 
 // ===========================================================================
 

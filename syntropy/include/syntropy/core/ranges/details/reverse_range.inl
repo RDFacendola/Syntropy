@@ -1,7 +1,7 @@
 
 /// \file reverse_range.inl
 ///
-/// \author Raffaele D. Facendola - Nov 2020
+/// \author Raffaele D. Facendola - November 2020.
 
 // ===========================================================================
 

@@ -5,7 +5,9 @@
 ///        It contains utility macros used to check for code invariants
 ///        and assertions.
 ///
-/// \author Raffaele D. Facendola - 2016
+/// \author Raffaele D. Facendola - 2016.
+
+// ===========================================================================
 
 #pragma once
 

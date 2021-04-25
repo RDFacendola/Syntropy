@@ -3,7 +3,7 @@
 ///
 /// \author Raffaele D. Facendola - February 2021.
 
-#pragma once
+// ===========================================================================
 
 #include "syntropy/memory/foundation/memory.h"
 

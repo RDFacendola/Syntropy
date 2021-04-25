@@ -1,7 +1,9 @@
 
 /// \file numbers.inl
 ///
-/// \author Raffaele D. Facendola - April 2021
+/// \author Raffaele D. Facendola - April 2021.
+
+// ===========================================================================
 
 #include <limits>
 

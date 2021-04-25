@@ -4,7 +4,9 @@
 /// \brief This header is part of Syntropy memory module.
 ///        It contains alignment-related definitions.
 ///
-/// \author Raffaele D. Facendola - August 2018
+/// \author Raffaele D. Facendola - August 2018.
+
+// ===========================================================================
 
 #pragma once
 

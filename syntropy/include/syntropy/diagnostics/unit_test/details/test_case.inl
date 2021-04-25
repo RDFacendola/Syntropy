@@ -1,9 +1,7 @@
 
 /// \file test_case.inl
 ///
-/// \author Raffaele D. Facendola - 2018
-
-#pragma once
+/// \author Raffaele D. Facendola - 2018.
 
 // ===========================================================================
 

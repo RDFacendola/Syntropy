@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy memory module.
 ///        It contains definitions of memory unit types and related functions.
 ///
-/// \author Raffaele D. Facendola - Aug 2018
+/// \author Raffaele D. Facendola - August 2018.
+
+// ===========================================================================
 
 #pragma once
 

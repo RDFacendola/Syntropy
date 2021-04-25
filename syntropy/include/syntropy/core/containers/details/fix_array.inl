@@ -1,9 +1,7 @@
 
 /// \file fix_array.inl
 ///
-/// \author Raffaele D. Facendola - January 2021
-
-#pragma once
+/// \author Raffaele D. Facendola - January 2021.
 
 // ===========================================================================
 

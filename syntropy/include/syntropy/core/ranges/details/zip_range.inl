@@ -1,7 +1,7 @@
 
 /// \file zip_range.inl
 ///
-/// \author Raffaele D. Facendola - November 2020
+/// \author Raffaele D. Facendola - November 2020.
 
 // ===========================================================================
 

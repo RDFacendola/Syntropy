@@ -4,7 +4,7 @@
 /// \brief This header is part of Syntropy core module.
 /// It contains definitions for exclusive-ownership smart pointers.
 ///
-/// \author Raffaele D. Facendola - August 2020
+/// \author Raffaele D. Facendola - August 2020.
 
 // ===========================================================================
 

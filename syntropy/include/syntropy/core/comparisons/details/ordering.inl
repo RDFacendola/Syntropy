@@ -1,9 +1,7 @@
 
 /// \file ordering.inl
 ///
-/// \author Raffaele D. Facendola - February 2021
-
-#pragma once
+/// \author Raffaele D. Facendola - February 2021.
 
 // ===========================================================================
 

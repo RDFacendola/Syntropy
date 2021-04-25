@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy core module.
 ///        It contains definitions for visitors and visitable objects.
 ///
-/// \author Raffaele D. Facendola - 2019
+/// \author Raffaele D. Facendola - 2019.
+
+// ===========================================================================
 
 #pragma once
 

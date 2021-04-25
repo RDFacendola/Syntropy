@@ -1,9 +1,7 @@
 
 /// \file system_allocator.h
 ///
-/// \author Raffaele D. Facendola - 2017
-
-#pragma once
+/// \author Raffaele D. Facendola - 2017.
 
 // ===========================================================================
 

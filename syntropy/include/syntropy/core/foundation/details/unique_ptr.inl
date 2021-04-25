@@ -1,9 +1,7 @@
 
 /// \file unique_ptr.inl
 ///
-/// \author Raffaele D. Facendola - August 2020
-
-#pragma once
+/// \author Raffaele D. Facendola - August 2020.
 
 // ===========================================================================
 

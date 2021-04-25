@@ -1,9 +1,7 @@
 
 /// \file visitor.inl
 ///
-/// \author Raffaele D. Facendola - 2019
-
-#pragma once
+/// \author Raffaele D. Facendola - 2019.
 
 // ===========================================================================
 

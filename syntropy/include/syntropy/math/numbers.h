@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy math module.
 ///        It contains base number definitions.
 ///
-/// \author Raffaele D. Facendola - April 2021
+/// \author Raffaele D. Facendola - April 2021.
+
+// ===========================================================================
 
 #pragma once
 

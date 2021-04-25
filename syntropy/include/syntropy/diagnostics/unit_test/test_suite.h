@@ -4,7 +4,7 @@
 /// \brief This header is part of the Syntropy diagnostics module.
 ///        It contains classes used to define test suites.
 ///
-/// \author Raffaele D. Facendola - 2018
+/// \author Raffaele D. Facendola - 2018.
 
 // ===========================================================================
 

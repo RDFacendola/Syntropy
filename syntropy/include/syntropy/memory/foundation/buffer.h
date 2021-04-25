@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy memory module.
 ///        It contains definitions for memory buffers.
 ///
-/// \author Raffaele D. Facendola - February 2017
+/// \author Raffaele D. Facendola - February 2017.
+
+// ===========================================================================
 
 #pragma once
 

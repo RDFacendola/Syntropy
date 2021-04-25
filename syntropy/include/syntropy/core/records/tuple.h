@@ -5,6 +5,8 @@
 ///
 /// \author Raffaele D. Facendola - September 2020.
 
+// ===========================================================================
+
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
@@ -13,8 +15,6 @@
 #include "syntropy/core/comparisons/compare.h"
 
 #include "syntropy/core/records/record.h"
-
-#include <iostream>
 
 // ===========================================================================
 

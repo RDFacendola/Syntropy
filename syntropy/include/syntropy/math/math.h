@@ -4,7 +4,9 @@
 /// \brief This header is part of the Syntropy math module.
 ///        It contains generic mathematical functions.
 ///
-/// \author Raffaele D. Facendola - 2017
+/// \author Raffaele D. Facendola - 2017.
+
+// ===========================================================================
 
 #pragma once
 

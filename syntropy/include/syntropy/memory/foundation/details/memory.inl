@@ -1,9 +1,9 @@
 
 /// \file memory.inl
 ///
-/// \author Raffaele D. Facendola - February 2021
+/// \author Raffaele D. Facendola - February 2021.
 
-#pragma once
+// ===========================================================================
 
 #include <cstring>
 

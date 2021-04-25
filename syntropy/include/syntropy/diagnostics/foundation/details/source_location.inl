@@ -1,9 +1,9 @@
 
 /// \file source_location.inl
 ///
-/// \author Raffaele D. Facendola - April 2021
+/// \author Raffaele D. Facendola - April 2021.
 
-#pragma once
+// ===========================================================================
 
 #include "syntropy/language/preprocessor/macro.h"
 #include "syntropy/core/toolset/swap.h"

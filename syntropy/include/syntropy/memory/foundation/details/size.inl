@@ -1,9 +1,7 @@
 
 /// \file size.inl
 ///
-/// \author Raffaele D. Facendola - Aug 2018
-
-#pragma once
+/// \author Raffaele D. Facendola - August 2018.
 
 // ===========================================================================
 

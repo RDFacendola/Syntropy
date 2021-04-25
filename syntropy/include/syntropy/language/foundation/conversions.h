@@ -4,7 +4,9 @@
 /// \brief This header is part of Syntropy language module.
 ///        It contains definitions for fundamental types conversions.
 ///
-/// \author Raffaele D. Facendola - February 2021
+/// \author Raffaele D. Facendola - February 2021.
+
+// ===========================================================================
 
 #pragma once
 

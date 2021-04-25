@@ -1,7 +1,7 @@
 
 /// \file test_context.inl
 ///
-/// \author Raffaele D. Facendola - 2018
+/// \author Raffaele D. Facendola - 2018.
 
 // ===========================================================================
 

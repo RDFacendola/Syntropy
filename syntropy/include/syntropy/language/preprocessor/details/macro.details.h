@@ -1,7 +1,7 @@
 
 /// \file macro.details.h
 ///
-/// \author Raffaele D. Facendola - April 2021
+/// \author Raffaele D. Facendola - April 2021.
 
 // ===========================================================================
 
