@@ -27,9 +27,11 @@ namespace Syntropy::Ranges
     ///
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept ForwardRange = Range<TRange>
-        && requires(Immutable<TRange> range)
+    concept ForwardRange = requires(Immutable<TRange> range)
     {
+        /// \brief Get a view to a range' elements.
+        { Ranges::ViewOf(range) };
+
         /// \brief Access the first element in a range.
         { Ranges::Front(range) };
 
