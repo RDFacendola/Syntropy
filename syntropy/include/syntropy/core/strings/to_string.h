@@ -14,31 +14,30 @@
 
 // ===========================================================================
 
-namespace Syntropy::Strings::Extensions
+namespace Syntropy
 {
     /************************************************************************/
-    /* STRING EXTENSIONS                                                    */
+    /* STRINGS EXTENSIONS                                                   */
     /************************************************************************/
 
-    /// \brief Convert an object to a string.
-    template <typename TType, typename = void>
-    struct ToString;
+    namespace Strings::Extensions
+    {
+        /// \brief Convert an object to a string.
+        template <typename TType, typename = void>
+        struct ToString;
+    }
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Strings
-{
     /************************************************************************/
     /* STRINGS                                                              */
     /************************************************************************/
 
-    /// \brief Convert rhs to a string.
-    template <typename TType>
-    [[nodiscard]] constexpr decltype(auto)
-    ToString(Immutable<TType> rhs) noexcept;
-
+    namespace Strings
+    {
+        /// \brief Convert rhs to a string.
+        template <typename TType>
+        [[nodiscard]] constexpr decltype(auto)
+        ToString(Immutable<TType> rhs) noexcept;
+    }
 }
 
 // ===========================================================================

@@ -95,7 +95,7 @@ namespace Syntropy::StringsADL
 
 // ===========================================================================
 
-namespace Syntropy::Strings
+namespace Syntropy
 {
     /************************************************************************/
     /* STRINGS                                                              */
@@ -104,7 +104,8 @@ namespace Syntropy::Strings
     /// \brief Convert rhs to a string.
     template <typename TType>
     [[nodiscard]] constexpr decltype(auto)
-    ToString(Immutable<TType> rhs) noexcept
+    Strings
+    ::ToString(Immutable<TType> rhs) noexcept
     {
         return StringsADL::InvokeToString(rhs);
     }
