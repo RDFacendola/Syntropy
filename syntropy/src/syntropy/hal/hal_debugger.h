@@ -10,14 +10,17 @@
 
 // ===========================================================================
 
-namespace Syntropy::HAL::Diagnostics
+namespace Syntropy
 {
     /************************************************************************/
-    /* DEBUGGER                                                             */
+    /* HAL DIAGNOSTICS                                                      */
     /************************************************************************/
 
-    /// \brief Check whether the debugger is attached.
-    [[nodiscard]] Bool IsDebuggerAttached() noexcept;
+    namespace HALDiagnostics
+    {
+        /// \brief Check whether the debugger is attached.
+        [[nodiscard]] Bool IsDebuggerAttached() noexcept;
+    }
 }
 
 // ===========================================================================

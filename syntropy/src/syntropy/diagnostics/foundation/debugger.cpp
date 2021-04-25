@@ -4,15 +4,17 @@
 
 // ===========================================================================
 
-namespace Syntropy::Diagnostics
+namespace Syntropy
 {
     /************************************************************************/
     /* DEBUGGER                                                             */
     /************************************************************************/
 
-    [[nodiscard]] Bool IsDebuggerAttached() noexcept
+    [[nodiscard]] inline Bool
+    Diagnostics
+    ::IsDebuggerAttached() noexcept
     {
-        return HAL::Diagnostics::IsDebuggerAttached();
+        return HALDiagnostics::IsDebuggerAttached();
     }
 }
 

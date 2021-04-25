@@ -17,7 +17,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Diagnostics
+namespace Syntropy
 {
     /************************************************************************/
     /* MACROS                                                               */
@@ -33,12 +33,15 @@ namespace Syntropy::Diagnostics
         SYNTROPY_MACRO_DECLARATION(empty)
 
     /************************************************************************/
-    /* DEBUGGER                                                             */
+    /* DIAGNOSTICS                                                          */
     /************************************************************************/
 
-    /// \brief Check whether the debugger is attached.
-    [[nodiscard]] Bool
-    IsDebuggerAttached() noexcept;
+    namespace Diagnostics
+    {
+        /// \brief Check whether the debugger is attached.
+        [[nodiscard]] Bool
+        IsDebuggerAttached() noexcept;
+    }
 
 }
 

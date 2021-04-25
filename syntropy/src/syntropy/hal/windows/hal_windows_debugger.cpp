@@ -20,20 +20,18 @@
 
 // ===========================================================================
 
-namespace Syntropy::HAL::Diagnostics
+namespace Syntropy
 {
     /************************************************************************/
-    /* IMPLEMENTATION                                                       */
+    /* HAL DIAGNOSTICS                                                      */
     /************************************************************************/
 
-    // Debugger.
-    // =========
-
-    [[nodiscard]] Bool IsDebuggerAttached() noexcept
+    [[nodiscard]] inline Bool
+    HALDiagnostics
+    ::IsDebuggerAttached() noexcept
     {
         return IsDebuggerPresent() != 0;
     }
-
 }
 
 // ===========================================================================
