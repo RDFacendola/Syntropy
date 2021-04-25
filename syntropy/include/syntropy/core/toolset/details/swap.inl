@@ -133,17 +133,17 @@ namespace Syntropy::Toolset
     /************************************************************************/
 
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr decltype(auto)
+    [[nodiscard]] constexpr TType
     Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept
     {
         return ToolsetADL::InvokeExchange(lhs, Forward<UType>(rhs));
     }
 
     template <typename TType>
-    constexpr decltype(auto)
+    constexpr void
     Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept
     {
-        return ToolsetADL::InvokeSwap(lhs, rhs);
+        ToolsetADL::InvokeSwap(lhs, rhs);
     }
 
 }

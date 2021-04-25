@@ -38,12 +38,12 @@ namespace Syntropy::Toolset
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr decltype(auto)
+    [[nodiscard]] constexpr TType
     Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept;
 
     /// \brief Swap lhs with rhs.
     template <typename TType>
-    constexpr decltype(auto)
+    constexpr void
     Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
 
 }

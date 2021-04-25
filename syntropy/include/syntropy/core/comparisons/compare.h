@@ -47,17 +47,17 @@ namespace Syntropy::Comparisons
     /// \brief Check whether lhs and rhs are equal.
     /// \remarks Equality implies equivalence.
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr decltype(auto)
+    [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
 
     /// \brief Check whether lhs and rhs are equivalent.
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr decltype(auto)
+    [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
 
     /// \brief Compare lhs against rhs.
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr decltype(auto)
+    [[nodiscard]] constexpr Ordering
     Compare(Immutable<TType> lhs, Immutable<UType> rhs) noexcept;
 
 }

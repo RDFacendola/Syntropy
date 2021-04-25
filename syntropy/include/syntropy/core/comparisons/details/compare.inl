@@ -177,21 +177,21 @@ namespace Syntropy::Comparisons
     /************************************************************************/
 
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr decltype(auto)
+    [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
     {
         return ComparisonsADL::InvokeAreEqual(lhs, rhs);
     }
 
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr decltype(auto)
+    [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
     {
         return ComparisonsADL::InvokeAreEquivalent(lhs, rhs);
     }
 
     template <typename TType, typename UType>
-    [[nodiscard]] constexpr decltype(auto)
+    [[nodiscard]] constexpr Ordering
     Compare(Immutable<TType> lhs, Immutable<UType> rhs) noexcept
     {
         return ComparisonsADL::InvokeCompare(lhs, rhs);
