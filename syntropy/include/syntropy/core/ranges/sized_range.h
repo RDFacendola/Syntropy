@@ -21,7 +21,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
     /* SIZED RANGE                                                          */
@@ -43,25 +43,25 @@ namespace Syntropy::Ranges
     struct SizedRangeTag{};
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* RANGES                                                               */
     /************************************************************************/
 
-    // Comparison.
-    // ===========
+    namespace Ranges
+    {
+        /// \brief Check whether two ranges are element-wise equal.
+        template <SizedRange TRange, SizedRange URange>
+        [[nodiscard]] constexpr Bool
+        AreEqual(Immutable<TRange> lhs,
+                 Immutable<URange> rhs,
+                 SizedRangeTag = {}) noexcept;
 
-    /// \brief Check whether two ranges are element-wise equal.
-    template <SizedRange TRange, SizedRange URange>
-    [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRange> lhs,
-             Immutable<URange> rhs,
-             SizedRangeTag = {}) noexcept;
-
-    /// \brief Check whether two ranges are element-wise equivalent.
-    template <SizedRange TRange, SizedRange URange>
-    [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRange> lhs,
-                  Immutable<URange> rhs,
-                  SizedRangeTag = {}) noexcept;
+        /// \brief Check whether two ranges are element-wise equivalent.
+        template <SizedRange TRange, SizedRange URange>
+        [[nodiscard]] constexpr Bool
+        AreEquivalent(Immutable<TRange> lhs,
+                      Immutable<URange> rhs,
+                      SizedRangeTag = {}) noexcept;
+    }
 
 }
 

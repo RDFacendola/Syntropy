@@ -6,18 +6,16 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* RANGES                                                               */
     /************************************************************************/
-
-    // Comparison.
-    // ===========
 
     template <SizedRange TRange, SizedRange URange>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs, SizedRangeTag)
+    Ranges
+    ::AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs, SizedRangeTag)
     noexcept
     {
         if(Ranges::Count(lhs) != Ranges::Count(rhs))
@@ -30,7 +28,10 @@ namespace Syntropy::Ranges
 
     template <SizedRange TRange, SizedRange URange>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs, SizedRangeTag)
+    Ranges
+    ::AreEquivalent(Immutable<TRange> lhs,
+                    Immutable<URange> rhs,
+                    SizedRangeTag)
     noexcept
     {
         if(Ranges::Count(lhs) != Ranges::Count(rhs))
@@ -40,7 +41,6 @@ namespace Syntropy::Ranges
 
         return Ranges::AreEquivalent(lhs, rhs, ForwardRangeTag{});
     }
-
 }
 
 // ===========================================================================

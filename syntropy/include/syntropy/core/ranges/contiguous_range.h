@@ -21,7 +21,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
     /* CONTIGUOUS RANGE                                                     */
@@ -42,37 +42,37 @@ namespace Syntropy::Ranges
     struct ContiguousRangeTag{};
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* RANGES                                                               */
     /************************************************************************/
 
-    // ContiguousRange.
-    // ================
+    namespace Ranges
+    {
+        /// \brief Check whether two ranges are element-wise equal.
+        template <ContiguousRange TRange, ContiguousRange URange>
+        [[nodiscard]] constexpr Bool
+        AreEqual(Immutable<TRange> lhs,
+                 Immutable<URange> rhs,
+                 ContiguousRangeTag = {}) noexcept;
 
-    /// \brief Check whether two ranges are element-wise equal.
-    template <ContiguousRange TRange, ContiguousRange URange>
-    [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRange> lhs,
-             Immutable<URange> rhs,
-             ContiguousRangeTag = {}) noexcept;
+        /// \brief Check whether two ranges are element-wise equivalent.
+        template <ContiguousRange TRange, ContiguousRange URange>
+        [[nodiscard]] constexpr Bool
+        AreEquivalent(Immutable<TRange> lhs,
+                      Immutable<URange> rhs,
+                      ContiguousRangeTag = {}) noexcept;
 
-    /// \brief Check whether two ranges are element-wise equivalent.
-    template <ContiguousRange TRange, ContiguousRange URange>
-    [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRange> lhs,
-                  Immutable<URange> rhs,
-                  ContiguousRangeTag = {}) noexcept;
+        /// \brief Compare two range views lexicographically.
+        template <ContiguousRange TRange, ContiguousRange URange>
+        [[nodiscard]] constexpr Ordering
+        Compare(Immutable<TRange> lhs,
+                Immutable<URange> rhs,
+                ContiguousRangeTag = {}) noexcept;
 
-    /// \brief Compare two range views lexicographically.
-    template <ContiguousRange TRange, ContiguousRange URange>
-    [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRange> lhs,
-            Immutable<URange> rhs,
-            ContiguousRangeTag = {}) noexcept;
-
-    /// \brief Check whether two contiguous ranges intersects.
-    template <ContiguousRange TRange, ContiguousRange URange>
-    [[nodiscard]] constexpr Bool
-    Intersect(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+        /// \brief Check whether two contiguous ranges intersects.
+        template <ContiguousRange TRange, ContiguousRange URange>
+        [[nodiscard]] constexpr Bool
+        Intersect(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    }
 
 }
 

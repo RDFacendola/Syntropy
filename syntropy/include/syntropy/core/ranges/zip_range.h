@@ -116,20 +116,51 @@ namespace Syntropy
     ZipRange(Immutable<TRanges>...) -> ZipRange<TRanges...>;
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* RANGES                                                               */
     /************************************************************************/
 
-    /// \brief Create a new ZipRange by deducing templates types
-    ///        from arguments.
-    template <Ranges::ForwardRange... TRanges>
-    [[nodiscard]] constexpr ZipRange<TRanges...>
-    MakeZipRange(Immutable<TRanges>... ranges) noexcept;
+    namespace Ranges
+    {
+        /// \brief Create a new ZipRange by deducing templates types
+        ///        from arguments.
+        template <Ranges::ForwardRange... TRanges>
+        [[nodiscard]] constexpr ZipRange<TRanges...>
+        MakeZipRange(Immutable<TRanges>... ranges) noexcept;
 
-    /// \brief Create a new ZipRange by deducing templates types from
-    ///        provided arguments.
-    template <Records::Record TTuple>
-    [[nodiscard]] constexpr auto
-    MakeZipRangeFromTuple(Immutable<TTuple> ranges) noexcept;
+        /// \brief Create a new ZipRange by deducing templates types from
+        ///        provided arguments.
+        template <Records::Record TTuple>
+        [[nodiscard]] constexpr auto
+        MakeZipRangeFromTuple(Immutable<TTuple> ranges) noexcept;
+        
+        /// \brief Create a new ZipRange by element-wise joining different,
+        ///        ranges flattening eventual ZipRanges on the first level.
+        template <ForwardRange... TRanges>
+        [[nodiscard]] constexpr ZipRange<TRanges...>
+        Zip(Immutable<TRanges>... ranges) noexcept;
+
+        /// \brief Unzip a zip range, producing a tuple containing the
+        ///        individual ranges.
+        ///
+        /// \remarks If the provided range is not a ZipRange, the results is a
+        ///          tuple with a single element.
+        template <ForwardRange... TRanges>
+        [[nodiscard]] constexpr auto
+        Unzip(Immutable<ZipRange<TRanges...>> range) noexcept;
+
+        /// \brief Unzip a zip range, producing a tuple containing the
+        ///        individual ranges.
+        ///
+        /// \remarks If the provided range is not a ZipRange, the results is a
+        ///          tuple with a single element.
+        template <ForwardRange TRange>
+        [[nodiscard]] constexpr auto
+        Unzip(Immutable<TRange> range) noexcept;
+    }
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
     /// \brief Access a zip range by index.
     ///
@@ -158,40 +189,6 @@ namespace Syntropy
     template <Int VIndex, Ranges::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
     Get(Movable<ZipRange<TRanges...>> range) noexcept;
-
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges
-{
-    /************************************************************************/
-    /* ZIP RANGE                                                            */
-    /************************************************************************/
-
-    /// \brief Create a new ZipRange by element-wise joining different ranges,
-    ///        flattening eventual ZipRanges on the first level.
-    template <ForwardRange... TRanges>
-    [[nodiscard]] constexpr ZipRange<TRanges...>
-    Zip(Immutable<TRanges>... ranges) noexcept;
-
-    /// \brief Unzip a zip range, producing a tuple containing the
-    ///        individual ranges.
-    ///
-    /// \remarks If the provided range is not a ZipRange, the results is a
-    ///          tuple with a single element.
-    template <ForwardRange... TRanges>
-    [[nodiscard]] constexpr auto
-    Unzip(Immutable<ZipRange<TRanges...>> range) noexcept;
-
-    /// \brief Unzip a zip range, producing a tuple containing the individual
-    ///        ranges.
-    ///
-    /// \remarks If the provided range is not a ZipRange, the results is a
-    ///          tuple with a single element.
-    template <ForwardRange TRange>
-    [[nodiscard]] constexpr auto
-    Unzip(Immutable<TRange> range) noexcept;
 
 }
 

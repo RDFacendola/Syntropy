@@ -77,11 +77,11 @@ namespace Syntropy::Memory
         return *FromTypelessPtr<TObject>(Ranges::Data(rhs));
     }
 
-    template <Ranges::ContiguousRange TRange>
+    template <ContiguousRange TRange>
     [[nodiscard]] inline auto
     RangeBytesOf(Immutable<TRange> rhs) noexcept
     {
-        using ElementType = typename Ranges::RangeElementTypeOf<TRange>;
+        using ElementType = RangeElementTypeOf<TRange>;
 
         auto data = ToBytePtr(Ranges::Data(rhs));
         auto size = SizeOf<ElementType>() * Ranges::Count(rhs);
@@ -101,7 +101,7 @@ namespace Syntropy::Memory
         return rhs;
     }
 
-    template <Ranges::ContiguousRange TRange>
+    template <ContiguousRange TRange>
     [[nodiscard]] inline TRange
     FromRangeBytesOf(Immutable<ByteSpan> rhs) noexcept
     {
@@ -111,7 +111,7 @@ namespace Syntropy::Memory
         }
         else
         {
-            using ElementType = Ranges::RangeElementTypeOf<TRange>;
+            using ElementType = RangeElementTypeOf<TRange>;
 
             auto data = FromTypelessPtr<ElementType>(Ranges::Data(rhs));
             auto count = Ranges::Count(rhs) / ToInt(SizeOf<ElementType>());
@@ -120,7 +120,7 @@ namespace Syntropy::Memory
         }
     }
 
-    template <Ranges::ContiguousRange TRange>
+    template <ContiguousRange TRange>
     [[nodiscard]] inline TRange
     FromRangeBytesOf(Immutable<RWByteSpan> rhs) noexcept
     {

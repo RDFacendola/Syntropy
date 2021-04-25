@@ -6,18 +6,16 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* RANGES                                                               */
     /************************************************************************/
-
-    // RandomAccessRange.
-    // ==================
 
     template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    Front(Immutable<TRange> range, Int count) noexcept
+    Ranges
+    ::Front(Immutable<TRange> range, Int count) noexcept
     {
         return Ranges::Select(Ranges::ViewOf(range),
                               ToInt(0),
@@ -26,7 +24,8 @@ namespace Syntropy::Ranges
 
     template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    Back(Immutable<TRange> range, Int count) noexcept
+    Ranges
+    ::Back(Immutable<TRange> range, Int count) noexcept
     {
         return Ranges::Select(Ranges::ViewOf(range),
                               Ranges::Count(range) - count,
@@ -35,7 +34,8 @@ namespace Syntropy::Ranges
 
     template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    PopFront(Immutable<TRange> range, Int count) noexcept
+    Ranges
+    ::PopFront(Immutable<TRange> range, Int count) noexcept
     {
         return Ranges::Select(Ranges::ViewOf(range),
                               count,
@@ -44,7 +44,8 @@ namespace Syntropy::Ranges
 
     template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    PopBack(Immutable<TRange> range, Int count) noexcept
+    Ranges
+    ::PopBack(Immutable<TRange> range, Int count) noexcept
     {
         return Ranges::Select(Ranges::ViewOf(range),
                               ToInt(0),
@@ -53,21 +54,24 @@ namespace Syntropy::Ranges
 
     template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    SliceFront(Immutable<TRange> range) noexcept
+    Ranges
+    ::SliceFront(Immutable<TRange> range) noexcept
     {
         return MakeTuple(Ranges::Front(range), Ranges::PopFront(range));
     }
 
     template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    SliceBack(Immutable<TRange> range) noexcept
+    Ranges
+    ::SliceBack(Immutable<TRange> range) noexcept
     {
         return MakeTuple(Ranges::Back(range), Ranges::PopBack(range));
     }
 
     template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    SliceFront(Immutable<TRange> range, Int count) noexcept
+    Ranges
+    ::SliceFront(Immutable<TRange> range, Int count) noexcept
     {
         return MakeTuple(Ranges::Front(range, count),
                          Ranges::PopFront(range, count));
@@ -75,7 +79,8 @@ namespace Syntropy::Ranges
 
     template <RandomAccessRange TRange>
     [[nodiscard]] constexpr auto
-    SliceBack(Immutable<TRange> range, Int count) noexcept
+    Ranges
+    ::SliceBack(Immutable<TRange> range, Int count) noexcept
     {
         return MakeTuple(Ranges::Back(range, count),
                          Ranges::PopBack(range, count));

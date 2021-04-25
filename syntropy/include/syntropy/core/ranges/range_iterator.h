@@ -1,7 +1,9 @@
 
 /// \file range_iterator.h
 ///
-/// \author Raffaele D. Facendola - January 2021
+/// \author Raffaele D. Facendola - January 2021.
+
+// ===========================================================================
 
 #pragma once
 
@@ -11,7 +13,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
     /* RANGE ITERATOR                                                       */
@@ -70,12 +72,6 @@ namespace Syntropy::Ranges
     template<ForwardRange TRange>
     RangeIterator(Immutable<TRange>) -> RangeIterator<RangeViewTypeOf<TRange>>;
 
-}
-
-// ===========================================================================
-
-namespace Syntropy
-{
     /************************************************************************/
     /* RANGE-BASED FOR LOOP                                                 */
     /************************************************************************/

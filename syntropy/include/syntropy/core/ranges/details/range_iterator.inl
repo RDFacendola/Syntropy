@@ -5,7 +5,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
     /* RANGE VIEW ITERATOR                                                  */
@@ -48,12 +48,6 @@ namespace Syntropy::Ranges
         return Ranges::IsEmpty(range_view_);
     }
 
-}
-
-// ===========================================================================
-
-namespace Syntropy
-{
     /************************************************************************/
     /* RANGE-BASED FOR LOOP                                                 */
     /************************************************************************/
@@ -64,7 +58,7 @@ namespace Syntropy
     {
         auto range_view = Ranges::ViewOf(range);
 
-        return Ranges::RangeIterator{ range_view };
+        return RangeIterator{ range_view };
     }
 
     /// \brief Get an iterator past the last element in a range view.
@@ -75,8 +69,7 @@ namespace Syntropy
 
         using RangeViewType = Ranges::RangeViewTypeOf<TRange>;
 
-        // return Ranges::RangeIterator<RangeViewType>{};
-        return Ranges::RangeIterator{ range_view };
+         return Ranges::RangeIterator<RangeViewType>{};
     }
 }
 

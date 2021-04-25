@@ -106,7 +106,7 @@ namespace Syntropy::Memory
     FromBytesOf(Immutable<RWByteSpan> rhs) noexcept;
 
     /// \brief Get the object representation of elements in a contiguous range.
-    template <Ranges::ContiguousRange TRange>
+    template <ContiguousRange TRange>
     [[nodiscard]] auto
     RangeBytesOf(Immutable<TRange> rhs) noexcept;
 
@@ -126,7 +126,7 @@ namespace Syntropy::Memory
     ///        range object representation.
     /// \remarks If rhs is not exactly a range TRange, accessing the returned
     ///          value results in undefined behavior.
-    template <Ranges::ContiguousRange TRange>
+    template <ContiguousRange TRange>
     [[nodiscard]] TRange
     FromRangeBytesOf(Immutable<ByteSpan> rhs) noexcept;
 
@@ -134,7 +134,7 @@ namespace Syntropy::Memory
     ///        range object representation.
     /// \remarks If rhs is not exactly a range TRange, accessing the returned
     ///          value results in undefined behavior.
-    template <Ranges::ContiguousRange TRange>
+    template <ContiguousRange TRange>
     [[nodiscard]] TRange
     FromRangeBytesOf(Immutable<ByteSpan> rhs) noexcept;
 
@@ -142,7 +142,7 @@ namespace Syntropy::Memory
     ///        range object representation.
     /// \remarks If rhs is not exactly a range TRange, accessing the returned
     ///          value results in undefined behavior.
-    template <Ranges::ContiguousRange TRange>
+    template <ContiguousRange TRange>
     [[nodiscard]] TRange
     FromRangeBytesOf(Immutable<RWByteSpan> rhs) noexcept;
 

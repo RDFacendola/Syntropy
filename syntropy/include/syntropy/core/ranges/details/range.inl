@@ -538,25 +538,24 @@ namespace Syntropy::RangesADL
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* RANGES                                                               */
     /************************************************************************/
-
-    // Range.
-    // =====
 
     template <typename TRange>
     [[nodiscard]] constexpr auto
-    ViewOf(Forwarding<TRange> range) noexcept
+    Ranges
+    ::ViewOf(Forwarding<TRange> range) noexcept
     {
         return RangesADL::InvokeViewOf(Forward<TRange>(range));
     }
 
     template <typename TRange>
     [[nodiscard]] constexpr Bool
-    IsEmpty(Forwarding<TRange> range) noexcept
+    Ranges
+    ::IsEmpty(Forwarding<TRange> range) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
 
@@ -565,7 +564,8 @@ namespace Syntropy::Ranges
 
     template <typename TRange>
     [[nodiscard]] constexpr Int
-    Count(Forwarding<TRange> range) noexcept
+    Ranges
+    ::Count(Forwarding<TRange> range) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
 
@@ -574,7 +574,8 @@ namespace Syntropy::Ranges
 
     template <typename TRange>
     [[nodiscard]] constexpr decltype(auto)
-    Front(Forwarding<TRange> range) noexcept
+    Ranges
+    ::Front(Forwarding<TRange> range) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
 
@@ -583,7 +584,8 @@ namespace Syntropy::Ranges
 
     template <typename TRange>
     [[nodiscard]] constexpr decltype(auto)
-    Back(Forwarding<TRange> range) noexcept
+    Ranges
+    ::Back(Forwarding<TRange> range) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
 
@@ -592,7 +594,8 @@ namespace Syntropy::Ranges
 
     template <typename TRange>
     [[nodiscard]] constexpr auto
-    PopFront(Forwarding<TRange> range) noexcept
+    Ranges
+    ::PopFront(Forwarding<TRange> range) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
 
@@ -601,7 +604,8 @@ namespace Syntropy::Ranges
 
     template <typename TRange>
     [[nodiscard]] constexpr auto
-    PopBack(Forwarding<TRange> range) noexcept
+    Ranges
+    ::PopBack(Forwarding<TRange> range) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
 
@@ -610,7 +614,8 @@ namespace Syntropy::Ranges
 
     template <typename TRange>
     [[nodiscard]] constexpr decltype(auto)
-    At(Forwarding<TRange> range, Int index) noexcept
+    Ranges
+    ::At(Forwarding<TRange> range, Int index) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
 
@@ -619,7 +624,8 @@ namespace Syntropy::Ranges
 
     template <typename TRange>
     [[nodiscard]] constexpr decltype(auto)
-    Select(Forwarding<TRange> range, Int offset, Int count) noexcept
+    Ranges
+    ::Select(Forwarding<TRange> range, Int offset, Int count) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
 
@@ -628,7 +634,8 @@ namespace Syntropy::Ranges
 
     template <typename TRange>
     [[nodiscard]] constexpr decltype(auto)
-    Data(Forwarding<TRange> range) noexcept
+    Ranges
+    ::Data(Forwarding<TRange> range) noexcept
     {
         auto range_view = Ranges::ViewOf(Forward<TRange>(range));
 

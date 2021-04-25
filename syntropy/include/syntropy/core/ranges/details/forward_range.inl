@@ -11,18 +11,16 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* RANGES                                                               */
     /************************************************************************/
-
-    // ForwardRange.
-    // =============
 
     template <ForwardRange TRange, typename TFunction>
     constexpr void
-    ForEach(Immutable<TRange> range, TFunction function) noexcept
+    Ranges
+    ::ForEach(Immutable<TRange> range, TFunction function) noexcept
     {
         auto right = Ranges::ViewOf(range);
 
@@ -34,12 +32,10 @@ namespace Syntropy::Ranges
         }
     }
 
-    // Copy \ Move.
-    // ============
-
     template <ForwardRange TRange, ForwardRange URange>
     constexpr Int
-    PartialCopy(Immutable<TRange> destination,
+    Ranges
+    ::PartialCopy(Immutable<TRange> destination,
                 Immutable<URange> source,
                 ForwardRangeTag) noexcept
     {
@@ -60,7 +56,8 @@ namespace Syntropy::Ranges
 
     template <ForwardRange TRange, ForwardRange URange>
     constexpr Int
-    PartialMove(Immutable<TRange> destination,
+    Ranges
+    ::PartialMove(Immutable<TRange> destination,
                 Immutable<URange> source,
                 ForwardRangeTag) noexcept
     {
@@ -79,12 +76,10 @@ namespace Syntropy::Ranges
         return count;
     }
 
-    // Swap.
-    // =====
-
     template <ForwardRange TRange>
     constexpr Int
-    PartialSwap(Immutable<TRange> lhs,
+    Ranges
+    ::PartialSwap(Immutable<TRange> lhs,
                 Immutable<TRange> rhs,
                 ForwardRangeTag) noexcept
     {
@@ -103,12 +98,10 @@ namespace Syntropy::Ranges
         return count;
     }
 
-    // Comparison.
-    // ===========
-
     template <ForwardRange TRange, ForwardRange URange>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs, ForwardRangeTag)
+    Ranges
+    ::AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs, ForwardRangeTag)
     noexcept
     {
         auto left = Ranges::ViewOf(lhs);
@@ -131,9 +124,10 @@ namespace Syntropy::Ranges
 
     template <ForwardRange TRange, ForwardRange URange>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRange> lhs,
-                  Immutable<URange> rhs,
-                  ForwardRangeTag) noexcept
+    Ranges
+    ::AreEquivalent(Immutable<TRange> lhs,
+                    Immutable<URange> rhs,
+                    ForwardRangeTag) noexcept
     {
         auto left = Ranges::ViewOf(lhs);
         auto right = Ranges::ViewOf(rhs);
@@ -155,7 +149,8 @@ namespace Syntropy::Ranges
 
     template <ForwardRange TRange, ForwardRange URange>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRange> lhs, Immutable<URange> rhs, ForwardRangeTag)
+    Ranges
+    ::Compare(Immutable<TRange> lhs, Immutable<URange> rhs, ForwardRangeTag)
     noexcept
     {
         auto left = Ranges::ViewOf(lhs);

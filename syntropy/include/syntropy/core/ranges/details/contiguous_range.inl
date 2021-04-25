@@ -6,18 +6,18 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* RANGES                                                               */
     /************************************************************************/
-
-    // ContiguousRange.
-    // ================
 
     template <ContiguousRange TRange, ContiguousRange URange>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs, ContiguousRangeTag)
+    Ranges
+    ::AreEqual(Immutable<TRange> lhs,
+               Immutable<URange> rhs,
+               ContiguousRangeTag)
     noexcept
     {
         if(Ranges::Count(lhs) != Ranges::Count(rhs))
@@ -35,9 +35,10 @@ namespace Syntropy::Ranges
 
     template <ContiguousRange TRange, ContiguousRange URange>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRange> lhs,
-                  Immutable<URange> rhs,
-                  ContiguousRangeTag) noexcept
+    Ranges
+    ::AreEquivalent(Immutable<TRange> lhs,
+                    Immutable<URange> rhs,
+                    ContiguousRangeTag) noexcept
     {
         if(Ranges::Count(lhs) != Ranges::Count(rhs))
         {
@@ -54,7 +55,8 @@ namespace Syntropy::Ranges
 
     template <ContiguousRange TRange, ContiguousRange URange>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRange> lhs, Immutable<URange> rhs, ContiguousRangeTag)
+    Ranges
+    ::Compare(Immutable<TRange> lhs, Immutable<URange> rhs, ContiguousRangeTag)
     noexcept
     {
         if(Ranges::Count(lhs) == Ranges::Count(rhs))
@@ -73,7 +75,8 @@ namespace Syntropy::Ranges
 
     template <ContiguousRange TRange, ContiguousRange URange>
     [[nodiscard]] constexpr Bool
-    Intersect(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    Ranges
+    ::Intersect(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         auto left_empty = Ranges::IsEmpty(lhs);
         auto right_empty = Ranges::IsEmpty(rhs);

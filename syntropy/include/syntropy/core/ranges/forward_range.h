@@ -8,6 +8,8 @@
 /// \author Raffaele D. Facendola - November 2020
 /// \author Raffaele D. Facendola - January 2021
 
+// ===========================================================================
+
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
@@ -17,7 +19,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
+namespace Syntropy
 {
     /************************************************************************/
     /* FORWARD RANGE                                                        */
@@ -47,73 +49,68 @@ namespace Syntropy::Ranges
     struct ForwardRangeTag{};
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* RANGES                                                               */
     /************************************************************************/
 
-    // ForwardRange.
-    // =============
+    namespace Ranges
+    {
+        /// \brief Apply a function to each element in a range.
+        template <ForwardRange TRange, typename TFunction>
+        constexpr void
+        ForEach(Immutable<TRange> range, TFunction function) noexcept;
 
-    /// \brief Apply a function to each element in a range.
-    template <ForwardRange TRange, typename TFunction>
-    constexpr void
-    ForEach(Immutable<TRange> range, TFunction function) noexcept;
+        /// \brief Member-wise copy elements between two ranges, until either
+        ///        is exhausted.
+        ///
+        /// \return Returns the number of copied elements.
+        template <ForwardRange TRange, ForwardRange URange>
+        constexpr Int
+        PartialCopy(Immutable<TRange> destination,
+            Immutable<URange> source,
+            ForwardRangeTag = {}) noexcept;
 
-    // Copy, Move, Swap.
-    // =================
+        /// \brief Member-wise move elements between two ranges, until either
+        ///        is exhausted.
+        ///
+        /// \return Returns the number of copied elements.
+        template <ForwardRange TRange, ForwardRange URange>
+        constexpr Int
+        PartialMove(Immutable<TRange> destination,
+            Immutable<URange> source,
+            ForwardRangeTag = {}) noexcept;
 
-    /// \brief Member-wise copy elements between two ranges, until either is
-    ///        exhausted.
-    ///
-    /// \return Returns the number of copied elements.
-    template <ForwardRange TRange, ForwardRange URange>
-    constexpr Int
-    PartialCopy(Immutable<TRange> destination,
-                Immutable<URange> source,
-                ForwardRangeTag = {}) noexcept;
+        /// \brief Member-wise swap elements in both ranges until either is
+        ///        exhausted.
+        ///
+        /// \return Returns the number of swap elements.
+        template <ForwardRange TRange>
+        constexpr Int
+        PartialSwap(Immutable<TRange> lhs,
+            Immutable<TRange> rhs,
+            ForwardRangeTag = {}) noexcept;
 
-    /// \brief Member-wise move elements between two ranges, until either is
-    ///        exhausted.
-    ///
-    /// \return Returns the number of copied elements.
-    template <ForwardRange TRange, ForwardRange URange>
-    constexpr Int
-    PartialMove(Immutable<TRange> destination,
-                Immutable<URange> source,
-                ForwardRangeTag = {}) noexcept;
-
-    /// \brief Member-wise swap elements in both ranges until either is
-    ///        exhausted.
-    ///
-    /// \return Returns the number of swap elements.
-    template <ForwardRange TRange>
-    constexpr Int
-    PartialSwap(Immutable<TRange> lhs,
-                Immutable<TRange> rhs,
-                ForwardRangeTag = {}) noexcept;
-
-    // Comparison.
-    // ===========
-
-    /// \brief Check whether two ranges are element-wise equal.
-    template <ForwardRange TRange, ForwardRange URange>
-    [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRange> lhs,
-             Immutable<URange> rhs,
-             ForwardRangeTag = {}) noexcept;
-
-    /// \brief Check whether two ranges are element-wise equivalent.
-    template <ForwardRange TRange, ForwardRange URange>
-    [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRange> lhs,
-                  Immutable<URange> rhs,
-                  ForwardRangeTag = {}) noexcept;
-
-    /// \brief Compare two range views lexicographically.
-    template <ForwardRange TRange, ForwardRange URange>
-    [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRange> lhs,
+        /// \brief Check whether two ranges are element-wise equal.
+        template <ForwardRange TRange, ForwardRange URange>
+        [[nodiscard]] constexpr Bool
+        AreEqual(Immutable<TRange> lhs,
             Immutable<URange> rhs,
             ForwardRangeTag = {}) noexcept;
+
+        /// \brief Check whether two ranges are element-wise equivalent.
+        template <ForwardRange TRange, ForwardRange URange>
+        [[nodiscard]] constexpr Bool
+        AreEquivalent(Immutable<TRange> lhs,
+            Immutable<URange> rhs,
+            ForwardRangeTag = {}) noexcept;
+
+        /// \brief Compare two range views lexicographically.
+        template <ForwardRange TRange, ForwardRange URange>
+        [[nodiscard]] constexpr Ordering
+        Compare(Immutable<TRange> lhs,
+            Immutable<URange> rhs,
+            ForwardRangeTag = {}) noexcept;
+
+    }
 
 }
 

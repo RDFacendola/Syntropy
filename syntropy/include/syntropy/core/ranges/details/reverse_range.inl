@@ -63,29 +63,26 @@ namespace Syntropy
                           Ranges::Count(range_) - index - ToInt(1));
     }
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges
-{
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* RANGES                                                               */
     /************************************************************************/
 
     template <BidirectionalRange TRange>
     [[nodiscard]] constexpr auto
-    Reverse(Immutable<TRange> range) noexcept
+    Ranges
+    ::Reverse(Immutable<TRange> range) noexcept
     {
         return ReverseRange{ Ranges::ViewOf(range) };
     }
 
     template <BidirectionalRange TRange>
     [[nodiscard]] constexpr TRange
-    Reverse(Immutable<ReverseRange<TRange>> range) noexcept
+    Ranges
+    ::Reverse(Immutable<ReverseRange<TRange>> range) noexcept
     {
         return range.range_;
     }
+
 }
 
 // ===========================================================================

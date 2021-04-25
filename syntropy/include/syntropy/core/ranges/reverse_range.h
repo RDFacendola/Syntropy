@@ -101,25 +101,22 @@ namespace Syntropy
     template<Ranges::BidirectionalRange TRange>
     ReverseRange(Immutable<TRange>) -> ReverseRange<TRange>;
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges
-{
     /************************************************************************/
-    /* REVERSE RANGE                                                        */
+    /* RANGES                                                               */
     /************************************************************************/
 
-    /// \brief Get a reversed range.
-    template <BidirectionalRange TRange>
-    [[nodiscard]] constexpr auto
-    Reverse(Immutable<TRange> range) noexcept;
+    namespace Ranges
+    {
+        /// \brief Get a reversed range.
+        template <BidirectionalRange TRange>
+        [[nodiscard]] constexpr auto
+        Reverse(Immutable<TRange> range) noexcept;
 
-    /// \brief Get a reversed range.
-    template <BidirectionalRange TRange>
-    [[nodiscard]] constexpr TRange
-    Reverse(Immutable<ReverseRange<TRange>> range) noexcept;
+        /// \brief Get a reversed range.
+        template <BidirectionalRange TRange>
+        [[nodiscard]] constexpr TRange
+        Reverse(Immutable<ReverseRange<TRange>> range) noexcept;
+    }
 
 }
 
