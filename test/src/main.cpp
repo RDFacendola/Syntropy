@@ -21,8 +21,8 @@
 #include "syntropy/language/support/ignore.h"
 #include "syntropy/language/support/swap.h"
 
-#include "syntropy/core/support/scope_guard.h"
-#include "syntropy/core/support/visitor.h"
+#include "syntropy/core/toolset/scope_guard.h"
+#include "syntropy/core/toolset/visitor.h"
 
 #include "syntropy/core/concepts/ntuple.h"
 
@@ -52,7 +52,7 @@
 #include "syntropy/diagnostics/foundation/debugger.h"
 #include "syntropy/diagnostics/foundation/assert.h"
 
-#include "syntropy/core/support/event.h"
+#include "syntropy/core/toolset/event.h"
 
 #include "syntropy/core/containers/fix_array.h"
 

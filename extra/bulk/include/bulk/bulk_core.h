@@ -36,8 +36,8 @@
 #include "syntropy/core/strings/string_view.h"
 #include "syntropy/core/strings/string.h"
 
-#include "syntropy/core/support/event.h"
-#include "syntropy/core/support/scope_guard.h"
-#include "syntropy/core/support/visitor.h"
+#include "syntropy/core/toolset/event.h"
+#include "syntropy/core/toolset/scope_guard.h"
+#include "syntropy/core/toolset/visitor.h"
 
 // ========================================================================= //
