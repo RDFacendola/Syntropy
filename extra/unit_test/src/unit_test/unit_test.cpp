@@ -21,6 +21,8 @@
 #include "test_suites/syntropy/language/templates/templates_unit_test.h"
 #include "test_suites/syntropy/language/templates/type_traits_unit_test.h"
 
+#include "test_suites/syntropy/memory/foundation/size_unit_test.h"
+
 
 // ===========================================================================
 
