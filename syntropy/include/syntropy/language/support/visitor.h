@@ -1,7 +1,7 @@
 
 /// \file visitor.h
 ///
-/// \brief This header is part of the Syntropy core module.
+/// \brief This header is part of the Syntropy language module.
 ///        It contains definitions for visitors and visitable objects.
 ///
 /// \author Raffaele D. Facendola - 2019.

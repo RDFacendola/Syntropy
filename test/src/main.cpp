@@ -18,8 +18,7 @@
 #include "syntropy/language/support/initializer_list.h"
 #include "syntropy/language/support/swap.h"
 #include "syntropy/language/support/scope_guard.h"
-
-#include "syntropy/core/toolset/visitor.h"
+#include "syntropy/language/support/visitor.h"
 
 #include "syntropy/core/concepts/ntuple.h"
 

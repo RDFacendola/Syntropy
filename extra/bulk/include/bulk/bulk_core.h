@@ -37,6 +37,5 @@
 #include "syntropy/core/strings/string.h"
 
 #include "syntropy/core/toolset/event.h"
-#include "syntropy/core/toolset/visitor.h"
 
 // ========================================================================= //
