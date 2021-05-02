@@ -11,7 +11,6 @@
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/sequence.h"
 #include "syntropy/language/templates/ratio.h"
-#include "syntropy/language/templates/math.h"
 #include "syntropy/language/templates/concepts.h"
 
 #include "syntropy/language/preprocessor/macro.h"

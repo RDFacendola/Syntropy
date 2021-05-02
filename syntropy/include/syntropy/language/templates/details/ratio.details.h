@@ -8,9 +8,9 @@
 #pragma once
 
 #include <ratio>
+#include <numeric>
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/language/templates/math.h"
 
 // ===========================================================================
 
@@ -69,8 +69,8 @@ namespace Syntropy::Templates::Details
               Int UDenominator>
     struct CommonRatioHelper<TRatio<TNumerator, TDenominator>,
                              TRatio<UNumerator, UDenominator>>
-       : Alias<TRatio<GCD<TNumerator, UNumerator>,
-                      LCM<TDenominator, UDenominator>>> {};
+       : Alias<TRatio<std::gcd(TNumerator, UNumerator),
+                      std::lcm(TDenominator, UDenominator)>> {};
 
     /// \brief Common type two ratios can be losslessy-converted to.
     template <typename TRatio, typename URatio>

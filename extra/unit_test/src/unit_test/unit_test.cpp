@@ -15,7 +15,6 @@
 
 #include "test_suites/syntropy/language/templates/concepts_unit_test.h"
 #include "test_suites/syntropy/language/templates/invoke_unit_test.h"
-#include "test_suites/syntropy/language/templates/math_unit_test.h"
 #include "test_suites/syntropy/language/templates/ratio_unit_test.h"
 #include "test_suites/syntropy/language/templates/templates_unit_test.h"
 #include "test_suites/syntropy/language/templates/type_traits_unit_test.h"
