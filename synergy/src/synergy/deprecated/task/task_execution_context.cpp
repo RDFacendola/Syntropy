@@ -1,6 +1,7 @@
 #include "synergy/task/task_execution_context.h"
 
-#include "syntropy/patterns/scope_guard.h"
+
+#include "syntropy/language/support/scope_guard.h"
 
 namespace Syntropy::synergy
 {

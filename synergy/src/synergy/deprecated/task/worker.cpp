@@ -1,7 +1,8 @@
 #include "synergy/task/worker.h"
 
 #include "syntropy/diagnostics/foundation/assert.h"
-#include "syntropy/patterns/scope_guard.h"
+
+#include "syntropy/language/support/scope_guard.h"
 
 namespace Syntropy::synergy
 {
@@ -25,7 +26,7 @@ namespace Syntropy::synergy
 
         execution_context_ = &context;
 
-        auto handle = context.OnTaskReady().Subscribe([this](auto& /*sender*/, auto& args) 
+        auto handle = context.OnTaskReady().Subscribe([this](auto& /*sender*/, auto& args)
         {
             EnqueueTask(args.task_);                                                        // #TODO Avoid accessing the queue if the task is going to be stolen.
 

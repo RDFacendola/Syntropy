@@ -4,7 +4,8 @@
 
 #include "syntropy/platform/threading.h"
 #include "syntropy/diagnostics/foundation/assert.h"
-#include "syntropy/patterns/scope_guard.h"
+
+#include "syntropy/language/support/scope_guard.h"
 
 #include <thread>
 #include <atomic>
@@ -15,7 +16,7 @@ namespace Syntropy::synergy
     /************************************************************************/
     /* SCHEDULER                                                            */
     /************************************************************************/
-    
+
     thread_local Worker* Scheduler::thread_worker_ = nullptr;
 
     Scheduler& Scheduler::GetInstance()
@@ -145,7 +146,7 @@ namespace Syntropy::synergy
     {
         SYNTROPY_ASSERT(!worker_->IsRunning());
 
-        thread_ = std::thread([this, affinity]() 
+        thread_ = std::thread([this, affinity]()
         {
             // Set thread affinity. Note that this call may silently fail if the specified affinity is not compatible with the process affinity.
 

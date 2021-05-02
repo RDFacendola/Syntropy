@@ -9,7 +9,8 @@
 #include "syntropy/core/strings/context.h"
 #include "syntropy/core/strings/string.h"
 #include "syntropy/serialization/string_stream.h"
-#include "syntropy/core/patterns/scope_guard.h"
+
+#include "syntropy/language/support/scope_guard.h"
 
 #include "syntropy/diagnostics/severity.h"
 #include "syntropy/diagnostics/stack_trace.h"

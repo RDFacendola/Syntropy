@@ -1,7 +1,7 @@
 
 /// \file scope_guard.h
 ///
-/// \brief This header is part of the Syntropy core module.
+/// \brief This header is part of the Syntropy language module.
 //         It contains definitions for scope-based guards.
 ///
 /// \author Raffaele D. Facendola - December 2016.
@@ -42,7 +42,8 @@ namespace Syntropy
         ScopeGuard(Immutable<ScopeGuard>) = delete;
 
         /// \brief No assignment operator.
-        ScopeGuard& operator=(Immutable<ScopeGuard>) = delete;
+        Mutable<ScopeGuard>
+        operator=(Immutable<ScopeGuard>) = delete;
 
         /// \brief Create a new scope guard.
         ScopeGuard(TFunctor functor) noexcept;
