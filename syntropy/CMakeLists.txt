@@ -4,7 +4,7 @@ project(syntropy)
 
 # syntropy
 
-set(CMAKE_CXX_COMPILER "/Users/daniele/Desktop/clangm1/bin/clang++")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 set(CMAKE_CXX_FLAGS "-std=c++20")
 
 include_directories(${PROJECT_SOURCE_DIR}/include/)
