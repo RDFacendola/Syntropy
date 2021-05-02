@@ -9,7 +9,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::ToolsetADL
+namespace Syntropy::SupportADL
 {
     /************************************************************************/
     /* SWAP EXTENSIONS                                                      */
@@ -18,12 +18,12 @@ namespace Syntropy::ToolsetADL
     /// \brief Type alias for the AreEqual extension functor.
     template <typename TType, typename UType>
     using ExchangeExtension
-        = Toolset::Extensions::Exchange<TType, UType>;
+        = Support::Extensions::Exchange<TType, UType>;
 
     /// \brief Type alias for the AreEquivalent extension functor.
     template <typename TType, typename UType>
     using SwapExtension
-        = Toolset::Extensions::Swap<TType, UType>;
+        = Support::Extensions::Swap<TType, UType>;
 
     /// \brief Invoke the Exchange function via extension functor.
     template <typename TType, typename UType>
@@ -112,7 +112,7 @@ namespace Syntropy::ToolsetADL
 
         auto fallback =[](auto&& lhs, auto&& rhs)
         {
-            rhs = Toolset::Exchange(lhs, rhs);
+            rhs = Support::Exchange(lhs, rhs);
         };
 
         return Templates::InvokeAny(extension,
@@ -132,18 +132,18 @@ namespace Syntropy
 
     template <typename TType, typename UType>
     [[nodiscard]] constexpr TType
-    Toolset
+    Support
     ::Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept
     {
-        return ToolsetADL::InvokeExchange(lhs, Forward<UType>(rhs));
+        return SupportADL::InvokeExchange(lhs, Forward<UType>(rhs));
     }
 
     template <typename TType>
     constexpr void
-    Toolset
+    Support
     ::Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept
     {
-        ToolsetADL::InvokeSwap(lhs, rhs);
+        SupportADL::InvokeSwap(lhs, rhs);
     }
 
 }

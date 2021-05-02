@@ -186,7 +186,7 @@ namespace Syntropy
 
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            (Toolset::Swap(Records::Get<TIndex>(lhs),
+            (Support::Swap(Records::Get<TIndex>(lhs),
                               Records::Get<TIndex>(rhs)), ...);
         };
 
@@ -205,7 +205,7 @@ namespace Syntropy
         {
             return TRecord
             {
-                Toolset::Exchange(Records::Get<TIndex>(lhs),
+                Support::Exchange(Records::Get<TIndex>(lhs),
                                   Records::Get<TIndex>(Forward(rhs)))...
             };
         };
@@ -260,7 +260,7 @@ namespace Syntropy
 
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            (Toolset::Swap(Records::Get<TIndex>(lhs),
+            (Support::Swap(Records::Get<TIndex>(lhs),
                            Records::Get<TIndex>(rhs)), ...);
         };
 

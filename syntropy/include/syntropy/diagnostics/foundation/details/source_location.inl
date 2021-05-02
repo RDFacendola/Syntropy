@@ -6,7 +6,7 @@
 // ===========================================================================
 
 #include "syntropy/language/foundation/preprocessor.h"
-#include "syntropy/core/toolset/swap.h"
+#include "syntropy/language/support/swap.h"
 #include "syntropy/memory/foundation/size.h"
 #include "syntropy/memory/foundation/byte_span.h"
 #include "syntropy/memory/foundation/memory.h"
@@ -96,9 +96,9 @@ namespace Syntropy
     SourceLocation
     ::Swap(Mutable<SourceLocation> other) noexcept
     {
-        Toolset::Swap(file_name_, other.file_name_);
-        Toolset::Swap(function_name_, other.function_name_);
-        Toolset::Swap(line_, other.line_);
+        Support::Swap(file_name_, other.file_name_);
+        Support::Swap(function_name_, other.function_name_);
+        Support::Swap(line_, other.line_);
     }
 
 }

@@ -1,7 +1,7 @@
 
 /// \file swap.h
 ///
-/// \brief This header is part of Syntropy core module.
+/// \brief This header is part of Syntropy language module.
 ///        It contains swapping-related definitions.
 ///
 /// \author Raffaele D. Facendola - 2020.
@@ -18,10 +18,10 @@
 namespace Syntropy
 {
     /************************************************************************/
-    /* TOOLSET EXTENSIONS                                                   */
+    /* SUPPORT EXTENSIONS                                                   */
     /************************************************************************/
 
-    namespace Toolset::Extensions
+    namespace Support::Extensions
     {
         /// \brief Swap two elements and return the old value of the first.
         template <typename TType, typename UType, typename = void>
@@ -33,10 +33,10 @@ namespace Syntropy
     }
 
     /************************************************************************/
-    /* TOOLSET                                                              */
+    /* SUPPORT                                                              */
     /************************************************************************/
 
-    namespace Toolset
+    namespace Support
     {
         /// \brief Swap lhs with rhs and return the old value of lhs.
         template <typename TType, typename UType>

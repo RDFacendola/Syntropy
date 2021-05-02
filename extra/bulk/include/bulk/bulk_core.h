@@ -6,7 +6,7 @@
 
 // ========================================================================= //
 
-#include "syntropy/core/toolset/swap.h"
+#include "syntropy/language/support/swap.h"
 #include "syntropy/core/toolset/swap_extensions.h"
 #include "syntropy/core/comparisons/compare.h"
 

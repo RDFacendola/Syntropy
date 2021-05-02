@@ -6,7 +6,7 @@
 
 // ===========================================================================
 
-#include "syntropy/core/toolset/swap.h"
+#include "syntropy/language/support/swap.h"
 #include "syntropy/core/comparisons/compare.h"
 
 // ===========================================================================
@@ -89,7 +89,7 @@ namespace Syntropy
 
         for (; !Ranges::IsEmpty(left) && !Ranges::IsEmpty(right); ++count)
         {
-            Toolset::Swap(Ranges::Front(left), Ranges::Front(right));
+            Support::Swap(Ranges::Front(left), Ranges::Front(right));
 
             left = Ranges::PopFront(left);
             right = Ranges::PopFront(right);

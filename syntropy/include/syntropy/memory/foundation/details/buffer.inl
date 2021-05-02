@@ -7,7 +7,7 @@
 
 #include "syntropy/memory/foundation/memory.h"
 
-#include "syntropy/core/toolset/swap.h"
+#include "syntropy/language/support/swap.h"
 
 #include "syntropy/diagnostics/foundation/assert.h"
 
@@ -66,7 +66,7 @@ namespace Syntropy
         : allocator_(rhs.allocator_)
         , alignment_(rhs.alignment_)
     {
-        Toolset::Swap(data_, rhs.data_);
+        Support::Swap(data_, rhs.data_);
     }
 
     inline Mutable<Buffer> Buffer
@@ -91,8 +91,8 @@ namespace Syntropy
     {
         if (allocator_ == rhs.allocator_)
         {
-            Toolset::Swap(data_, rhs.data_);
-            Toolset::Swap(alignment_, rhs.alignment_);
+            Support::Swap(data_, rhs.data_);
+            Support::Swap(alignment_, rhs.alignment_);
         }
         else
         {
@@ -171,8 +171,8 @@ namespace Syntropy
         SYNTROPY_UNDEFINED_BEHAVIOR(allocator_ == rhs.allocator_,
             "Both this and rhs must share the same allocator.");
 
-        Toolset::Swap(data_, rhs.data_);
-        Toolset::Swap(alignment_, rhs.alignment_);
+        Support::Swap(data_, rhs.data_);
+        Support::Swap(alignment_, rhs.alignment_);
     }
 
     /************************************************************************/

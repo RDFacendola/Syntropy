@@ -5,7 +5,7 @@
 
 // ===========================================================================
 
-#include "syntropy/core/toolset/swap.h"
+#include "syntropy/language/support/swap.h"
 
 // ===========================================================================
 
@@ -19,12 +19,12 @@ namespace Syntropy
     TestRunner
     ::operator=(Movable<TestRunner> rhs) noexcept
     {
-        Toolset::Swap(suite_started_event_, rhs.suite_started_event_);
-        Toolset::Swap(suite_finished_event_, rhs.suite_finished_event_);
-        Toolset::Swap(case_started_event_, rhs.case_started_event_);
-        Toolset::Swap(case_finished_event_, rhs.case_finished_event_);
-        Toolset::Swap(case_success_event_, rhs.case_success_event_);
-        Toolset::Swap(case_failure_event_, rhs.case_failure_event_);
+        Support::Swap(suite_started_event_, rhs.suite_started_event_);
+        Support::Swap(suite_finished_event_, rhs.suite_finished_event_);
+        Support::Swap(case_started_event_, rhs.case_started_event_);
+        Support::Swap(case_finished_event_, rhs.case_finished_event_);
+        Support::Swap(case_success_event_, rhs.case_success_event_);
+        Support::Swap(case_failure_event_, rhs.case_failure_event_);
 
         return *this;
     }
