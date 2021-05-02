@@ -7,7 +7,7 @@
 // ========================================================================= //
 
 #include "syntropy/language/support/swap.h"
-#include "syntropy/core/toolset/swap_extensions.h"
+
 #include "syntropy/core/comparisons/compare.h"
 
 #include "syntropy/core/containers/fix_array.h"

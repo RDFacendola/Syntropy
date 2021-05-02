@@ -16,6 +16,7 @@
 #include "syntropy/language/support/initializer_list.h"
 #include "syntropy/language/support/scope_guard.h"
 #include "syntropy/language/support/visitor.h"
+#include "syntropy/language/support/swap_extensions.h"
 
 #include "syntropy/language/templates/concepts.h"
 #include "syntropy/language/templates/diagnostics.h"
