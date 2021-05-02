@@ -171,7 +171,7 @@ namespace Syntropy::Details
     {
         if (PtrOf(rhs) != this)
         {
-            auto clone = Copy(rhs);
+            auto clone = ToImmutable(rhs);
 
             Link(events_, Link(clone.events_, nullptr));
         }

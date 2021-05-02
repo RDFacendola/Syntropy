@@ -12,13 +12,6 @@ namespace Syntropy
     /************************************************************************/
 
     template <typename TType>
-    constexpr Immutable<TType>
-    Copy(Immutable<TType> rhs) noexcept
-    {
-        return rhs;
-    }
-
-    template <typename TType>
     constexpr Forwarding<Templates::QualifiedOf<TType>>
     Move(Forwarding<TType> rhs) noexcept
     {

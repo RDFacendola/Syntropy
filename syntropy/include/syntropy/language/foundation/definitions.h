@@ -21,11 +21,6 @@ namespace Syntropy
     /* DEFINITIONS                                                          */
     /************************************************************************/
 
-    /// \brief Obtain an immutable reference to rhs.
-    template <typename TType>
-    constexpr Immutable<TType>
-    Copy(Immutable<TType> rhs) noexcept;
-
     /// \brief Obtain either a movable reference or an immovable reference to
     ///        rhs, depending on whether rhs is mutable or immutable.
     template <typename TType>
