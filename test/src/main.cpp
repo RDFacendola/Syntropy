@@ -16,7 +16,6 @@
 #include "syntropy/language/preprocessor/macro.h"
 
 #include "syntropy/language/support/initializer_list.h"
-#include "syntropy/language/support/ignore.h"
 #include "syntropy/language/support/swap.h"
 
 #include "syntropy/core/toolset/scope_guard.h"

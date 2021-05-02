@@ -13,7 +13,6 @@
 
 #include "syntropy/language/preprocessor/macro.h"
 
-#include "syntropy/language/support/ignore.h"
 #include "syntropy/language/support/initializer_list.h"
 
 #include "syntropy/language/templates/concepts.h"
