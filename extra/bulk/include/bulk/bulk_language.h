@@ -11,7 +11,7 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/preprocessor/macro.h"
+#include "syntropy/language/foundation/preprocessor.h"
 
 #include "syntropy/language/support/initializer_list.h"
 #include "syntropy/language/support/scope_guard.h"

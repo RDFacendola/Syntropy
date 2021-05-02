@@ -5,7 +5,7 @@
 
 // ===========================================================================
 
-#include "syntropy/language/preprocessor/macro.h"
+#include "syntropy/language/foundation/preprocessor.h"
 #include "syntropy/core/toolset/swap.h"
 #include "syntropy/memory/foundation/size.h"
 #include "syntropy/memory/foundation/byte_span.h"

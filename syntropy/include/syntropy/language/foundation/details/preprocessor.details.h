@@ -1,5 +1,5 @@
 
-/// \file macro.details.h
+/// \file preprocessor.details.h
 ///
 /// \author Raffaele D. Facendola - April 2021.
 

@@ -10,7 +10,7 @@
 #include "syntropy/core/strings/string.h"
 
 #include "syntropy/language/templates/concepts.h"
-#include "syntropy/language/preprocessor/macro.h"
+#include "syntropy/language/foundation/preprocessor.h"
 
 // ===========================================================================
 

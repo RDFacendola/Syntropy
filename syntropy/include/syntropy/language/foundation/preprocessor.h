@@ -1,8 +1,8 @@
 
-/// \file macro.h
+/// \file preprocessor.h
 ///
 /// \brief This header is part of Syntropy language module.
-///         It contains macro definitions.
+///         It contains preprocessor definitions.
 ///
 /// \author Raffaele D. Facendola - November 2016
 
@@ -16,7 +16,7 @@
 
 // ===========================================================================
 
-#include "details/macro.details.h"
+#include "details/preprocessor.details.h"
 
 // ===========================================================================
 

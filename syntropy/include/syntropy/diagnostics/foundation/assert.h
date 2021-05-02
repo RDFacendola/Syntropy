@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "syntropy/language/preprocessor/macro.h"
+#include "syntropy/language/foundation/preprocessor.h"
 
 #include "syntropy/diagnostics/foundation/debugger.h"
 

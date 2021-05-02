@@ -13,7 +13,7 @@
 #include "syntropy/language/templates/ratio.h"
 #include "syntropy/language/templates/concepts.h"
 
-#include "syntropy/language/preprocessor/macro.h"
+#include "syntropy/language/foundation/preprocessor.h"
 
 #include "syntropy/language/support/initializer_list.h"
 #include "syntropy/language/support/swap.h"
