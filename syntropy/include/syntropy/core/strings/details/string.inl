@@ -98,9 +98,9 @@ namespace Syntropy::StringsADL
             return ToString(rhs);
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function)(rhs);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function)(rhs);
     }
 }
 

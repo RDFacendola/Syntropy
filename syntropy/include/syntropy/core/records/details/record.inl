@@ -53,9 +53,9 @@ namespace Syntropy::RecordsADL
             return Get<TIndex>(Forward<TRange>(rhs));
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function)(rhs);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function)(rhs);
     }
 
 }

@@ -192,10 +192,10 @@ namespace Syntropy::RangesADL
             return rhs;
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function,
-                                    fallback)(Forward<TRange>(rhs));
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function,
+                                  fallback)(Forward<TRange>(rhs));
     }
 
     // IsEmpty.
@@ -230,10 +230,10 @@ namespace Syntropy::RangesADL
             return Ranges::Count(rhs) == ToInt(0);
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function,
-                                    fallback)(rhs);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function,
+                                  fallback)(rhs);
     }
 
     // Count.
@@ -262,9 +262,9 @@ namespace Syntropy::RangesADL
             return Count(rhs);
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function)(rhs);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function)(rhs);
     }
 
     // Select.
@@ -293,9 +293,9 @@ namespace Syntropy::RangesADL
             return Select(rhs, offset, count);
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function)(rhs, offset, count);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function)(rhs, offset, count);
     }
 
     // Front.
@@ -330,10 +330,10 @@ namespace Syntropy::RangesADL
             return Ranges::At(rhs, ToInt(0));
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function,
-                                    fallback)(rhs);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function,
+                                  fallback)(rhs);
     }
 
     // Back.
@@ -368,10 +368,10 @@ namespace Syntropy::RangesADL
             return Ranges::At(rhs, Ranges::Count(rhs) - ToInt(1));
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function,
-                                    fallback)(rhs);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function,
+                                  fallback)(rhs);
     }
 
     // PopFront.
@@ -410,10 +410,10 @@ namespace Syntropy::RangesADL
                                   Ranges::Count(rhs) - ToInt(1));
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function,
-                                    fallback)(rhs);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function,
+                                  fallback)(rhs);
     }
 
     // PopBack.
@@ -452,10 +452,10 @@ namespace Syntropy::RangesADL
                                   Ranges::Count(rhs) - ToInt(1));
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function,
-                                    fallback)(rhs);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function,
+                                  fallback)(rhs);
     }
 
     // At.
@@ -496,11 +496,11 @@ namespace Syntropy::RangesADL
             return Ranges::Data(rhs)[index];
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    member_operator,
-                                    non_member_function,
-                                    fallback)(rhs, index);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  member_operator,
+                                  non_member_function,
+                                  fallback)(rhs, index);
     }
 
     // Data.
@@ -529,9 +529,9 @@ namespace Syntropy::RangesADL
             return Data(rhs);
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function)(rhs);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function)(rhs);
     }
 
 }

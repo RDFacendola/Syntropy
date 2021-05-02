@@ -15,7 +15,7 @@
 #include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/language/templates/type_traits.h"
-#include "syntropy/language/templates/invoke.h"
+#include "syntropy/language/support/invoke.h"
 
 #include "syntropy/core/reflection/type_id.h"
 

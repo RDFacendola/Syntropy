@@ -12,9 +12,9 @@
 #include "test_suites/syntropy/core/comparisons/compare_unit_test.h"
 
 #include "test_suites/syntropy/language/support/swap_unit_test.h"
+#include "test_suites/syntropy/language/support/invoke_unit_test.h"
 
 #include "test_suites/syntropy/language/templates/concepts_unit_test.h"
-#include "test_suites/syntropy/language/templates/invoke_unit_test.h"
 #include "test_suites/syntropy/language/templates/ratio_unit_test.h"
 #include "test_suites/syntropy/language/templates/templates_unit_test.h"
 #include "test_suites/syntropy/language/templates/type_traits_unit_test.h"

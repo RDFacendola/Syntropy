@@ -11,6 +11,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/definitions.h"
+#include "syntropy/language/templates/type_traits.h"
 
 // ===========================================================================
 
@@ -18,7 +19,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Support
 {
     /************************************************************************/
     /* INVOKE                                                               */
@@ -30,7 +31,7 @@ namespace Syntropy::Templates
     ///        Invoke(non-member-function, arguments...);
     ///        Invoke(member-function, instance, arguments...);
     template <typename TCallable, typename... TArguments>
-    constexpr InvokeResultOf<TCallable, TArguments...>
+    constexpr Templates::InvokeResultOf<TCallable, TArguments...>
     Invoke(Forwarding<TCallable> callable,
            Forwarding<TArguments>... arguments) noexcept;
 

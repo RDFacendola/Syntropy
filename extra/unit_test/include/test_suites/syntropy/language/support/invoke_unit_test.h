@@ -9,7 +9,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/language/templates/invoke.h"
+#include "syntropy/language/support/invoke.h"
 #include "syntropy/language/templates/concepts.h"
 
 #include "syntropy/diagnostics/unit_test/unit_test.h"
@@ -87,6 +87,7 @@ namespace UnitTest
     [](auto& fixture)
     {
         using namespace Syntropy;
+        using namespace Syntropy::Support;
         using namespace Syntropy::Templates;
 
         using Functor = InvokeTestFixture::Functor;
@@ -107,6 +108,7 @@ namespace UnitTest
     [](auto& fixture)
     {
         using namespace Syntropy;
+        using namespace Syntropy::Support;
         using namespace Syntropy::Templates;
 
         using Some = InvokeTestFixture::Some;
@@ -139,6 +141,7 @@ namespace UnitTest
     [](auto& fixture)
     {
         using namespace Syntropy;
+        using namespace Syntropy::Support;
         using namespace Syntropy::Templates;
 
         using Functor = InvokeTestFixture::Functor;
@@ -167,6 +170,7 @@ namespace UnitTest
     [](auto& fixture)
     {
         using namespace Syntropy;
+        using namespace Syntropy::Support;
         using namespace Syntropy::Templates;
 
         using Functor = InvokeTestFixture::Functor;

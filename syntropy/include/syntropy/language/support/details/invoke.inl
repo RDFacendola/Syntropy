@@ -5,14 +5,14 @@
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Support
 {
     /************************************************************************/
     /* INVOKE                                                               */
     /************************************************************************/
 
     template <typename TCallable, typename... TArguments>
-    constexpr InvokeResultOf<TCallable, TArguments...>
+    constexpr Templates::InvokeResultOf<TCallable, TArguments...>
     Invoke(Forwarding<TCallable> callable,
            Forwarding<TArguments>... arguments) noexcept
     {

@@ -5,7 +5,7 @@
 
 // ===========================================================================
 
-#include "syntropy/language/templates/invoke.h"
+#include "syntropy/language/support/invoke.h"
 
 // ===========================================================================
 
@@ -81,10 +81,10 @@ namespace Syntropy::SupportADL
             return result;
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function,
-                                    fallback)(lhs, rhs);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function,
+                                  fallback)(lhs, rhs);
     }
 
     /// \brief Invoke the Swap function, trying different implementations.
@@ -115,10 +115,10 @@ namespace Syntropy::SupportADL
             rhs = Support::Exchange(lhs, rhs);
         };
 
-        return Templates::InvokeAny(extension,
-                                    member_function,
-                                    non_member_function,
-                                    fallback)(lhs, rhs);
+        return Support::InvokeAny(extension,
+                                  member_function,
+                                  non_member_function,
+                                  fallback)(lhs, rhs);
     }
 }
 

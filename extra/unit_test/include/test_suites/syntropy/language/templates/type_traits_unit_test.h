@@ -10,7 +10,7 @@
 #include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/language/templates/concepts.h"
-#include "syntropy/language/templates/invoke.h"
+#include "syntropy/language/support/invoke.h"
 
 #include "syntropy/diagnostics/unit_test/unit_test.h"
 
