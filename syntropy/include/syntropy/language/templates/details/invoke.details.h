@@ -12,7 +12,6 @@
 
 #include "syntropy/language/foundation/definitions.h"
 
-#include "syntropy/language/templates/priority.h"
 #include "syntropy/language/templates/type_traits.h"
 
 // ===========================================================================
@@ -196,6 +195,19 @@ namespace Syntropy::Templates::Details
     using InvokeResultOf
         = typename InvokeResultOfHelper<TCallable, TArguments...>::Type;
 
+    // InvocationPriority.
+    // ===================
+
+    /// \brief A compile-time tag-type used to sort an overload function
+    ///        set according to an explicit priority value.
+    template <Int TPriority>
+    struct InvocationPriority
+        : InvocationPriority<TPriority - 1>{};
+
+    /// \brief Lowest priority tag type.
+    template <>
+    struct InvocationPriority<0> {};
+
     // InvocationSequence.
     // ===================
 
@@ -204,7 +216,7 @@ namespace Syntropy::Templates::Details
     struct InvocationSequence
     {
         /// \brief Lowest priority.
-        using PriorityType = Templates::Priority<0>;
+        using PriorityType = InvocationPriority<0>;
     };
 
     /// \brief Partial specialization for non-empty sets.
@@ -214,7 +226,7 @@ namespace Syntropy::Templates::Details
         , InvocationSequence<TFunctions...>
     {
         /// \brief Priority of the current function.
-        using PriorityType = Templates::Priority<sizeof...(TFunctions) + 1>;
+        using PriorityType = InvocationPriority<sizeof...(TFunctions) + 1>;
 
         /// \brief Create an invocation set.
         InvocationSequence(TFunction function, TFunctions... functions)

@@ -20,7 +20,6 @@
 #include "syntropy/language/templates/diagnostics.h"
 #include "syntropy/language/templates/invoke.h"
 #include "syntropy/language/templates/math.h"
-#include "syntropy/language/templates/priority.h"
 #include "syntropy/language/templates/ratio.h"
 #include "syntropy/language/templates/sfinae.h"
 #include "syntropy/language/templates/templates.h"
