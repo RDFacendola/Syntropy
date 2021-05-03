@@ -27,9 +27,9 @@
 #include "syntropy/core/ranges/span.h"
 #include "syntropy/core/ranges/zip_range.h"
 
-#include "syntropy/core/records/record.h"
+#include "syntropy/language/support/record.h"
 #include "syntropy/core/records/record_extensions.h"
-#include "syntropy/core/records/tuple.h"
+#include "syntropy/language/support/tuple.h"
 
 #include "syntropy/core/reflection/type_id.h"
 

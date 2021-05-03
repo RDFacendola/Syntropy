@@ -18,7 +18,7 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 
-#include "syntropy/core/records/tuple.h"
+#include "syntropy/language/support/tuple.h"
 #include "syntropy/core/ranges/bidirectional_range.h"
 
 // ===========================================================================
