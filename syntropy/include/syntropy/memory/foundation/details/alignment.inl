@@ -5,6 +5,10 @@
 
 // ===========================================================================
 
+#include "syntropy/language/support/view.h"
+
+// ===========================================================================
+
 namespace Syntropy
 {
     /************************************************************************/
@@ -58,10 +62,8 @@ namespace Syntropy
     Memory
     ::Align(RWBytePtr pointer, Alignment alignment) noexcept
     {
-        using Syntropy::ToReadOnly;
-        using Syntropy::ToReadWrite;
-
-        return ToReadWrite(Align(ToReadOnly(pointer), alignment));
+        return Support::ToReadWrite(Align(Support::ToReadOnly(pointer),
+                                          alignment));
     }
 
     [[nodiscard]] inline BytePtr
@@ -79,10 +81,8 @@ namespace Syntropy
     Memory
     ::AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
     {
-        using Syntropy::ToReadOnly;
-        using Syntropy::ToReadWrite;
-
-        return ToReadWrite(AlignDown(ToReadOnly(pointer), alignment));
+        return Support::ToReadWrite(AlignDown(Support::ToReadOnly(pointer),
+                                              alignment));
     }
 
     /************************************************************************/

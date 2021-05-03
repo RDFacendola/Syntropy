@@ -87,24 +87,6 @@ namespace Syntropy
     constexpr BasePtr<TType>
     ToPtr(BasePtr<UType> rhs) noexcept;
 
-    /// \brief Convert rhs to a pointer to a read-only instance of TType.
-    template <typename TType>
-    constexpr Ptr<TType>
-    ToReadOnly(Ptr<TType> rhs) noexcept;
-
-    /// \brief Convert rhs to a pointer to a read-write instance of TType.
-    ///
-    /// The intended use for this method is to write a non-const implementation
-    /// based on a const implementation, without duplicating code.
-    /// Such usage has the form: ToReadWrite(F(ToReadOnly(x)))
-    /// where x is mutable and F(.) is a function.
-    ///
-    /// \remarks If rhs doesn't point to a read-write object, accessing the
-    ///          returned value of this method results in undefined behavior.
-    template <typename TType>
-    constexpr RWPtr<TType>
-    ToReadWrite(Ptr<TType> rhs) noexcept;
-
     /************************************************************************/
     /* FIXED-SIZE TYPES                                                     */
     /************************************************************************/

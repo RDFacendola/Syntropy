@@ -5,6 +5,10 @@
 
 // ===========================================================================
 
+#include "syntropy/language/support/view.h"
+
+// ===========================================================================
+
 namespace Syntropy
 {
     /************************************************************************/
@@ -25,7 +29,8 @@ namespace Syntropy
     Memory
     ::Align(Immutable<RWByteSpan> lhs, Alignment alignment) noexcept
     {
-        return ToReadWrite(Align(ToReadOnly(lhs), alignment));
+        return Support::ToReadWrite(Align(Support::ToReadOnly(lhs),
+                                          alignment));
     }
 
     [[nodiscard]] inline ByteSpan
@@ -41,7 +46,8 @@ namespace Syntropy
     Memory
     ::Floor(Immutable<RWByteSpan> lhs, Bytes size) noexcept
     {
-        return ToReadWrite(Floor(ToReadOnly(lhs), size));
+        return Support::ToReadWrite(Floor(Support::ToReadOnly(lhs),
+                                          size));
     }
 
     template <typename TObject>
@@ -60,7 +66,7 @@ namespace Syntropy
     Memory
     ::BytesOf(Mutable<TObject> rhs) noexcept
     {
-        return ToReadWrite(BytesOf(ToImmutable(rhs)));
+        return Support::ToReadWrite(BytesOf(ToImmutable(rhs)));
     }
 
     template <typename TObject>
@@ -131,7 +137,8 @@ namespace Syntropy
     Memory
     ::FromRangeBytesOf(Immutable<RWByteSpan> rhs) noexcept
     {
-        return ToReadWrite(FromRangeBytesOf<TRange>(ToReadOnly(rhs)));
+        return Support::ToReadWrite(
+            FromRangeBytesOf<TRange>(Support::ToReadOnly(rhs)));
     }
 
     /************************************************************************/

@@ -12,7 +12,7 @@
 namespace Syntropy::SupportADL
 {
     /************************************************************************/
-    /* SWAP EXTENSIONS                                                      */
+    /* SUPPORT EXTENSIONS                                                   */
     /************************************************************************/
 
     /// \brief Type alias for the AreEqual extension functor.
@@ -127,7 +127,7 @@ namespace Syntropy::SupportADL
 namespace Syntropy
 {
     /************************************************************************/
-    /* TOOLSET                                                              */
+    /* SUPPORT                                                              */
     /************************************************************************/
 
     template <typename TType, typename UType>

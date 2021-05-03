@@ -6,6 +6,7 @@
 // ===========================================================================
 
 #include "syntropy/core/ranges/contiguous_range.h"
+#include "syntropy/language/support/view.h"
 
 // ===========================================================================
 
@@ -132,14 +133,14 @@ namespace Syntropy
     [[nodiscard]] constexpr Span<TType>
     ToReadOnly(Immutable<BaseSpan<TType>> rhs) noexcept
     {
-        return { ToReadOnly(rhs.GetData()), rhs.GetCount() };
+        return { Support::ToReadOnly(rhs.GetData()), rhs.GetCount() };
     }
 
     template <typename TType>
     [[nodiscard]] constexpr RWSpan<TType>
     ToReadWrite(Immutable<BaseSpan<TType>> rhs) noexcept
     {
-        return { ToReadWrite(rhs.GetData()), rhs.GetCount() };
+        return { Support::ToReadWrite(rhs.GetData()), rhs.GetCount() };
     }
 
     // Utilities.

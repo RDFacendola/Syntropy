@@ -68,20 +68,6 @@ namespace Syntropy
         return static_cast<BasePtr<TType>>(rhs);
     }
 
-    template <typename TType>
-    constexpr Ptr<TType>
-    ToReadOnly(Ptr<TType> rhs) noexcept
-    {
-        return const_cast<Ptr<TType>>(rhs);
-    }
-
-    template <typename TType>
-    constexpr RWPtr<TType>
-    ToReadWrite(Ptr<TType> rhs) noexcept
-    {
-        return const_cast<RWPtr<TType>>(rhs);
-    }
-
     /************************************************************************/
     /* FIXED-SIZE TYPES                                                     */
     /************************************************************************/

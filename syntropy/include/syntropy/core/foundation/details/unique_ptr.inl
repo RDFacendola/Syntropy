@@ -5,6 +5,10 @@
 
 // ===========================================================================
 
+#include "syntropy/language/support/view.h"
+
+// ===========================================================================
+
 namespace Syntropy
 {
     /************************************************************************/
@@ -241,7 +245,7 @@ namespace Syntropy
             auto size = rhs.GetSize();
             auto pointee = rhs.Release();
 
-            return { ToReadOnly(pointee), size, *allocator };
+            return { Support::ToReadOnly(pointee), size, *allocator };
         }
 
         return {};
@@ -251,7 +255,7 @@ namespace Syntropy
     [[nodiscard]] inline constexpr UniquePtr<TType>
     ToReadOnly(Movable<BaseUniquePtr<TType, TTraits>> rhs) noexcept
     {
-        return ToReadOnly(rhs);
+        return Support::ToReadOnly(rhs);
     }
 
     template <typename TType, typename TTraits>
@@ -264,7 +268,7 @@ namespace Syntropy
             auto size = rhs.GetSize();
             auto pointee = rhs.Release();
 
-            return { ToReadWrite(pointee), size, *allocator };
+            return { Support::ToReadWrite(pointee), size, *allocator };
         }
 
         return {};
@@ -274,7 +278,7 @@ namespace Syntropy
     [[nodiscard]] constexpr RWUniquePtr<TType>
     ToReadWrite(Movable<BaseUniquePtr<TType, TTraits>> rhs) noexcept
     {
-        return ToReadWrite(rhs);
+        return Support::ToReadWrite(rhs);
     }
 
     // Utilities.
@@ -307,7 +311,7 @@ namespace Syntropy
     [[nodiscard]] inline RWUniquePtr<TType>
     MakeRWUnique(Forwarding<TArguments>... arguments) noexcept
     {
-        return ToReadWrite(
+        return Support::ToReadWrite(
             MakeUniqueOnAllocator<TType>(Memory::GetScopeAllocator(),
                                          Forward<TArguments>(arguments)...));
     }
@@ -317,7 +321,7 @@ namespace Syntropy
     MakeRWUniqueOnAllocator(Mutable<BaseAllocator> allocator,
                             Forwarding<TArguments>... arguments) noexcept
     {
-        return ToReadWrite(
+        return Support::ToReadWrite(
             MakeUniqueOnAllocator<TType>(allocator,
                                          Forward<TArguments>(arguments)...));
     }
