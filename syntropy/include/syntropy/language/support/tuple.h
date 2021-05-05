@@ -63,6 +63,14 @@ namespace Syntropy
     Int TupleRankOf
         = TupleRank<Templates::UnqualifiedOf<TTuple>>::kValue;
 
+    /// \brief Type of a tuple element.
+    ///
+    /// \remarks Ill-formed if exceeding tuple bounds.
+    template <Int TIndex, IsTupleReference TTuple>
+    using TupleElementTypeOf
+        = typename TupleElementType<TIndex,
+                                    Templates::UnqualifiedOf<TTuple>>::Type;
+
     /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
@@ -250,13 +258,7 @@ namespace Syntropy
         Bool IsSameRank
             = (TupleRankOf<TTuple> == TupleRankOf<UTuple>);
 
-        /// \brief Type of a tuple element.
-        ///
-        /// \remarks Ill-formed if exceeding tuple bounds.
-        template <Int TIndex, IsTupleReference TTuple>
-        using ElementTypeOf
-            = typename TupleElementType<
-                TIndex, Templates::UnqualifiedOf<TTuple>>::Type;
+
 
         /// \brief Generates a sequence that can be used to enumerate all
         ///        elements in a tuple.

@@ -537,7 +537,7 @@ namespace Syntropy
     {
         using BaseType = Details::TupleBase<TIndex, Tuple<UElements...>>;
 
-        using ElementType = Tuples::ElementTypeOf<TIndex,
+        using ElementType = TupleElementTypeOf<TIndex,
                                                    Tuple<UElements...>>;
 
         return static_cast<Immovable<ElementType>>(
@@ -550,7 +550,7 @@ namespace Syntropy
     {
         using BaseType = Details::TupleBase<TIndex, Tuple<UElements...>>;
 
-        using ElementType = Tuples::ElementTypeOf<TIndex,
+        using ElementType = TupleElementTypeOf<TIndex,
                                                    Tuple<UElements...>>;
 
         return static_cast<Movable<ElementType>>(
@@ -690,7 +690,7 @@ namespace std
               Syntropy::IsTuple TTuple>
     struct std::tuple_element<TIndex, TTuple>
     {
-        using type = Syntropy::Tuples::ElementTypeOf<TIndex, TTuple>;
+        using type = Syntropy::TupleElementTypeOf<TIndex, TTuple>;
     };
 
     template <std::size_t TIndex, Syntropy::IsTuple TTuple>
