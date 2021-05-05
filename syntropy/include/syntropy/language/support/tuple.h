@@ -90,6 +90,14 @@ namespace Syntropy
                                           TupleSequenceOf<TTuple>,
                                           TupleElementType>;
 
+    /// \brief Index of the first element with type TElement in a tuple.
+    ///
+    /// \remarks Ill-formed if no such element exist.
+    template <typename TElement, IsTupleReference TTuple>
+    inline constexpr
+    Int TupleElementIndexOf
+        = Templates::ElementIndexOf<TElement, TupleElementTypeListOf<TTuple>>;
+
     /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
@@ -271,14 +279,6 @@ namespace Syntropy
 
     namespace Tuples
     {
-        /// \brief Index of the first element with type TElement in a tuple.
-        ///
-        /// \remarks Ill-formed if no such element exist.
-        template <typename TElement, IsTupleReference TTuple>
-        inline constexpr
-        Int ElementIndexOf
-            = Templates::ElementIndexOf<TElement, TupleElementTypeListOf<TTuple>>;
-
         /// \brief Access a tuple element by index.
         ///
         /// \remarks Ill-formed if the index exceeds tuple's bounds.

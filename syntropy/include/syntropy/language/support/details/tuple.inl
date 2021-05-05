@@ -240,7 +240,7 @@ namespace Syntropy
     Tuples
     ::Get(Forwarding<TTuple> tuple) noexcept
     {
-        constexpr auto TIndex = ElementIndexOf<TElement, TTuple>;
+        constexpr auto TIndex = TupleElementIndexOf<TElement, TTuple>;
 
         return TuplesADL::InvokeGet<TIndex>(Forward<TTuple>(tuple));
     }
