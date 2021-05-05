@@ -19,7 +19,7 @@ namespace Syntropy::RecordsADL
     /// \brief Type alias for the Get extension functor.
     template <Int TIndex, typename TRecord>
     using GetExtension
-        = Records::Extensions::Get<TIndex, TRecord>;
+        = Tuples::Extensions::Get<TIndex, TRecord>;
 
     /// \brief Invoke the Get function via extension functor.
     template <Int TIndex, typename TRecord>

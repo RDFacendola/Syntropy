@@ -205,10 +205,10 @@ namespace Syntropy
     Tuple(TElements...) -> Tuple<TElements...>;
 
     /************************************************************************/
-    /* RECORDS EXTENSIONS                                                   */
+    /* TUPLES EXTENSIONS                                                    */
     /************************************************************************/
 
-    namespace Records::Extensions
+    namespace Tuples::Extensions
     {
         /// \brief Access a record element by index.
         template <Int TIndex, typename TRecord, typename = void>
