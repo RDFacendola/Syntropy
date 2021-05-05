@@ -83,6 +83,13 @@ namespace Syntropy
     using TupleSequenceOf
         = Templates::MakeSequence<TupleRankOf<TTuple>>;
 
+    /// \brief List of types of a tuple's elements.
+    template <IsTupleReference TTuple>
+    using TupleElementTypeListOf
+        = Details::TupleElementTypeListOf<TTuple,
+                                          TupleSequenceOf<TTuple>,
+                                          TupleElementType>;
+
     /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
@@ -264,20 +271,13 @@ namespace Syntropy
 
     namespace Tuples
     {
-        /// \brief List of types of a tuple's elements.
-        template <IsTupleReference TTuple>
-        using ElementTypeListOf
-            = Details::ElementTypeListOf<TTuple,
-                                         TupleSequenceOf<TTuple>,
-                                         TupleElementType>;
-
         /// \brief Index of the first element with type TElement in a tuple.
         ///
         /// \remarks Ill-formed if no such element exist.
         template <typename TElement, IsTupleReference TTuple>
         inline constexpr
         Int ElementIndexOf
-            = Templates::ElementIndexOf<TElement, ElementTypeListOf<TTuple>>;
+            = Templates::ElementIndexOf<TElement, TupleElementTypeListOf<TTuple>>;
 
         /// \brief Access a tuple element by index.
         ///

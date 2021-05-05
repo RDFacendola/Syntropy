@@ -19,6 +19,27 @@
 namespace Syntropy::Details
 {
     /************************************************************************/
+    /* TYPE TRAITS                                                          */
+    /************************************************************************/
+
+    /// \brief Helper function for TupleElementTypeListOf.
+    template <typename TTuple,
+              template <Int, typename> typename TTupleElementType,
+              Int... TIndex>
+    auto
+    TupleElementTypeListOfHelper(Templates::Sequence<TIndex...>) noexcept
+        -> Templates::TypeList<typename TTupleElementType<TIndex,
+                                                          TTuple>::Type...>;
+
+    /// \brief List of types of a tuple's elements.
+    template <typename TTuple,
+              typename TSequence,
+              template <Int, typename> typename TTupleElementType>
+    using
+    TupleElementTypeListOf = decltype(
+        TupleElementTypeListOfHelper<TTuple, TTupleElementType>(TSequence{}));
+
+    /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
 
@@ -206,33 +227,6 @@ namespace Syntropy::Details
     template <Int TCount, typename TTuple>
     using TupleBase
         = typename TupleBaseHelper<TCount, TTuple>::Type;
-
-}
-
-// ===========================================================================
-
-namespace Syntropy::Tuples::Details
-{
-    /************************************************************************/
-    /* TYPE TRAITS                                                          */
-    /************************************************************************/
-
-    /// \brief Helper function for ElementTypeListOf.
-    template <typename TTuple,
-              template <Int, typename> typename TElementTypeTrait,
-              Int... TIndex>
-    auto
-    ElementTypeListOfHelper(Templates::Sequence<TIndex...>) noexcept
-        -> Templates::TypeList<typename TElementTypeTrait<TIndex,
-                                                          TTuple>::Type...>;
-
-    /// \brief List of types of a tuple's elements.
-    template <typename TTuple,
-              typename TSequence,
-              template <Int, typename> typename TElementTypeTrait>
-    using
-    ElementTypeListOf = decltype(
-        ElementTypeListOfHelper<TTuple, TElementTypeTrait>(TSequence{}));
 
 }
 
