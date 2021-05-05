@@ -414,7 +414,8 @@ namespace Syntropy
     Tuples
     ::PartialSwap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
     {
-        constexpr auto kSwapRank = Math::Min(TupleRankOf<TTuple>, TupleRankOf<UTuple>);
+        constexpr auto kSwapRank = Math::Min(TupleRankOf<TTuple>,
+                                             TupleRankOf<UTuple>);
 
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
