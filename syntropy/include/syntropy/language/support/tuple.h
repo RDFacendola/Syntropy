@@ -26,14 +26,14 @@ namespace Syntropy
     /* TYPE TRAITS                                                          */
     /************************************************************************/
 
-    /// \brief Number of elements in a record.
+    /// \brief Number of elements in a tuple.
     template <typename TTuple>
     struct TupleRank
     {
         // : Syntropy::Templates::IntType<rank>
     };
 
-    /// \brief Type of an element in a record, by index.
+    /// \brief Type of an element in a tuple, by index.
     template <Int TIndex, typename TTuple>
     struct TupleElementType
     {
@@ -49,12 +49,12 @@ namespace Syntropy
         { TupleRank<TTuple>::kValue } -> Templates::IsIntegral;
     };
 
-    /// \brief Concept for a reference to a record.
+    /// \brief Concept for a reference to a tuple.
     template <typename TTuple>
     concept IsTupleReference
         = IsTuple<Templates::UnqualifiedOf<TTuple>>;
 
-    /// \brief Tag type associated to records.
+    /// \brief Tag type associated to tuples.
     struct TupleTag{};
 
     /************************************************************************/
@@ -238,40 +238,40 @@ namespace Syntropy
 
     namespace Records
     {
-        /// \brief Number of elements in a record.
+        /// \brief Number of elements in a tuple.
         template <IsTupleReference TTuple>
         inline constexpr
         Int RankOf
             = TupleRank<Templates::UnqualifiedOf<TTuple>>::kValue;
 
-        /// \brief True if two records have the same rank, false otherwise.
+        /// \brief True if two tuples have the same rank, false otherwise.
         template <IsTupleReference TTuple, IsTupleReference UTuple>
         inline constexpr
         Bool IsSameRank
             = (RankOf<TTuple> == RankOf<UTuple>);
 
-        /// \brief Type of a record element.
+        /// \brief Type of a tuple element.
         ///
-        /// \remarks Ill-formed if exceeding record bounds.
+        /// \remarks Ill-formed if exceeding tuple bounds.
         template <Int TIndex, IsTupleReference TTuple>
         using ElementTypeOf
             = typename TupleElementType<
                 TIndex, Templates::UnqualifiedOf<TTuple>>::Type;
 
         /// \brief Generates a sequence that can be used to enumerate all
-        ///        elements in a record.
+        ///        elements in a tuple.
         template <IsTupleReference TTuple>
         using SequenceOf
             = Templates::MakeSequence<RankOf<TTuple>>;
 
-        /// \brief List of types of a record's elements.
+        /// \brief List of types of a tuple's elements.
         template <IsTupleReference TTuple>
         using ElementTypeListOf
             = Details::ElementTypeListOf<TTuple,
                                          SequenceOf<TTuple>,
                                          TupleElementType>;
 
-        /// \brief Index of the first element with type TElement in a record.
+        /// \brief Index of the first element with type TElement in a tuple.
         ///
         /// \remarks Ill-formed if no such element exist.
         template <typename TElement, IsTupleReference TTuple>
@@ -279,77 +279,77 @@ namespace Syntropy
         Int ElementIndexOf
             = Templates::ElementIndexOf<TElement, ElementTypeListOf<TTuple>>;
 
-        /// \brief Access a record element by index.
+        /// \brief Access a tuple element by index.
         ///
-        /// \remarks Ill-formed if the index exceeds record's bounds.
+        /// \remarks Ill-formed if the index exceeds tuple's bounds.
         template <Int TIndex, IsTupleReference TTuple>
         [[nodiscard]] constexpr decltype(auto)
-        Get(Forwarding<TTuple> record) noexcept;
+        Get(Forwarding<TTuple> tuple) noexcept;
 
-        /// \brief Access the first element of type TElement in a record.
+        /// \brief Access the first element of type TElement in a tuple.
         ///
         /// \remarks Ill-formed if no such element exist.
         template <typename TElement, IsTupleReference TTuple>
         [[nodiscard]] constexpr decltype(auto)
-        Get(Forwarding<TTuple> record) noexcept;
+        Get(Forwarding<TTuple> tuple) noexcept;
 
-        /// \brief Invoke a function with arguments provided in form of record.
+        /// \brief Invoke a function with arguments provided in form of tuple.
         template <typename TFunction, IsTupleReference TTuple>
         constexpr decltype(auto)
-        Apply(Forwarding<TFunction> function, Forwarding<TTuple> record)
+        Apply(Forwarding<TFunction> function, Forwarding<TTuple> tuple)
         noexcept;
 
-        /// \brief Apply a function to each record elements individually.
+        /// \brief Apply a function to each tuple elements individually.
         template <typename TFunction, IsTupleReference TTuple>
         constexpr void
         ForEachApply(Forwarding<TFunction> function,
-                     Forwarding<TTuple> record) noexcept;
+                     Forwarding<TTuple> tuple) noexcept;
 
-        /// \brief Apply a function to the index-th element of each record at
+        /// \brief Apply a function to the index-th element of each tuple at
         ///        once.
-        template <Int TIndex, typename TFunction, IsTupleReference... TRecords>
+        template <Int TIndex, typename TFunction, IsTupleReference... TTuples>
         constexpr decltype(auto)
         ProjectApply(Forwarding<TFunction> function,
-                     Forwarding<TRecords>... records) noexcept;
+                     Forwarding<TTuples>... tuples) noexcept;
 
         /// \brief Apply a function to each argument list generated by
-        ///        projecting the i-th records elements, for each index up to
-        ///        the minimum rank among those records.
-        template <typename TFunction, IsTupleReference... TRecords>
+        ///        projecting the i-th tuples elements, for each index up to
+        ///        the minimum rank among those tuples.
+        template <typename TFunction, IsTupleReference... TTuples>
         constexpr void
         LockstepApply(Forwarding<TFunction> function,
-                      Forwarding<TRecords>... records) noexcept;
+                      Forwarding<TTuples>... tuples) noexcept;
 
         /// \brief Create a new instance of TType using TTuple as constructor
         ///        arguments.
         template <typename TType, IsTupleReference TTuple>
         [[nodiscard]] constexpr TType
-        MakeFromRecord(Forwarding<TTuple> record) noexcept;
+        MakeFromRecord(Forwarding<TTuple> tuple) noexcept;
 
-        /// \brief Member-wise copy a record to another one with the same rank.
+        /// \brief Member-wise copy a tuple to another one with the same rank.
         template <IsTuple TTuple, IsTuple UTuple>
         constexpr void
         Copy(Mutable<TTuple> destination, Immutable<UTuple> source)
         noexcept;
 
-        /// \brief Member-wise move a record to another one with the same rank.
+        /// \brief Member-wise move a tuple to another one with the same rank.
         template <IsTuple TTuple, IsTupleReference UTuple>
         constexpr void
         Move(Mutable<TTuple> destination, Forwarding<UTuple> source)
         noexcept;
 
-        /// \brief Member-wise swap two records.
+        /// \brief Member-wise swap two tuples.
         template <IsTuple TTuple, IsTuple UTuple>
         constexpr void
         Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept;
 
-        /// \brief Member-wise swap two records and returns the previous value
+        /// \brief Member-wise swap two tuples and returns the previous value
         ///        of the former.
         template <IsTuple TTuple, IsTupleReference UTuple>
         [[nodiscard]] constexpr TTuple
         Exchange(Mutable<TTuple> lhs, Forwarding<UTuple> rhs) noexcept;
 
-        /// \brief Member-wise copy a record to another one, until either is
+        /// \brief Member-wise copy a tuple to another one, until either is
         ///        exhausted.
         /// \return Returns the number of copied elements.
         template <IsTuple TTuple, IsTuple UTuple>
@@ -357,7 +357,7 @@ namespace Syntropy
         PartialCopy(Mutable<TTuple> destination, Immutable<UTuple> source)
         noexcept;
 
-        /// \brief Member-wise move a record to another one, until either is
+        /// \brief Member-wise move a tuple to another one, until either is
         ///        exhausted.
         /// \return Returns the number of copied elements.
         template <IsTuple TTuple, IsTupleReference UTuple>
@@ -365,26 +365,26 @@ namespace Syntropy
         PartialMove(Mutable<TTuple> destination, Forwarding<UTuple> source)
         noexcept;
 
-        /// \brief Member-wise swap two records until either is exhausted.
+        /// \brief Member-wise swap two tuples until either is exhausted.
         ///
         /// \return Returns the number of swapped elements.
         template <IsTuple TTuple, IsTuple UTuple>
         constexpr Int
         PartialSwap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept;
 
-        /// \brief Check whether two records are member-wise equal.
+        /// \brief Check whether two tuples are member-wise equal.
         /// \remarks Equality implies equivalence.
         template <IsTuple TTuple, IsTuple UTuple>
         [[nodiscard]] constexpr Bool
         AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
-        /// \brief Check whether two record are member-wise equivalent.
+        /// \brief Check whether two tuple are member-wise equivalent.
         /// \remarks Equivalence doesn't imply equality.
         template <IsTuple TTuple, IsTuple UTuple>
         [[nodiscard]] constexpr Bool
         AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
-        /// \brief Member-wise compare two records lexicographically.
+        /// \brief Member-wise compare two tuples lexicographically.
         template <IsTuple TTuple, IsTuple UTuple>
         [[nodiscard]] constexpr Ordering
         Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
@@ -445,14 +445,14 @@ namespace Syntropy
     ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
-    template <IsTupleReference... TRecords>
+    template <IsTupleReference... TTuples>
     [[nodiscard]] constexpr auto
-    Concatenate(Forwarding<TRecords>... records) noexcept;
+    Concatenate(Forwarding<TTuples>... tuples) noexcept;
 
     /// \brief Flatten a tuple recursively.
     template <IsTupleReference TTuple>
     [[nodiscard]] constexpr auto
-    Flatten(Forwarding<TTuple> record) noexcept;
+    Flatten(Forwarding<TTuple> tuple) noexcept;
 
     /// \brief Flatten a tuple recursively.
     template <typename TElement>
@@ -521,24 +521,24 @@ namespace std
     /* STRUCTURED BINDINGS                                                  */
     /************************************************************************/
 
-    /// \brief Rank of a record.
+    /// \brief Rank of a tuple.
     template <Syntropy::IsTuple TTuple>
     struct std::tuple_size<TTuple>;
 
-    /// \brief Type of a record element, by index.
+    /// \brief Type of a tuple element, by index.
     template <std::size_t TIndex,
               Syntropy::IsTuple TTuple>
     struct std::tuple_element<TIndex, TTuple>;
 
-    /// \brief Access a record element, by index.
+    /// \brief Access a tuple element, by index.
     template <std::size_t TIndex,
               Syntropy::IsTuple TTuple>
-    decltype(auto) get(Syntropy::Immutable<TTuple> record);
+    decltype(auto) get(Syntropy::Immutable<TTuple> tuple);
 
-    /// \brief Access a record element, by index..
+    /// \brief Access a tuple element, by index..
     template <std::size_t TIndex,
               Syntropy::IsTuple TTuple>
-    decltype(auto) get(Syntropy::Movable<TTuple> record);
+    decltype(auto) get(Syntropy::Movable<TTuple> tuple);
 }
 
 // ===========================================================================

@@ -76,40 +76,40 @@ namespace Syntropy::Details
     // Concatenate helpers.
     // ====================
 
-    // In order to concatenate records together, two sequences with the same
+    // In order to concatenate tuples together, two sequences with the same
     // total size are generated.
     // The first sequence is used to associate each element in the resulting
-    // sequence with the index of the record the element is taken from.
+    // sequence with the index of the tuple the element is taken from.
     // The second sequence is used to associate each element in the resulting
-    // sequence with the index of the element in the owning record.
+    // sequence with the index of the element in the owning tuple.
 
     // Example: A {a,b,c}, B {d,e}, C {f}
     // First sequence:  000-11-2 AAA-BB-C
     // Second sequence: 012-01-0 abc-de-f
 
     /// \brief Sequence associating each element to the generating tuple.
-    template <typename TSequence, typename... TRecords>
+    template <typename TSequence, typename... TTuples>
     struct TupleEnumerateRecordsHelper {};
 
-    /// \brief Partial template specialization for sequence-records pairs.
-    template <Int... TIndex, typename... TRecords>
+    /// \brief Partial template specialization for sequence-tuples pairs.
+    template <Int... TIndex, typename... TTuples>
     struct TupleEnumerateRecordsHelper<Templates::Sequence<TIndex...>,
-                                       TRecords...>
+                                       TTuples...>
         : Templates::Alias<
             Templates::SequenceConcatenate<
                 Templates::SequenceRepeat<TIndex,
-                                          Records::RankOf<TRecords>>...>> {};
+                                          Records::RankOf<TTuples>>...>> {};
 
-    /// \brief Sequence associating each element to the source record.
-    template <typename... TRecords>
+    /// \brief Sequence associating each element to the source tuple.
+    template <typename... TTuples>
     using TupleEnumerateRecords
         = typename TupleEnumerateRecordsHelper<
-            Templates::SequenceFor<TRecords...>, TRecords...>::Type;
+            Templates::SequenceFor<TTuples...>, TTuples...>::Type;
 
-    /// \brief Sequence associating each element to the source record element.
-    template <typename... TRecords>
+    /// \brief Sequence associating each element to the source tuple element.
+    template <typename... TTuples>
     using TupleEnumerateRecordElements
-        = Templates::SequenceConcatenate<Records::SequenceOf<TRecords>...>;
+        = Templates::SequenceConcatenate<Records::SequenceOf<TTuples>...>;
 }
 
 // ===========================================================================
@@ -231,30 +231,30 @@ namespace Syntropy
     template <Int TIndex, IsTupleReference TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Records
-    ::Get(Forwarding<TTuple> record) noexcept
+    ::Get(Forwarding<TTuple> tuple) noexcept
     {
-        return RecordsADL::InvokeGet<TIndex>(Forward<TTuple>(record));
+        return RecordsADL::InvokeGet<TIndex>(Forward<TTuple>(tuple));
     }
 
     template <typename TElement, IsTupleReference TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Records
-    ::Get(Forwarding<TTuple> record) noexcept
+    ::Get(Forwarding<TTuple> tuple) noexcept
     {
         constexpr auto TIndex = ElementIndexOf<TElement, TTuple>;
 
-        return RecordsADL::InvokeGet<TIndex>(Forward<TTuple>(record));
+        return RecordsADL::InvokeGet<TIndex>(Forward<TTuple>(tuple));
     }
 
     template <typename TFunction, IsTupleReference TTuple>
     constexpr decltype(auto)
     Records
-    ::Apply(Forwarding<TFunction> function, Forwarding<TTuple> record)
+    ::Apply(Forwarding<TFunction> function, Forwarding<TTuple> tuple)
     noexcept
     {
         auto apply = [&]<Int... TIndex> (Templates::Sequence<TIndex...>)
         {
-            return function(Records::Get<TIndex>(Forward<TTuple>(record))...);
+            return function(Records::Get<TIndex>(Forward<TTuple>(tuple))...);
         };
 
         return apply(SequenceOf<TTuple>{});
@@ -264,36 +264,36 @@ namespace Syntropy
     constexpr void
     Records
     ::ForEachApply(Forwarding<TFunction> function,
-                   Forwarding<TTuple> record) noexcept
+                   Forwarding<TTuple> tuple) noexcept
     {
         auto apply = [&]<Int... TIndex> (Templates::Sequence<TIndex...>)
         {
-            (function(Records::Get<TIndex>(Forward<TTuple>(record))), ...);
+            (function(Records::Get<TIndex>(Forward<TTuple>(tuple))), ...);
         };
 
         apply(SequenceOf<TTuple>{});
     }
 
-    template <Int TIndex, typename TFunction, IsTupleReference... TRecords>
+    template <Int TIndex, typename TFunction, IsTupleReference... TTuples>
     constexpr decltype(auto)
     Records
     ::ProjectApply(Forwarding<TFunction> function,
-                   Forwarding<TRecords>... records) noexcept
+                   Forwarding<TTuples>... tuples) noexcept
     {
-        return function(Records::Get<TIndex>(Forward<TRecords>(records))...);
+        return function(Records::Get<TIndex>(Forward<TTuples>(tuples))...);
     }
 
-    template <typename TFunction, IsTupleReference... TRecords>
+    template <typename TFunction, IsTupleReference... TTuples>
     constexpr void
     Records
     ::LockstepApply(Forwarding<TFunction> function,
-                    Forwarding<TRecords>... records) noexcept
+                    Forwarding<TTuples>... tuples) noexcept
     {
-        constexpr auto kMinRank = Math::Min(RankOf<TRecords>...);
+        constexpr auto kMinRank = Math::Min(RankOf<TTuples>...);
 
         auto apply = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            (ProjectApply<TIndex>(Forward<TFunction>(function), records...),
+            (ProjectApply<TIndex>(Forward<TFunction>(function), tuples...),
                                   ...);
         };
 
@@ -303,11 +303,11 @@ namespace Syntropy
     template <typename TType, IsTupleReference TTuple>
     [[nodiscard]] constexpr TType
     Records
-    ::MakeFromRecord(Forwarding<TTuple> record) noexcept
+    ::MakeFromRecord(Forwarding<TTuple> tuple) noexcept
     {
         auto make = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            return TType{ Records::Get<TIndex>(Forward<TTuple>(record))... };
+            return TType{ Records::Get<TIndex>(Forward<TTuple>(tuple))... };
         };
 
         return make(SequenceOf<TTuple>{});
@@ -319,7 +319,7 @@ namespace Syntropy
     ::Copy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
     {
         static_assert(IsSameRank<TTuple, UTuple>,
-                      "Both records must have the same rank");
+                      "Both tuples must have the same rank");
 
         return PartialCopy(destination, source);
     }
@@ -331,7 +331,7 @@ namespace Syntropy
     ::Move(Mutable<TTuple> destination, Forwarding<UTuple> source) noexcept
     {
         static_assert(IsSameRank<TTuple, UTuple>,
-                      "Both records must have the same rank");
+                      "Both tuples must have the same rank");
 
         return PartialMove(destination, Forward<UTuple>(source));
     }
@@ -342,7 +342,7 @@ namespace Syntropy
     ::Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
     {
         static_assert(IsSameRank<TTuple, UTuple>,
-                      "Both records must have the same rank");
+                      "Both tuples must have the same rank");
 
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
@@ -359,7 +359,7 @@ namespace Syntropy
     ::Exchange(Mutable<TTuple> lhs, Forwarding<UTuple> rhs) noexcept
     {
         static_assert(IsSameRank<TTuple, UTuple>,
-                      "Both records must have the same rank");
+                      "Both tuples must have the same rank");
 
         auto exchange = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
@@ -583,41 +583,41 @@ namespace Syntropy
                    Forward<TElements>(elements)...);
     }
 
-    template <IsTupleReference... TRecords>
+    template <IsTupleReference... TTuples>
     [[nodiscard]] constexpr auto
-    Concatenate(Forwarding<TRecords>... records) noexcept
+    Concatenate(Forwarding<TTuples>... tuples) noexcept
     {
         auto concatenate = [&]<IsTupleReference TTuple,
                                Int... TTupleIndex,
                                Int... TElementIndex>
-            (Forwarding<TTuple> record,
+            (Forwarding<TTuple> tuple,
              Templates::Sequence<TTupleIndex...>,
              Templates::Sequence<TElementIndex...>)
             {
                 return MakeTuple(
                            Get<TElementIndex>(
-                               Get<TTupleIndex>(Forward<TTuple>(record)))
+                               Get<TTupleIndex>(Forward<TTuple>(tuple)))
                            ...);
             };
 
         return concatenate(
-            ForwardAsTuple(records...),
-            Details::TupleEnumerateRecords<TRecords...>{},
-            Details::TupleEnumerateRecordElements<TRecords...>{});
+            ForwardAsTuple(tuples...),
+            Details::TupleEnumerateRecords<TTuples...>{},
+            Details::TupleEnumerateRecordElements<TTuples...>{});
     }
 
     template <IsTupleReference TTuple>
     [[nodiscard]] constexpr auto
-    Flatten(Forwarding<TTuple> record) noexcept
+    Flatten(Forwarding<TTuple> tuple) noexcept
     {
-        auto flatten = [&]<Int... TIndex>(Forwarding<TTuple> record,
+        auto flatten = [&]<Int... TIndex>(Forwarding<TTuple> tuple,
                                           Templates::Sequence<TIndex...>)
         {
-            return Concatenate(Flatten(Get<TIndex>(Forward<TTuple>(record)))
+            return Concatenate(Flatten(Get<TIndex>(Forward<TTuple>(tuple)))
                                ...);
         };
 
-        return flatten(Forward<TTuple>(record),
+        return flatten(Forward<TTuple>(tuple),
                        Records::SequenceOf<TTuple>{});
     }
 
@@ -695,15 +695,15 @@ namespace std
     };
 
     template <std::size_t TIndex, Syntropy::IsTuple TTuple>
-    decltype(auto) get(Syntropy::Immutable<TTuple> record)
+    decltype(auto) get(Syntropy::Immutable<TTuple> tuple)
     {
-        return Get<TIndex>(record);
+        return Get<TIndex>(tuple);
     }
 
     template <std::size_t TIndex, Syntropy::IsTuple TTuple>
-    decltype(auto) get(Syntropy::Movable<TTuple> record)
+    decltype(auto) get(Syntropy::Movable<TTuple> tuple)
     {
-        return Get<TIndex>(Syntropy::Move(record));
+        return Get<TIndex>(Syntropy::Move(tuple));
     }
 }
 

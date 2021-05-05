@@ -226,7 +226,7 @@ namespace Syntropy::Records::Details
         -> Templates::TypeList<typename TElementTypeTrait<TIndex,
                                                           TTuple>::Type...>;
 
-    /// \brief List of types of a record's elements.
+    /// \brief List of types of a tuple's elements.
     template <typename TTuple,
               typename TSequence,
               template <Int, typename> typename TElementTypeTrait>
