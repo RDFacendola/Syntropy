@@ -317,19 +317,19 @@ namespace Syntropy
     Tuples
     ::Copy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
     {
-        static_assert(IsSameRank<TTuple, UTuple>,
+        static_assert(TupleIsSameRank<TTuple, UTuple>,
                       "Both tuples must have the same rank");
 
         return PartialCopy(destination, source);
     }
 
     template <IsTuple TTuple, IsTupleReference UTuple>
-    //requires Tuples::IsSameRank<TTuple, UTuple>
+    //requires Tuples::TupleIsSameRank<TTuple, UTuple>
     constexpr void
     Tuples
     ::Move(Mutable<TTuple> destination, Forwarding<UTuple> source) noexcept
     {
-        static_assert(IsSameRank<TTuple, UTuple>,
+        static_assert(TupleIsSameRank<TTuple, UTuple>,
                       "Both tuples must have the same rank");
 
         return PartialMove(destination, Forward<UTuple>(source));
@@ -340,7 +340,7 @@ namespace Syntropy
     Tuples
     ::Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
     {
-        static_assert(IsSameRank<TTuple, UTuple>,
+        static_assert(TupleIsSameRank<TTuple, UTuple>,
                       "Both tuples must have the same rank");
 
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
@@ -357,7 +357,7 @@ namespace Syntropy
     Tuples
     ::Exchange(Mutable<TTuple> lhs, Forwarding<UTuple> rhs) noexcept
     {
-        static_assert(IsSameRank<TTuple, UTuple>,
+        static_assert(TupleIsSameRank<TTuple, UTuple>,
                       "Both tuples must have the same rank");
 
         auto exchange = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
@@ -440,7 +440,7 @@ namespace Syntropy
                     && ...);
         };
 
-        if constexpr (IsSameRank<TTuple, UTuple>)
+        if constexpr (TupleIsSameRank<TTuple, UTuple>)
         {
             return equal(SequenceOf<TTuple>{});
         }
@@ -460,7 +460,7 @@ namespace Syntropy
                     && ...);
         };
 
-        if constexpr (IsSameRank<TTuple, UTuple>)
+        if constexpr (TupleIsSameRank<TTuple, UTuple>)
         {
             return equivalent(SequenceOf<TTuple>{});
         }

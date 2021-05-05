@@ -71,6 +71,12 @@ namespace Syntropy
         = typename TupleElementType<TIndex,
                                     Templates::UnqualifiedOf<TTuple>>::Type;
 
+    /// \brief True if two tuples have the same rank, false otherwise.
+    template <IsTupleReference TTuple, IsTupleReference UTuple>
+    inline constexpr
+    Bool TupleIsSameRank
+        = (TupleRankOf<TTuple> == TupleRankOf<UTuple>);
+
     /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
@@ -252,11 +258,7 @@ namespace Syntropy
 
     namespace Tuples
     {
-        /// \brief True if two tuples have the same rank, false otherwise.
-        template <IsTupleReference TTuple, IsTupleReference UTuple>
-        inline constexpr
-        Bool IsSameRank
-            = (TupleRankOf<TTuple> == TupleRankOf<UTuple>);
+
 
 
 
