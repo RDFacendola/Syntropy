@@ -10,10 +10,10 @@
 
 // ===========================================================================
 
-namespace Syntropy::RecordsADL
+namespace Syntropy::TuplesADL
 {
     /************************************************************************/
-    /* RANGE EXTENSIONS                                                     */
+    /* TUPLES EXTENSIONS                                                    */
     /************************************************************************/
 
     /// \brief Type alias for the Get extension functor.
@@ -32,7 +32,7 @@ namespace Syntropy::RecordsADL
     }
 
     /************************************************************************/
-    /* RECORDS                                                              */
+    /* TUPLES                                                               */
     /************************************************************************/
 
     /// \brief Invoke the Get function, trying different implementations.
@@ -89,12 +89,11 @@ namespace Syntropy::Details
 
     /// \brief Sequence associating each element to the generating tuple.
     template <typename TSequence, typename... TTuples>
-    struct TupleEnumerateRecordsHelper {};
+    struct EnumerateTuplesHelper {};
 
     /// \brief Partial template specialization for sequence-tuples pairs.
     template <Int... TIndex, typename... TTuples>
-    struct TupleEnumerateRecordsHelper<Templates::Sequence<TIndex...>,
-                                       TTuples...>
+    struct EnumerateTuplesHelper<Templates::Sequence<TIndex...>, TTuples...>
         : Templates::Alias<
             Templates::SequenceConcatenate<
                 Templates::SequenceRepeat<TIndex,
@@ -102,13 +101,13 @@ namespace Syntropy::Details
 
     /// \brief Sequence associating each element to the source tuple.
     template <typename... TTuples>
-    using TupleEnumerateRecords
-        = typename TupleEnumerateRecordsHelper<
+    using EnumerateTuples
+        = typename EnumerateTuplesHelper<
             Templates::SequenceFor<TTuples...>, TTuples...>::Type;
 
     /// \brief Sequence associating each element to the source tuple element.
     template <typename... TTuples>
-    using TupleEnumerateRecordElements
+    using EnumerateTupleElements
         = Templates::SequenceConcatenate<Tuples::SequenceOf<TTuples>...>;
 }
 
@@ -225,7 +224,7 @@ namespace Syntropy
     }
 
     /************************************************************************/
-    /* RECORDS                                                              */
+    /* TUPLES                                                               */
     /************************************************************************/
 
     template <Int TIndex, IsTupleReference TTuple>
@@ -233,7 +232,7 @@ namespace Syntropy
     Tuples
     ::Get(Forwarding<TTuple> tuple) noexcept
     {
-        return RecordsADL::InvokeGet<TIndex>(Forward<TTuple>(tuple));
+        return TuplesADL::InvokeGet<TIndex>(Forward<TTuple>(tuple));
     }
 
     template <typename TElement, IsTupleReference TTuple>
@@ -243,7 +242,7 @@ namespace Syntropy
     {
         constexpr auto TIndex = ElementIndexOf<TElement, TTuple>;
 
-        return RecordsADL::InvokeGet<TIndex>(Forward<TTuple>(tuple));
+        return TuplesADL::InvokeGet<TIndex>(Forward<TTuple>(tuple));
     }
 
     template <typename TFunction, IsTupleReference TTuple>
@@ -303,7 +302,7 @@ namespace Syntropy
     template <typename TType, IsTupleReference TTuple>
     [[nodiscard]] constexpr TType
     Tuples
-    ::MakeFromRecord(Forwarding<TTuple> tuple) noexcept
+    ::MakeFromTuple(Forwarding<TTuple> tuple) noexcept
     {
         auto make = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
@@ -602,8 +601,8 @@ namespace Syntropy
 
         return concatenate(
             ForwardAsTuple(tuples...),
-            Details::TupleEnumerateRecords<TTuples...>{},
-            Details::TupleEnumerateRecordElements<TTuples...>{});
+            Details::EnumerateTuples<TTuples...>{},
+            Details::EnumerateTupleElements<TTuples...>{});
     }
 
     template <IsTupleReference TTuple>

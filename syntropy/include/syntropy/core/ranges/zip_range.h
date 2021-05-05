@@ -190,7 +190,7 @@ namespace Syntropy
     Get(Movable<ZipRange<TRanges...>> range) noexcept;
 
     /************************************************************************/
-    /* RECORDS                                                              */
+    /* TUPLES                                                               */
     /************************************************************************/
 
     /// \brief Partial template specialization for ZipRanges.

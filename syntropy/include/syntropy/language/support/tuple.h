@@ -23,7 +23,7 @@
 namespace Syntropy
 {
     /************************************************************************/
-    /* TYPE TRAITS                                                          */
+    /* TUPLES TYPE TRAITS                                                   */
     /************************************************************************/
 
     /// \brief Number of elements in a tuple.
@@ -324,7 +324,7 @@ namespace Syntropy
         ///        arguments.
         template <typename TType, IsTupleReference TTuple>
         [[nodiscard]] constexpr TType
-        MakeFromRecord(Forwarding<TTuple> tuple) noexcept;
+        MakeFromTuple(Forwarding<TTuple> tuple) noexcept;
 
         /// \brief Member-wise copy a tuple to another one with the same rank.
         template <IsTuple TTuple, IsTuple UTuple>
