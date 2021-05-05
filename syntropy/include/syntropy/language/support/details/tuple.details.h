@@ -211,7 +211,7 @@ namespace Syntropy::Details
 
 // ===========================================================================
 
-namespace Syntropy::Records::Details
+namespace Syntropy::Tuples::Details
 {
     /************************************************************************/
     /* TYPE TRAITS                                                          */

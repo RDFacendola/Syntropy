@@ -128,7 +128,7 @@ namespace Syntropy
 
         /// \brief Create a new ZipRange by deducing templates types from
         ///        provided arguments.
-        template <Records::IsTuple TTuple>
+        template <Tuples::IsTuple TTuple>
         [[nodiscard]] constexpr auto
         MakeZipRangeFromTuple(Immutable<TTuple> ranges) noexcept;
 

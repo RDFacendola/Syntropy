@@ -98,7 +98,7 @@ namespace Syntropy::Details
         : Templates::Alias<
             Templates::SequenceConcatenate<
                 Templates::SequenceRepeat<TIndex,
-                                          Records::RankOf<TTuples>>...>> {};
+                                          Tuples::RankOf<TTuples>>...>> {};
 
     /// \brief Sequence associating each element to the source tuple.
     template <typename... TTuples>
@@ -109,7 +109,7 @@ namespace Syntropy::Details
     /// \brief Sequence associating each element to the source tuple element.
     template <typename... TTuples>
     using TupleEnumerateRecordElements
-        = Templates::SequenceConcatenate<Records::SequenceOf<TTuples>...>;
+        = Templates::SequenceConcatenate<Tuples::SequenceOf<TTuples>...>;
 }
 
 // ===========================================================================
@@ -206,7 +206,7 @@ namespace Syntropy
     Tuple<TElement, TElements...>
     ::operator=(Immutable<Tuple<UElements...>> rhs) noexcept
     {
-        Records::Copy(*this, rhs);
+        Tuples::Copy(*this, rhs);
 
         return *this;
     }
@@ -219,7 +219,7 @@ namespace Syntropy
     Tuple<TElement, TElements...>
     ::operator=(Movable<Tuple<UElements...>> rhs) noexcept
     {
-        Records::Move(*this, rhs);
+        Tuples::Move(*this, rhs);
 
         return *this;
     }
@@ -230,7 +230,7 @@ namespace Syntropy
 
     template <Int TIndex, IsTupleReference TTuple>
     [[nodiscard]] constexpr decltype(auto)
-    Records
+    Tuples
     ::Get(Forwarding<TTuple> tuple) noexcept
     {
         return RecordsADL::InvokeGet<TIndex>(Forward<TTuple>(tuple));
@@ -238,7 +238,7 @@ namespace Syntropy
 
     template <typename TElement, IsTupleReference TTuple>
     [[nodiscard]] constexpr decltype(auto)
-    Records
+    Tuples
     ::Get(Forwarding<TTuple> tuple) noexcept
     {
         constexpr auto TIndex = ElementIndexOf<TElement, TTuple>;
@@ -248,13 +248,13 @@ namespace Syntropy
 
     template <typename TFunction, IsTupleReference TTuple>
     constexpr decltype(auto)
-    Records
+    Tuples
     ::Apply(Forwarding<TFunction> function, Forwarding<TTuple> tuple)
     noexcept
     {
         auto apply = [&]<Int... TIndex> (Templates::Sequence<TIndex...>)
         {
-            return function(Records::Get<TIndex>(Forward<TTuple>(tuple))...);
+            return function(Tuples::Get<TIndex>(Forward<TTuple>(tuple))...);
         };
 
         return apply(SequenceOf<TTuple>{});
@@ -262,13 +262,13 @@ namespace Syntropy
 
     template <typename TFunction, IsTupleReference TTuple>
     constexpr void
-    Records
+    Tuples
     ::ForEachApply(Forwarding<TFunction> function,
                    Forwarding<TTuple> tuple) noexcept
     {
         auto apply = [&]<Int... TIndex> (Templates::Sequence<TIndex...>)
         {
-            (function(Records::Get<TIndex>(Forward<TTuple>(tuple))), ...);
+            (function(Tuples::Get<TIndex>(Forward<TTuple>(tuple))), ...);
         };
 
         apply(SequenceOf<TTuple>{});
@@ -276,16 +276,16 @@ namespace Syntropy
 
     template <Int TIndex, typename TFunction, IsTupleReference... TTuples>
     constexpr decltype(auto)
-    Records
+    Tuples
     ::ProjectApply(Forwarding<TFunction> function,
                    Forwarding<TTuples>... tuples) noexcept
     {
-        return function(Records::Get<TIndex>(Forward<TTuples>(tuples))...);
+        return function(Tuples::Get<TIndex>(Forward<TTuples>(tuples))...);
     }
 
     template <typename TFunction, IsTupleReference... TTuples>
     constexpr void
-    Records
+    Tuples
     ::LockstepApply(Forwarding<TFunction> function,
                     Forwarding<TTuples>... tuples) noexcept
     {
@@ -302,12 +302,12 @@ namespace Syntropy
 
     template <typename TType, IsTupleReference TTuple>
     [[nodiscard]] constexpr TType
-    Records
+    Tuples
     ::MakeFromRecord(Forwarding<TTuple> tuple) noexcept
     {
         auto make = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            return TType{ Records::Get<TIndex>(Forward<TTuple>(tuple))... };
+            return TType{ Tuples::Get<TIndex>(Forward<TTuple>(tuple))... };
         };
 
         return make(SequenceOf<TTuple>{});
@@ -315,7 +315,7 @@ namespace Syntropy
 
     template <IsTuple TTuple, IsTuple UTuple>
     constexpr void
-    Records
+    Tuples
     ::Copy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
     {
         static_assert(IsSameRank<TTuple, UTuple>,
@@ -325,9 +325,9 @@ namespace Syntropy
     }
 
     template <IsTuple TTuple, IsTupleReference UTuple>
-    //requires Records::IsSameRank<TTuple, UTuple>
+    //requires Tuples::IsSameRank<TTuple, UTuple>
     constexpr void
-    Records
+    Tuples
     ::Move(Mutable<TTuple> destination, Forwarding<UTuple> source) noexcept
     {
         static_assert(IsSameRank<TTuple, UTuple>,
@@ -338,7 +338,7 @@ namespace Syntropy
 
     template <IsTuple TTuple, IsTuple UTuple>
     constexpr void
-    Records
+    Tuples
     ::Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
     {
         static_assert(IsSameRank<TTuple, UTuple>,
@@ -346,8 +346,8 @@ namespace Syntropy
 
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            (Support::Swap(Records::Get<TIndex>(lhs),
-                              Records::Get<TIndex>(rhs)), ...);
+            (Support::Swap(Tuples::Get<TIndex>(lhs),
+                              Tuples::Get<TIndex>(rhs)), ...);
         };
 
         swap(SequenceOf<TTuple>{});
@@ -355,7 +355,7 @@ namespace Syntropy
 
     template <IsTuple TTuple, IsTupleReference UTuple>
     [[nodiscard]] constexpr TTuple
-    Records
+    Tuples
     ::Exchange(Mutable<TTuple> lhs, Forwarding<UTuple> rhs) noexcept
     {
         static_assert(IsSameRank<TTuple, UTuple>,
@@ -365,8 +365,8 @@ namespace Syntropy
         {
             return TTuple
             {
-                Support::Exchange(Records::Get<TIndex>(lhs),
-                                  Records::Get<TIndex>(Forward(rhs)))...
+                Support::Exchange(Tuples::Get<TIndex>(lhs),
+                                  Tuples::Get<TIndex>(Forward(rhs)))...
             };
         };
 
@@ -375,7 +375,7 @@ namespace Syntropy
 
     template <IsTuple TTuple, IsTuple UTuple>
     constexpr Int
-    Records
+    Tuples
     ::PartialCopy(Mutable<TTuple> destination, Immutable<UTuple> source)
     noexcept
     {
@@ -385,14 +385,14 @@ namespace Syntropy
             destination_element = Copy(source_element);
         };
 
-        Records::LockstepApply(elementwise_copy, destination, source);
+        Tuples::LockstepApply(elementwise_copy, destination, source);
 
         return Math::Min(RankOf<TTuple>, RankOf<UTuple>);
     }
 
     template <IsTuple TTuple, IsTupleReference UTuple>
     constexpr Int
-    Records
+    Tuples
     ::PartialMove(Mutable<TTuple> destination, Forwarding<UTuple> source)
     noexcept
     {
@@ -404,7 +404,7 @@ namespace Syntropy
             destination_element = Forward<SourceType>(source_element);
         };
 
-        Records::LockstepApply(elementwise_move,
+        Tuples::LockstepApply(elementwise_move,
                                destination,
                                Forward<UTuple>(source));
 
@@ -413,15 +413,15 @@ namespace Syntropy
 
     template <IsTuple TTuple, IsTuple UTuple>
     constexpr Int
-    Records
+    Tuples
     ::PartialSwap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
     {
         constexpr auto kSwapRank = Math::Min(RankOf<TTuple>, RankOf<UTuple>);
 
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            (Support::Swap(Records::Get<TIndex>(lhs),
-                           Records::Get<TIndex>(rhs)), ...);
+            (Support::Swap(Tuples::Get<TIndex>(lhs),
+                           Tuples::Get<TIndex>(rhs)), ...);
         };
 
         swap(Templates::MakeSequence<kSwapRank>{});
@@ -431,13 +431,13 @@ namespace Syntropy
 
     template <IsTuple TTuple, IsTuple UTuple>
     [[nodiscard]] constexpr Bool
-    Records
+    Tuples
     ::AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         auto equal = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            return (Comparisons::AreEqual(Records::Get<TIndex>(lhs),
-                                          Records::Get<TIndex>(rhs))
+            return (Comparisons::AreEqual(Tuples::Get<TIndex>(lhs),
+                                          Tuples::Get<TIndex>(rhs))
                     && ...);
         };
 
@@ -451,13 +451,13 @@ namespace Syntropy
 
     template <IsTuple TTuple, IsTuple UTuple>
     [[nodiscard]] constexpr Bool
-    Records
+    Tuples
     ::AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         auto equivalent = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
-            return (Comparisons::AreEquivalent(Records::Get<TIndex>(lhs),
-                                               Records::Get<TIndex>(rhs))
+            return (Comparisons::AreEquivalent(Tuples::Get<TIndex>(lhs),
+                                               Tuples::Get<TIndex>(rhs))
                     && ...);
         };
 
@@ -471,7 +471,7 @@ namespace Syntropy
 
     template <IsTuple TTuple, IsTuple UTuple>
     [[nodiscard]] constexpr Ordering
-    Records
+    Tuples
     ::Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         constexpr auto LeftRank = RankOf<TTuple>;
@@ -482,8 +482,8 @@ namespace Syntropy
         {
             if (result == Ordering::kEquivalent)
             {
-                return Comparisons::Compare(Records::Get<TIndex>(lhs),
-                                            Records::Get<TIndex>(rhs));
+                return Comparisons::Compare(Tuples::Get<TIndex>(lhs),
+                                            Tuples::Get<TIndex>(rhs));
             }
 
             return result;
@@ -538,7 +538,7 @@ namespace Syntropy
     {
         using BaseType = Details::TupleBase<TIndex, Tuple<UElements...>>;
 
-        using ElementType = Records::ElementTypeOf<TIndex,
+        using ElementType = Tuples::ElementTypeOf<TIndex,
                                                    Tuple<UElements...>>;
 
         return static_cast<Immovable<ElementType>>(
@@ -551,7 +551,7 @@ namespace Syntropy
     {
         using BaseType = Details::TupleBase<TIndex, Tuple<UElements...>>;
 
-        using ElementType = Records::ElementTypeOf<TIndex,
+        using ElementType = Tuples::ElementTypeOf<TIndex,
                                                    Tuple<UElements...>>;
 
         return static_cast<Movable<ElementType>>(
@@ -618,7 +618,7 @@ namespace Syntropy
         };
 
         return flatten(Forward<TTuple>(tuple),
-                       Records::SequenceOf<TTuple>{});
+                       Tuples::SequenceOf<TTuple>{});
     }
 
     template <typename TElement>
@@ -637,7 +637,7 @@ namespace Syntropy
     Swap(Mutable<Tuple<TTypes...>> lhs,
          Mutable<Tuple<UTypes...>> rhs) noexcept
     {
-        Records::Swap(lhs, rhs);
+        Tuples::Swap(lhs, rhs);
     }
 
     template <typename... TTypes, typename... UTypes>
@@ -646,7 +646,7 @@ namespace Syntropy
     Exchange(Mutable<Tuple<TTypes...>> lhs,
              Forwarding<Tuple<UTypes...>> rhs) noexcept
     {
-        return Records::Exchange(lhs, Forward<Tuple<UTypes...>>>(rhs));
+        return Tuples::Exchange(lhs, Forward<Tuple<UTypes...>>>(rhs));
     }
 
     // Comparison.
@@ -658,7 +658,7 @@ namespace Syntropy
     operator==(Immutable<Tuple<TTypes...>> lhs,
                Immutable<Tuple<UTypes...>> rhs) noexcept
     {
-        return Records::AreEquivalent(lhs, rhs);
+        return Tuples::AreEquivalent(lhs, rhs);
     }
 
     template <typename... TTypes, typename... UTypes>
@@ -667,7 +667,7 @@ namespace Syntropy
     operator<=>(Immutable<Tuple<TTypes...>> lhs,
                 Immutable<Tuple<UTypes...>> rhs) noexcept
     {
-        return Records::Compare(lhs, rhs);
+        return Tuples::Compare(lhs, rhs);
     }
 
 }
@@ -684,14 +684,14 @@ namespace std
     struct std::tuple_size<TTuple>
     {
         static constexpr
-        std::size_t value = Syntropy::Records::RankOf<TTuple>;
+        std::size_t value = Syntropy::Tuples::RankOf<TTuple>;
     };
 
     template <std::size_t TIndex,
               Syntropy::IsTuple TTuple>
     struct std::tuple_element<TIndex, TTuple>
     {
-        using type = Syntropy::Records::ElementTypeOf<TIndex, TTuple>;
+        using type = Syntropy::Tuples::ElementTypeOf<TIndex, TTuple>;
     };
 
     template <std::size_t TIndex, Syntropy::IsTuple TTuple>

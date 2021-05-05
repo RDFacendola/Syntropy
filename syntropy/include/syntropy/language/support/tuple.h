@@ -236,7 +236,7 @@ namespace Syntropy
     /* TUPLES                                                               */
     /************************************************************************/
 
-    namespace Records
+    namespace Tuples
     {
         /// \brief Number of elements in a tuple.
         template <IsTupleReference TTuple>
