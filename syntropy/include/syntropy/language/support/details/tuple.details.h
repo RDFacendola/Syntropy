@@ -207,47 +207,32 @@ namespace Syntropy::Details
     using TupleBase
         = typename TupleBaseHelper<TCount, TTuple>::Type;
 
+}
+
+// ===========================================================================
+
+namespace Syntropy::Records::Details
+{
     /************************************************************************/
-    /* TUPLE                                                                */
+    /* TYPE TRAITS                                                          */
     /************************************************************************/
 
-    // Concatenate helpers.
-    // ====================
+    /// \brief Helper function for ElementTypeListOf.
+    template <typename TRecord,
+              template <Int, typename> typename TElementTypeTrait,
+              Int... TIndex>
+    auto
+    ElementTypeListOfHelper(Templates::Sequence<TIndex...>) noexcept
+        -> Templates::TypeList<typename TElementTypeTrait<TIndex,
+                                                          TRecord>::Type...>;
 
-    // In order to concatenate records together, two sequences with the same
-    // total size are generated.
-    // The first sequence is used to associate each element in the resulting
-    // sequence with the index of the record the element is taken from.
-    // The second sequence is used to associate each element in the resulting
-    // sequence with the index of the element in the owning record.
-
-    // Example: A {a,b,c}, B {d,e}, C {f}
-    // First sequence:  000-11-2 AAA-BB-C
-    // Second sequence: 012-01-0 abc-de-f
-
-    /// \brief Sequence associating each element to the generating tuple.
-    template <typename TSequence, RecordReference... TRecords>
-    struct TupleEnumerateRecordsHelper {};
-
-    /// \brief Partial template specialization for sequence-records pairs.
-    template <Int... TIndex, RecordReference... TRecords>
-    struct TupleEnumerateRecordsHelper<Templates::Sequence<TIndex...>,
-                                       TRecords...>
-        : Templates::Alias<
-            Templates::SequenceConcatenate<
-                Templates::SequenceRepeat<TIndex,
-                                          Records::RankOf<TRecords>>...>> {};
-
-    /// \brief Sequence associating each element to the source record.
-    template <RecordReference... TRecords>
-    using TupleEnumerateRecords
-        = typename TupleEnumerateRecordsHelper<
-            Templates::SequenceFor<TRecords...>, TRecords...>::Type;
-
-    /// \brief Sequence associating each element to the source record element.
-    template <RecordReference... TRecords>
-    using TupleEnumerateRecordElements
-        = Templates::SequenceConcatenate<Records::SequenceOf<TRecords>...>;
+    /// \brief List of types of a record's elements.
+    template <typename TRecord,
+              typename TSequence,
+              template <Int, typename> typename TElementTypeTrait>
+    using
+    ElementTypeListOf = decltype(
+        ElementTypeListOfHelper<TRecord, TElementTypeTrait>(TSequence{}));
 
 }
 

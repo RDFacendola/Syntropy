@@ -13,7 +13,6 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/language/support/record.h"
 #include "syntropy/language/support/tuple.h"
 #include "syntropy/core/ranges/forward_range.h"
 
