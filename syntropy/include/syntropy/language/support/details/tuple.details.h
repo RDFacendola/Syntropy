@@ -218,21 +218,21 @@ namespace Syntropy::Records::Details
     /************************************************************************/
 
     /// \brief Helper function for ElementTypeListOf.
-    template <typename TRecord,
+    template <typename TTuple,
               template <Int, typename> typename TElementTypeTrait,
               Int... TIndex>
     auto
     ElementTypeListOfHelper(Templates::Sequence<TIndex...>) noexcept
         -> Templates::TypeList<typename TElementTypeTrait<TIndex,
-                                                          TRecord>::Type...>;
+                                                          TTuple>::Type...>;
 
     /// \brief List of types of a record's elements.
-    template <typename TRecord,
+    template <typename TTuple,
               typename TSequence,
               template <Int, typename> typename TElementTypeTrait>
     using
     ElementTypeListOf = decltype(
-        ElementTypeListOfHelper<TRecord, TElementTypeTrait>(TSequence{}));
+        ElementTypeListOfHelper<TTuple, TElementTypeTrait>(TSequence{}));
 
 }
 

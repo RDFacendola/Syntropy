@@ -135,7 +135,7 @@ namespace Syntropy
         return { ranges... };
     }
 
-    template <Syntropy::Records::Record TTuple>
+    template <Syntropy::Records::IsTuple TTuple>
     [[nodiscard]] constexpr auto
     Ranges
     ::MakeZipRangeFromTuple(Immutable<TTuple> ranges) noexcept
