@@ -77,6 +77,12 @@ namespace Syntropy
     Bool TupleIsSameRank
         = (TupleRankOf<TTuple> == TupleRankOf<UTuple>);
 
+    /// \brief Generates a sequence that can be used to enumerate all
+    ///        elements in a tuple.
+    template <IsTupleReference TTuple>
+    using TupleSequenceOf
+        = Templates::MakeSequence<TupleRankOf<TTuple>>;
+
     /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
@@ -258,21 +264,11 @@ namespace Syntropy
 
     namespace Tuples
     {
-
-
-
-
-        /// \brief Generates a sequence that can be used to enumerate all
-        ///        elements in a tuple.
-        template <IsTupleReference TTuple>
-        using SequenceOf
-            = Templates::MakeSequence<TupleRankOf<TTuple>>;
-
         /// \brief List of types of a tuple's elements.
         template <IsTupleReference TTuple>
         using ElementTypeListOf
             = Details::ElementTypeListOf<TTuple,
-                                         SequenceOf<TTuple>,
+                                         TupleSequenceOf<TTuple>,
                                          TupleElementType>;
 
         /// \brief Index of the first element with type TElement in a tuple.

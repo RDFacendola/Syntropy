@@ -108,7 +108,7 @@ namespace Syntropy::Details
     /// \brief Sequence associating each element to the source tuple element.
     template <typename... TTuples>
     using EnumerateTupleElements
-        = Templates::SequenceConcatenate<Tuples::SequenceOf<TTuples>...>;
+        = Templates::SequenceConcatenate<TupleSequenceOf<TTuples>...>;
 }
 
 // ===========================================================================
@@ -256,7 +256,7 @@ namespace Syntropy
             return function(Tuples::Get<TIndex>(Forward<TTuple>(tuple))...);
         };
 
-        return apply(SequenceOf<TTuple>{});
+        return apply(TupleSequenceOf<TTuple>{});
     }
 
     template <typename TFunction, IsTupleReference TTuple>
@@ -270,7 +270,7 @@ namespace Syntropy
             (function(Tuples::Get<TIndex>(Forward<TTuple>(tuple))), ...);
         };
 
-        apply(SequenceOf<TTuple>{});
+        apply(TupleSequenceOf<TTuple>{});
     }
 
     template <Int TIndex, typename TFunction, IsTupleReference... TTuples>
@@ -309,7 +309,7 @@ namespace Syntropy
             return TType{ Tuples::Get<TIndex>(Forward<TTuple>(tuple))... };
         };
 
-        return make(SequenceOf<TTuple>{});
+        return make(TupleSequenceOf<TTuple>{});
     }
 
     template <IsTuple TTuple, IsTuple UTuple>
@@ -349,7 +349,7 @@ namespace Syntropy
                               Tuples::Get<TIndex>(rhs)), ...);
         };
 
-        swap(SequenceOf<TTuple>{});
+        swap(TupleSequenceOf<TTuple>{});
     }
 
     template <IsTuple TTuple, IsTupleReference UTuple>
@@ -369,7 +369,7 @@ namespace Syntropy
             };
         };
 
-        return exchange(SequenceOf<TTuple>{});
+        return exchange(TupleSequenceOf<TTuple>{});
     }
 
     template <IsTuple TTuple, IsTuple UTuple>
@@ -442,7 +442,7 @@ namespace Syntropy
 
         if constexpr (TupleIsSameRank<TTuple, UTuple>)
         {
-            return equal(SequenceOf<TTuple>{});
+            return equal(TupleSequenceOf<TTuple>{});
         }
 
         return false;
@@ -462,7 +462,7 @@ namespace Syntropy
 
         if constexpr (TupleIsSameRank<TTuple, UTuple>)
         {
-            return equivalent(SequenceOf<TTuple>{});
+            return equivalent(TupleSequenceOf<TTuple>{});
         }
 
         return false;
@@ -617,7 +617,7 @@ namespace Syntropy
         };
 
         return flatten(Forward<TTuple>(tuple),
-                       Tuples::SequenceOf<TTuple>{});
+                       TupleSequenceOf<TTuple>{});
     }
 
     template <typename TElement>

@@ -149,7 +149,7 @@ namespace Syntropy
         using RangesType = decltype(ranges);
 
         return make_zip_range(
-            Syntropy::Tuples::SequenceOf<RangesType>{});
+            Syntropy::TupleSequenceOf<RangesType>{});
     }
 
     template <ForwardRange... TRanges>
