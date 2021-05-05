@@ -57,6 +57,12 @@ namespace Syntropy
     /// \brief Tag type associated to tuples.
     struct TupleTag{};
 
+    /// \brief Number of elements in a tuple.
+    template <IsTupleReference TTuple>
+    inline constexpr
+    Int TupleRankOf
+        = TupleRank<Templates::UnqualifiedOf<TTuple>>::kValue;
+
     /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
@@ -238,17 +244,11 @@ namespace Syntropy
 
     namespace Tuples
     {
-        /// \brief Number of elements in a tuple.
-        template <IsTupleReference TTuple>
-        inline constexpr
-        Int RankOf
-            = TupleRank<Templates::UnqualifiedOf<TTuple>>::kValue;
-
         /// \brief True if two tuples have the same rank, false otherwise.
         template <IsTupleReference TTuple, IsTupleReference UTuple>
         inline constexpr
         Bool IsSameRank
-            = (RankOf<TTuple> == RankOf<UTuple>);
+            = (TupleRankOf<TTuple> == TupleRankOf<UTuple>);
 
         /// \brief Type of a tuple element.
         ///
@@ -262,7 +262,7 @@ namespace Syntropy
         ///        elements in a tuple.
         template <IsTupleReference TTuple>
         using SequenceOf
-            = Templates::MakeSequence<RankOf<TTuple>>;
+            = Templates::MakeSequence<TupleRankOf<TTuple>>;
 
         /// \brief List of types of a tuple's elements.
         template <IsTupleReference TTuple>

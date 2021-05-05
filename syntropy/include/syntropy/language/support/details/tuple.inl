@@ -97,7 +97,7 @@ namespace Syntropy::Details
         : Templates::Alias<
             Templates::SequenceConcatenate<
                 Templates::SequenceRepeat<TIndex,
-                                          Tuples::RankOf<TTuples>>...>> {};
+                                          TupleRankOf<TTuples>>...>> {};
 
     /// \brief Sequence associating each element to the source tuple.
     template <typename... TTuples>
@@ -288,7 +288,7 @@ namespace Syntropy
     ::LockstepApply(Forwarding<TFunction> function,
                     Forwarding<TTuples>... tuples) noexcept
     {
-        constexpr auto kMinRank = Math::Min(RankOf<TTuples>...);
+        constexpr auto kMinRank = Math::Min(TupleRankOf<TTuples>...);
 
         auto apply = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
@@ -386,7 +386,7 @@ namespace Syntropy
 
         Tuples::LockstepApply(elementwise_copy, destination, source);
 
-        return Math::Min(RankOf<TTuple>, RankOf<UTuple>);
+        return Math::Min(TupleRankOf<TTuple>, TupleRankOf<UTuple>);
     }
 
     template <IsTuple TTuple, IsTupleReference UTuple>
@@ -407,7 +407,7 @@ namespace Syntropy
                                destination,
                                Forward<UTuple>(source));
 
-        return Math::Min(RankOf<TTuple>, RankOf<UTuple>);
+        return Math::Min(TupleRankOf<TTuple>, TupleRankOf<UTuple>);
     }
 
     template <IsTuple TTuple, IsTuple UTuple>
@@ -415,7 +415,7 @@ namespace Syntropy
     Tuples
     ::PartialSwap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
     {
-        constexpr auto kSwapRank = Math::Min(RankOf<TTuple>, RankOf<UTuple>);
+        constexpr auto kSwapRank = Math::Min(TupleRankOf<TTuple>, TupleRankOf<UTuple>);
 
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
         {
@@ -473,8 +473,8 @@ namespace Syntropy
     Tuples
     ::Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
-        constexpr auto LeftRank = RankOf<TTuple>;
-        constexpr auto RightRank = RankOf<UTuple>;
+        constexpr auto LeftRank = TupleRankOf<TTuple>;
+        constexpr auto RightRank = TupleRankOf<UTuple>;
         constexpr auto MinRank = Math::Min<LeftRank, RightRank>;
 
         auto compare_at = [&]<Int TIndex>(Ordering result)
@@ -683,7 +683,7 @@ namespace std
     struct std::tuple_size<TTuple>
     {
         static constexpr
-        std::size_t value = Syntropy::Tuples::RankOf<TTuple>;
+        std::size_t value = Syntropy::TupleRankOf<TTuple>;
     };
 
     template <std::size_t TIndex,
