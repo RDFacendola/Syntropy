@@ -506,12 +506,74 @@ namespace Syntropy
         return (LeftRank < RightRank) ? Ordering::kLess : Ordering::kGreater;
     }
 
+    template <typename... TElements>
+    [[nodiscard]] constexpr Tuple<Mutable<TElements>...>
+    Tuples
+    ::Tie(Mutable<TElements>... elements) noexcept
+    {
+        return Tuple<Mutable<TElements>...>(elements...);
+    }
+
+    template <typename... TElements>
+    [[nodiscard]] constexpr Tuple<Forwarding<TElements>...>
+    Tuples
+    ::ForwardAsTuple(Forwarding<TElements>... elements) noexcept
+    {
+        return Tuple<Forwarding<TElements>...>(
+                   Forward<TElements>(elements)...);
+    }
+
+    template <IsTupleReference... TTuples>
+    [[nodiscard]] constexpr auto
+    Tuples
+    ::Concatenate(Forwarding<TTuples>... tuples) noexcept
+    {
+        auto concatenate = [&]<IsTupleReference TTuple,
+                               Int... TTupleIndex,
+                               Int... TElementIndex>
+            (Forwarding<TTuple> tuple,
+             Templates::Sequence<TTupleIndex...>,
+             Templates::Sequence<TElementIndex...>)
+            {
+                return MakeTuple(
+                           Get<TElementIndex>(
+                               Get<TTupleIndex>(Forward<TTuple>(tuple)))
+                           ...);
+            };
+
+        return concatenate(
+            ForwardAsTuple(tuples...),
+            Details::EnumerateTuples<TTuples...>{},
+            Details::EnumerateTupleElements<TTuples...>{});
+    }
+
+    template <IsTupleReference TTuple>
+    [[nodiscard]] constexpr auto
+    Tuples
+    ::Flatten(Forwarding<TTuple> tuple) noexcept
+    {
+        auto flatten = [&]<Int... TIndex>(Forwarding<TTuple> tuple,
+                                          Templates::Sequence<TIndex...>)
+        {
+            return Concatenate(Flatten(Get<TIndex>(Forward<TTuple>(tuple)))
+                               ...);
+        };
+
+        return flatten(Forward<TTuple>(tuple),
+                       TupleSequenceOf<TTuple>{});
+    }
+
+    template <typename TElement>
+    [[nodiscard]] constexpr auto
+    Tuples
+    ::Flatten(Forwarding<TElement> element) noexcept
+    {
+        return MakeTuple(Forward<TElement>(element));
+    }
+
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
-
-    // IsTuple.
-    // =======
 
     template <Int TIndex, typename... UElements>
     [[nodiscard]] constexpr decltype(auto)
@@ -557,79 +619,6 @@ namespace Syntropy
             static_cast<Mutable<BaseType>>(tuple).element_);
     }
 
-    // Utilities.
-    // ==========
-
-    template <typename... TElements>
-    [[nodiscard]] constexpr Tuple<TElements...>
-    MakeTuple(Forwarding<TElements>... elements) noexcept
-    {
-        return { Forward<TElements>(elements)... };
-    }
-
-    template <typename... TElements>
-    [[nodiscard]] constexpr Tuple<Mutable<TElements>...>
-    Tie(Mutable<TElements>... elements) noexcept
-    {
-        return Tuple<Mutable<TElements>...>(elements...);
-    }
-
-    template <typename... TElements>
-    [[nodiscard]] constexpr Tuple<Forwarding<TElements>...>
-    ForwardAsTuple(Forwarding<TElements>... elements) noexcept
-    {
-        return Tuple<Forwarding<TElements>...>(
-                   Forward<TElements>(elements)...);
-    }
-
-    template <IsTupleReference... TTuples>
-    [[nodiscard]] constexpr auto
-    Concatenate(Forwarding<TTuples>... tuples) noexcept
-    {
-        auto concatenate = [&]<IsTupleReference TTuple,
-                               Int... TTupleIndex,
-                               Int... TElementIndex>
-            (Forwarding<TTuple> tuple,
-             Templates::Sequence<TTupleIndex...>,
-             Templates::Sequence<TElementIndex...>)
-            {
-                return MakeTuple(
-                           Get<TElementIndex>(
-                               Get<TTupleIndex>(Forward<TTuple>(tuple)))
-                           ...);
-            };
-
-        return concatenate(
-            ForwardAsTuple(tuples...),
-            Details::EnumerateTuples<TTuples...>{},
-            Details::EnumerateTupleElements<TTuples...>{});
-    }
-
-    template <IsTupleReference TTuple>
-    [[nodiscard]] constexpr auto
-    Flatten(Forwarding<TTuple> tuple) noexcept
-    {
-        auto flatten = [&]<Int... TIndex>(Forwarding<TTuple> tuple,
-                                          Templates::Sequence<TIndex...>)
-        {
-            return Concatenate(Flatten(Get<TIndex>(Forward<TTuple>(tuple)))
-                               ...);
-        };
-
-        return flatten(Forward<TTuple>(tuple),
-                       TupleSequenceOf<TTuple>{});
-    }
-
-    template <typename TElement>
-    [[nodiscard]] constexpr decltype(auto)
-    Flatten(Forwarding<TElement> element) noexcept
-    {
-        return MakeTuple(Forward<TElement>(element));
-    }
-
-    // Swap.
-    // =====
-
     template <typename... TTypes, typename... UTypes>
     requires (sizeof...(TTypes) == sizeof...(UTypes))
     constexpr void
@@ -647,9 +636,6 @@ namespace Syntropy
     {
         return Tuples::Exchange(lhs, Forward<Tuple<UTypes...>>>(rhs));
     }
-
-    // Comparison.
-    // ===========
 
     template <typename... TTypes, typename... UTypes>
     requires (sizeof...(TTypes) == sizeof...(UTypes))
@@ -669,6 +655,12 @@ namespace Syntropy
         return Tuples::Compare(lhs, rhs);
     }
 
+    template <typename... TElements>
+    [[nodiscard]] constexpr Tuple<TElements...>
+    MakeTuple(Forwarding<TElements>... elements) noexcept
+    {
+        return { Forward<TElements>(elements)... };
+    }
 }
 
 // ===========================================================================

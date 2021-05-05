@@ -389,14 +389,35 @@ namespace Syntropy
         [[nodiscard]] constexpr Ordering
         Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
+        /// \brief Create a tuple of references to the provided arguments.
+        template <typename... TElements>
+        [[nodiscard]] constexpr Tuple<Mutable<TElements>...>
+        Tie(Mutable<TElements>... elements) noexcept;
+
+        /// \brief Create a tuple of perfectly-forwarded elements.
+        template <typename... TElements>
+        [[nodiscard]] constexpr Tuple<Forwarding<TElements>...>
+        ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
+
+        /// \brief Concatenate a set of tuples.
+        template <IsTupleReference... TTuples>
+        [[nodiscard]] constexpr auto
+        Concatenate(Forwarding<TTuples>... tuples) noexcept;
+
+        /// \brief Flatten a tuple recursively.
+        template <IsTupleReference TTuple>
+        [[nodiscard]] constexpr auto
+        Flatten(Forwarding<TTuple> tuple) noexcept;
+
+        /// \brief Flatten a tuple recursively.
+        template <typename TElement>
+        [[nodiscard]] constexpr auto
+        Flatten(Forwarding<TElement> element) noexcept;
     }
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
-
-    // Element access.
-    // ===============
 
     /// \brief Access a tuple element by index.
     ///
@@ -426,42 +447,6 @@ namespace Syntropy
     [[nodiscard]] constexpr decltype(auto)
     Get(Movable<Tuple<UElements...>> tuple) noexcept;
 
-    // Utilities.
-    // ==========
-
-    /// \brief Create a tuple deducing template types from arguments.
-    template <typename... TElements>
-    [[nodiscard]] constexpr Tuple<TElements...>
-    MakeTuple(Forwarding<TElements>... elements) noexcept;
-
-    /// \brief Create a tuple of references to the provided arguments.
-    template <typename... TElements>
-    [[nodiscard]] constexpr Tuple<Mutable<TElements>...>
-    Tie(Mutable<TElements>... elements) noexcept;
-
-    /// \brief Create a tuple of perfectly-forwarded elements.
-    template <typename... TElements>
-    [[nodiscard]] constexpr Tuple<Forwarding<TElements>...>
-    ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
-
-    /// \brief Concatenate a set of tuples.
-    template <IsTupleReference... TTuples>
-    [[nodiscard]] constexpr auto
-    Concatenate(Forwarding<TTuples>... tuples) noexcept;
-
-    /// \brief Flatten a tuple recursively.
-    template <IsTupleReference TTuple>
-    [[nodiscard]] constexpr auto
-    Flatten(Forwarding<TTuple> tuple) noexcept;
-
-    /// \brief Flatten a tuple recursively.
-    template <typename TElement>
-    [[nodiscard]] constexpr auto
-    Flatten(Forwarding<TElement> element) noexcept;
-
-    // Swap.
-    // =====
-
     /// \brief Member-wise swap two tuples.
     template <typename... TTypes, typename... UTypes>
     requires (sizeof...(TTypes) == sizeof...(UTypes))
@@ -476,9 +461,6 @@ namespace Syntropy
     [[nodiscard]] constexpr Tuple<TTypes...>
     Exchange(Mutable<Tuple<TTypes...>> lhs,
              Forwarding<Tuple<UTypes...>> rhs) noexcept;
-
-    // Comparison.
-    // ===========
 
     /// \brief Check whether two tuples are member-wise equivalent.
     /// \brief Equivalence doesn't imply equality.
@@ -495,8 +477,13 @@ namespace Syntropy
     operator<=>(Immutable<Tuple<TTypes...>> lhs,
                 Immutable<Tuple<UTypes...>> rhs) noexcept;
 
+    /// \brief Create a tuple deducing template types from arguments.
+    template <typename... TElements>
+    [[nodiscard]] constexpr Tuple<TElements...>
+    MakeTuple(Forwarding<TElements>... elements) noexcept;
+
     /************************************************************************/
-    /* TYPE TRAITS                                                          */
+    /* TUPLE TYPE TRAITS                                                    */
     /************************************************************************/
 
     /// \brief Partial template specialization for tuples.
