@@ -428,6 +428,7 @@ namespace Syntropy
     }
 
     template <IsTuple TTuple, IsTuple UTuple>
+    requires (TupleRankOf<TTuple> == TupleRankOf<UTuple>)
     [[nodiscard]] constexpr Bool
     Tuples
     ::AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
@@ -439,15 +440,11 @@ namespace Syntropy
                     && ...);
         };
 
-        if constexpr (TupleRankOf<TTuple> == TupleRankOf<UTuple>)
-        {
-            return equal(TupleSequenceOf<TTuple>{});
-        }
-
-        return false;
+        return equal(TupleSequenceOf<TTuple>{});
     }
 
     template <IsTuple TTuple, IsTuple UTuple>
+    requires (TupleRankOf<TTuple> == TupleRankOf<UTuple>)
     [[nodiscard]] constexpr Bool
     Tuples
     ::AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
@@ -459,15 +456,11 @@ namespace Syntropy
                     && ...);
         };
 
-        if constexpr (TupleRankOf<TTuple> == TupleRankOf<UTuple>)
-        {
-            return equivalent(TupleSequenceOf<TTuple>{});
-        }
-
-        return false;
+        return equivalent(TupleSequenceOf<TTuple>{});
     }
 
     template <IsTuple TTuple, IsTuple UTuple>
+    requires (TupleRankOf<TTuple> == TupleRankOf<UTuple>)
     [[nodiscard]] constexpr Ordering
     Tuples
     ::Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
