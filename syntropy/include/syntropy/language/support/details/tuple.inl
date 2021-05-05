@@ -317,19 +317,18 @@ namespace Syntropy
     Tuples
     ::Copy(Mutable<TTuple> destination, Immutable<UTuple> source) noexcept
     {
-        static_assert(TupleIsSameRank<TTuple, UTuple>,
+        static_assert(TupleRankOf<TTuple> == TupleRankOf<UTuple>,
                       "Both tuples must have the same rank");
 
         return PartialCopy(destination, source);
     }
 
     template <IsTuple TTuple, IsTupleReference UTuple>
-    //requires Tuples::TupleIsSameRank<TTuple, UTuple>
     constexpr void
     Tuples
     ::Move(Mutable<TTuple> destination, Forwarding<UTuple> source) noexcept
     {
-        static_assert(TupleIsSameRank<TTuple, UTuple>,
+        static_assert(TupleRankOf<TTuple> == TupleRankOf<UTuple>,
                       "Both tuples must have the same rank");
 
         return PartialMove(destination, Forward<UTuple>(source));
@@ -340,7 +339,7 @@ namespace Syntropy
     Tuples
     ::Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
     {
-        static_assert(TupleIsSameRank<TTuple, UTuple>,
+        static_assert(TupleRankOf<TTuple> == TupleRankOf<UTuple>,
                       "Both tuples must have the same rank");
 
         auto swap = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
@@ -357,7 +356,7 @@ namespace Syntropy
     Tuples
     ::Exchange(Mutable<TTuple> lhs, Forwarding<UTuple> rhs) noexcept
     {
-        static_assert(TupleIsSameRank<TTuple, UTuple>,
+        static_assert(TupleRankOf<TTuple> == TupleRankOf<UTuple>,
                       "Both tuples must have the same rank");
 
         auto exchange = [&]<Int... TIndex>(Templates::Sequence<TIndex...>)
@@ -440,7 +439,7 @@ namespace Syntropy
                     && ...);
         };
 
-        if constexpr (TupleIsSameRank<TTuple, UTuple>)
+        if constexpr (TupleRankOf<TTuple> == TupleRankOf<UTuple>)
         {
             return equal(TupleSequenceOf<TTuple>{});
         }
@@ -460,7 +459,7 @@ namespace Syntropy
                     && ...);
         };
 
-        if constexpr (TupleIsSameRank<TTuple, UTuple>)
+        if constexpr (TupleRankOf<TTuple> == TupleRankOf<UTuple>)
         {
             return equivalent(TupleSequenceOf<TTuple>{});
         }
