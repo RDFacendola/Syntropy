@@ -23,6 +23,24 @@
 namespace Syntropy
 {
     /************************************************************************/
+    /* TYPE TRAITS                                                          */
+    /************************************************************************/
+
+    /// \brief Number of elements in a record.
+    template <typename TRecord>
+    struct TupleRank
+    {
+        // : Syntropy::Templates::IntType<rank>
+    };
+
+    /// \brief Type of an element in a record, by index.
+    template <Int TIndex, typename TRecord>
+    struct TupleElementType
+    {
+        // : Syntropy::Templates::Alias<element type>;
+    };
+
+    /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
 
@@ -198,24 +216,6 @@ namespace Syntropy
     }
 
     /************************************************************************/
-    /* RECORDS TYPE TRAITS                                                  */
-    /************************************************************************/
-
-    /// \brief Number of elements in a record.
-    template <typename TRecord>
-    struct RecordRankTrait
-    {
-        // : Syntropy::Templates::IntType<rank>
-    };
-
-    /// \brief Type of an element in a record, by index.
-    template <Int TIndex, typename TRecord>
-    struct RecordElementTypeTrait
-    {
-        // : Syntropy::Templates::Alias<element type>;
-    };
-
-    /************************************************************************/
     /* RECORD                                                               */
     /************************************************************************/
 
@@ -225,7 +225,7 @@ namespace Syntropy
     concept Record = requires
     {
         /// \brief Rank of the record.
-        { RecordRankTrait<TRecord>::kValue } -> Templates::IsIntegral;
+        { TupleRank<TRecord>::kValue } -> Templates::IsIntegral;
     };
 
     /// \brief Concept for a reference to a record.
@@ -246,7 +246,7 @@ namespace Syntropy
         template <RecordReference TRecord>
         inline constexpr
         Int RankOf
-            = RecordRankTrait<Templates::UnqualifiedOf<TRecord>>::kValue;
+            = TupleRank<Templates::UnqualifiedOf<TRecord>>::kValue;
 
         /// \brief True if two records have the same rank, false otherwise.
         template <RecordReference TRecord, RecordReference URecord>
@@ -259,7 +259,7 @@ namespace Syntropy
         /// \remarks Ill-formed if exceeding record bounds.
         template <Int TIndex, RecordReference TRecord>
         using ElementTypeOf
-            = typename RecordElementTypeTrait<
+            = typename TupleElementType<
                 TIndex, Templates::UnqualifiedOf<TRecord>>::Type;
 
         /// \brief Generates a sequence that can be used to enumerate all
@@ -273,7 +273,7 @@ namespace Syntropy
         using ElementTypeListOf
             = Details::ElementTypeListOf<TRecord,
                                          SequenceOf<TRecord>,
-                                         RecordElementTypeTrait>;
+                                         TupleElementType>;
 
         /// \brief Index of the first element with type TElement in a record.
         ///
@@ -505,12 +505,12 @@ namespace Syntropy
 
     /// \brief Partial template specialization for tuples.
     template <typename... TTypes>
-    struct RecordRankTrait<Tuple<TTypes...>>
+    struct TupleRank<Tuple<TTypes...>>
         : Templates::IntType<sizeof...(TTypes)> {};
 
     /// \brief Partial template specialization for tuples.
     template <Int TIndex, typename... TTypes>
-    struct RecordElementTypeTrait<TIndex, Tuple<TTypes...>>
+    struct TupleElementType<TIndex, Tuple<TTypes...>>
         : Templates::Alias<
             Templates::ElementTypeOf<TIndex,
                                      Templates::TypeList<TTypes...>>> {};

@@ -195,12 +195,12 @@ namespace Syntropy
 
     /// \brief Partial template specialization for ZipRanges.
     template <Syntropy::Ranges::ForwardRange... TRanges>
-    struct RecordRankTrait<ZipRange<TRanges...>>
+    struct TupleRank<ZipRange<TRanges...>>
         : Templates::IntType<sizeof...(TRanges)> {};
 
     /// \brief Partial template specialization for ZipRanges.
     template <Int TIndex, Syntropy::Ranges::ForwardRange... TRanges>
-    struct RecordElementTypeTrait
+    struct TupleElementType
         : Templates::Alias<Templates::ElementIndexOf<TIndex, TRanges...>> {};
 
 }
