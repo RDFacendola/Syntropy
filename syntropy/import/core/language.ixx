@@ -6,12 +6,42 @@
 
 // ################################################################################
 
+module;
+
+#include <type_traits>
+
+// ################################################################################
+
 export module syntropy.language;
 
 // ################################################################################
 
 export namespace sy
 {
+    // ================================================================================
+    // TRAITS
+    // ================================================================================
+
+    // If Type is a reference type, this is equal to the referenced type, otherwise this is equal to Type.
+    template <typename Type>
+    using RemoveReference = std::remove_reference_t<Type>;
+
+    // ================================================================================
+    // MOVE / FORWARD
+    // ================================================================================
+
+    // Indicates that rhs can be efficiently moved to another object.
+    template <typename Type>
+    constexpr RemoveReference<Type>&& Move(Type&& rhs);
+
+    // Forwards lvalues as lvalues or rvalues depending on Type.
+    template <typename Type>
+    constexpr Type&& Forward(RemoveReference<Type>& rhs);
+
+    // Forwards rvalues as rvalues and prohibits forwarding of rvalues as lvalues.
+    template <typename Type>
+    constexpr Type&& Forward(RemoveReference<Type>&& rhs);
+
     // ================================================================================
     // NON-COPYABLE
     // ================================================================================
@@ -43,6 +73,30 @@ export namespace sy
 
     };
 
+}
+
+// ################################################################################
+
+// ================================================================================
+// IMPLEMENTATION
+// ================================================================================
+
+template <typename Type>
+constexpr sy::RemoveReference<Type>&& sy::Move(Type&& rhs)
+{
+    return static_cast<RemoveReference<Type>&&>(rhs);
+}
+
+template <typename Type>
+constexpr Type&& sy::Forward(RemoveReference<Type>& rhs)
+{
+    return static_cast<Type&&>(rhs);
+}
+
+template <typename Type>
+constexpr Type&& sy::Forward(RemoveReference<Type>&& rhs)
+{
+    return static_cast<Type&&>(rhs);
 }
 
 // ################################################################################
