@@ -1,5 +1,5 @@
 build/
-projects/
-intermediates/
+intermediate/
+.vs/
 
 *.DS_Store
