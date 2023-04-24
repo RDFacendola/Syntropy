@@ -32,9 +32,6 @@ export namespace sy
         // Create a buffer on the current allocator.
         Buffer(Bytes size, Allocator& allocator = GetThreadAllocator());
 
-        // Create an aligned buffer on the current allocator.
-        Buffer(Bytes size, Alignment alignment, Allocator& allocator = GetThreadAllocator());
-
         // Release the allocated buffer.
         ~Buffer();
 
@@ -50,9 +47,6 @@ export namespace sy
         // Get the buffer size.
         Bytes GetSize() const;
 
-        // Get the buffer alignment.
-        Alignment GetAlignment() const;
-
     private:
 
         // Allocator this buffer was allocated on.
@@ -60,9 +54,6 @@ export namespace sy
 
         // Buffer data.
         RWByteSpan _data{};
-
-        // Buffer alignment.
-        Alignment _alignment{ 0 };
 
     };
 

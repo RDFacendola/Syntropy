@@ -21,16 +21,7 @@ sy::Buffer::Buffer(Allocator& allocator)
 
 sy::Buffer::Buffer(Bytes size, Allocator& allocator)
     : _allocator{ allocator }
-    , _data{ _allocator.Allocate(size, GetMaxAlignment()) }
-    , _alignment{ GetMaxAlignment() }
-{
-
-}
-
-sy::Buffer::Buffer(Bytes size, Alignment alignment, Allocator& allocator)
-    : _allocator{ allocator }
-    , _data{ _allocator.Allocate(size, alignment) }
-    , _alignment{ alignment }
+    , _data{ _allocator.Allocate(size) }
 {
 
 }
@@ -39,7 +30,7 @@ sy::Buffer::~Buffer()
 {
     if (_data.GetCount() > 0)
     {
-        _allocator.Deallocate(_data, _alignment);
+        _allocator.Deallocate(_data);
     }
 }
 
@@ -61,11 +52,6 @@ sy::Allocator& sy::Buffer::GetAllocator() const
 sy::Bytes sy::Buffer::GetSize() const
 {
     return Bytes{ _data.GetCount() };
-}
-
-sy::Alignment sy::Buffer::GetAlignment() const
-{
-    return _alignment;
 }
 
 // ################################################################################

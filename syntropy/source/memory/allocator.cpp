@@ -7,7 +7,7 @@
 
 module;
 
-#include <new>
+#include <stdlib.h>
 
 // ################################################################################
 
@@ -42,25 +42,21 @@ void sy::SetThreadAllocator(Allocator& allocator)
 // SYSTEM ALLOCATOR
 // ================================================================================
 
-sy::RWByteSpan sy::SystemAllocator::Allocate(Bytes size, Alignment alignment)
+sy::RWByteSpan sy::SystemAllocator::Allocate(Bytes size)
 {
-    auto api_size = static_cast<size_t>(size);
-    auto api_alignment = static_cast<std::align_val_t>(alignment);
-
-    if (auto api_block = ::operator new(api_size, api_alignment, std::nothrow))
+    if (auto address = malloc(static_cast<size_t>(size)))
     {
-        return { RWAddress<Byte>{ api_block }, ToInt(size) };
+        return { RWAddress<Byte>{ address }, ToInt(size) };
     }
 
     return {};
 }
 
-void sy::SystemAllocator::Deallocate(const RWByteSpan& block, Alignment alignment)
+void sy::SystemAllocator::Deallocate(const RWByteSpan& block)
 {
-    auto api_address = AddressOf(block.GetFront());
-    auto api_alignment = static_cast<std::align_val_t>(alignment);
+    auto address = AddressOf(block.GetFront());
 
-    ::operator delete(api_address, api_alignment, std::nothrow);
+    free(address);
 }
 
 sy::SystemAllocator& sy::GetSystemAllocator()

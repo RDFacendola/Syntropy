@@ -32,12 +32,12 @@ export namespace sy
         virtual ~Allocator() = default;
 
         // Allocate a memory block. If memory could not be allocated, returns an empty block.
-        [[nodiscard]] virtual RWByteSpan Allocate(Bytes size, Alignment alignment) = 0;
+        [[nodiscard]] virtual RWByteSpan Allocate(Bytes size) = 0;
 
         // Deallocate a memory block.
         // @remarks Calling this method with a memory block that was not returned by a previous call to ::Allocate
         //          results in undefined behaviour.
-        virtual void Deallocate(const RWByteSpan& block, Alignment alignment) = 0;
+        virtual void Deallocate(const RWByteSpan& block) = 0;
 
     };
 
@@ -59,9 +59,9 @@ export namespace sy
 
     public:
 
-        [[nodiscard]] virtual RWByteSpan Allocate(Bytes size, Alignment alignment) override;
+        [[nodiscard]] virtual RWByteSpan Allocate(Bytes size) override;
 
-        virtual void Deallocate(const RWByteSpan& block, Alignment alignment) override;
+        virtual void Deallocate(const RWByteSpan& block) override;
 
     private:
 
