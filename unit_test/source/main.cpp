@@ -2,26 +2,36 @@
 #include <iostream>
 
 import syntropy.types;
+import syntropy.language;
 import syntropy.memory;
 import syntropy.allocator;
 import syntropy.buffer;
 import syntropy.hash;
 import syntropy.span;
+import syntropy.unique;
+
+struct Foo
+{
+    Foo()
+    {
+        _foo = 42;
+    }
+
+    sy::Int _foo{ 0 };
+};
 
 int main()
 {
     {
         auto ag = sy::AllocatorGuard{ sy::GetSystemAllocator() };
 
-        auto ma = sy::GetMaxAlignment();
+        auto uf = sy::MakeUnique<Foo>();
 
-        auto buff = sy::Buffer(sy::Bytes{ 64 });
+        uf->_foo = 43;
 
-        auto s = buff.GetSize();
+        auto uf2 = sy::MakeUnique<Foo>();
 
-        auto buffview = sy::ByteSpan{ buff };
-
-        auto rwbuffview = sy::RWByteSpan{ buff };
+        uf = sy::Move(uf2);
     }
 
     return 0;

@@ -124,6 +124,18 @@ export namespace sy
     template <typename Type>
     constexpr RWByteSpan Marshal(Type& rhs);
 
+    // Convert a read-only representation of an object to a reference.
+    // If the representation do not refer to a object of type Type, accessing the returned
+    // value results in undefined behavior.
+    template <typename Type>
+    constexpr const Type& Unmarshal(const ByteSpan& rhs);
+
+    // Convert a read-write representation of an object to a reference.
+    // If the representation do not refer to a object of type Type, accessing the returned
+    // value results in undefined behavior.
+    template <typename Type>
+    constexpr Type& Unmarshal(const RWByteSpan& rhs);
+
     // ================================================================================
     // CONVERSIONS
     // ================================================================================
@@ -225,6 +237,22 @@ constexpr sy::RWByteSpan sy::Marshal(Type& rhs)
     auto count = ToInt(SizeOf(rhs));
 
     return { data, count };
+}
+
+template <typename Type>
+constexpr const Type& sy::Unmarshal(const ByteSpan& rhs)
+{
+    auto data = rhs.GetData();
+
+    return *reinterpret_cast<const Type*>(data);
+}
+
+template <typename Type>
+constexpr Type& sy::Unmarshal(const RWByteSpan& rhs)
+{
+    auto data = rhs.GetData();
+
+    return *reinterpret_cast<Type*>(data);
 }
 
 // ################################################################################

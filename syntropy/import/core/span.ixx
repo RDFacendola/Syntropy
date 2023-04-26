@@ -79,6 +79,9 @@ export namespace sy
         // Accessing an element past the span range results in undefined behaviour.
         constexpr ReferenceType operator[](Int index) const;
 
+        // Check whether the span is non-empty.
+        constexpr explicit operator Bool() const;
+
         // Get the address to the first element in the span.
         constexpr AddressType GetData() const;
 
@@ -256,6 +259,12 @@ template <typename Traits>
 constexpr sy::BaseSpan<Traits>::ReferenceType sy::BaseSpan<Traits>::operator[](Int index) const
 {
     return _data[index];
+}
+
+template <typename Traits>
+constexpr sy::BaseSpan<Traits>::operator sy::Bool() const
+{
+    return !IsEmpty();
 }
 
 template <typename Traits>
